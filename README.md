@@ -11,11 +11,11 @@ game-theoretic decision modules, and geospatial data.
 - **Influence Maps** — BFS-based spatial reasoning, escalation contagion, Moran's I spatial autocorrelation
 - **Axelrod Strategies** — 5 personality types (Aggressor, Pacifist, Tit-for-Tat, Neutral, Grudger) via the Axelrod library
 - **Analysis Suite** — VAR models, Granger causality, OLS causal inference, Louvain community detection, Sobol sensitivity analysis, NSGA2 multi-objective optimization, strategic risk assessment, war gaming, alliance forecasting
-- **Real-World Data** — Natural Earth geographic data, OSINT integration (GDELT), real-time tension updates
+- **Real-World Data** — Natural Earth geographic data, OSINT integration (GDELT, ReliefWeb), real-time tension updates
 - **Geopolitical Theories** — Realpolitik, Democratic Peace, Power Transition, Offensive/Defensive Realism, Liberal Institutionalism, Constructivism
-- **OSINT Pipeline** — VADER sentiment analysis, GDELT/ACLED/WorldBank adapters with SQLite caching
+- **OSINT Pipeline** — VADER sentiment analysis, GDELT/ACLED/WorldBank/ReliefWeb adapters with SQLite caching, RSS feed ingestion
 - **RL Environment** — PettingZoo AEC multi-agent environment for training policies
-- **Visualization** — Interactive Folium maps (satellite/streets/topo basemaps), Pyvis diplomacy networks, Matplotlib choropleths
+- **Visualization** — Interactive Folium maps (satellite/streets/topo basemaps), Pyvis diplomacy networks, Matplotlib choropleths, GEXF export for Gephi network analysis
 
 ## Installation
 
@@ -124,6 +124,94 @@ for agent in env.agent_iter():
     obs, rew, term, trunc, info = env.last()
     action = env.action_space(agent).sample()
     env.step(action)
+```
+
+### OSINT Data Collection
+
+```python
+from strategify.osint import (
+    FeaturePipeline,
+    GDELTAdapter,
+    ACLEDAdapter,
+    ReliefWebAdapter,
+    WorldBankAdapter,
+    analyze_sentiment,
+)
+
+# Initialize pipeline with caching
+pipeline = FeaturePipeline(
+    adapters=[
+        GDELTAdapter(cache_dir=".osint_cache"),
+        ACLEDAdapter(cache_dir=".osint_cache"),
+        ReliefWebAdapter(cache_dir=".osint_cache"),
+        WorldBankAdapter(cache_dir=".osint_cache"),
+    ],
+    cache_ttl_hours=6,
+)
+
+# Fetch current events for scenario regions
+region_keywords = {
+    "UKR": ["Ukraine", "Russia", "war", "military"],
+    "RUS": ["Russia", "Putin", "sanctions"],
+    "POL": ["Poland", "NATO", "border"],
+}
+
+events = pipeline.fetch("GDELT", region_keywords=region_keywords)
+
+# Analyze sentiment
+for event in events[:5]:
+    score = analyze_sentiment(event["text"])
+    print(f"{event['text'][:50]}: {score:.2f}")
+```
+
+### RSS News Feeds
+
+```python
+from strategify.osint import fetch_rss_feed
+
+bbc = fetch_rss_feed("https://feeds.bbci.co.uk/news/world/rss.xml")
+reuters = fetch_rss_feed("https://www.reutersagency.com/feed/?best-topics=politics")
+```
+
+### Gephi Network Export
+
+```python
+from strategify.viz import export_gexf, export_diplomacy_snapshot
+
+# Export for Gephi analysis
+export_gexf(model, "diplomacy_network.gexf")
+
+# Time-series snapshots for temporal analysis
+for step in range(20):
+    model.step()
+    export_diplomacy_snapshot(model, "gephi_snapshots")
+
+# Then open .gexf files in Gephi for:
+# - ForceAtlas2 layout
+# - Community detection
+# - Centrality metrics (betweenness, degree, PageRank)
+# - Export to PDF/SVG/PNG
+```
+
+### Initialize Model with Real-World Data
+
+```python
+from strategify.geo.real_data import RealWorldDataCollector
+from strategify import GeopolModel
+
+# Get real-world data for initialization
+collector = RealWorldDataCollector()
+initial_state = collector.get_initial_state()
+
+# Create model with real capabilities
+model = GeopolModel()
+for agent in model.schedule.agents:
+    rid = getattr(agent, "region_id", None)
+    if rid and rid in initial_state:
+        data = initial_state[rid]
+        agent.capabilities["military"] = data.military_capability
+        agent.capabilities["economic"] = data.gdp_usd
+        agent.capabilities["diplomatic"] = data.diplomatic_score
 ```
 
 ## Project Structure

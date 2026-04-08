@@ -390,3 +390,137 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
         return float(value)
     except (ValueError, TypeError):
         return default
+
+
+# ---------------------------------------------------------------------------
+# ReliefWeb Adapter (Free Humanitarian Data)
+# ---------------------------------------------------------------------------
+
+
+class ReliefWebAdapter(BaseAdapter):
+    """Adapter for ReliefWeb API (free, no API key required).
+
+    Provides humanitarian news, disaster alerts, and crisis data.
+    API: https://reliefweb.int/help/api
+    """
+
+    _API_URL = "https://api.reliefweb.int/v1/reports"
+
+    @property
+    def name(self) -> str:
+        return "reliefweb"
+
+    def fetch(
+        self,
+        region_keywords: dict[str, list[str]],
+        date_range: tuple[str, str] | None = None,
+        max_records: int = 50,
+    ) -> list[dict[str, Any]]:
+        events: list[dict[str, Any]] = []
+
+        for region_id, keywords in region_keywords.items():
+            query_term = " OR ".join(keywords[:3])
+
+            post_data = {
+                "limit": min(max_records, 100),
+                "query": {"value": query_term, "operator": "OR"},
+                "fields": {"include": ["title", "date", "primary_country", "url"]},
+            }
+
+            try:
+                data = _post_json(self._API_URL, post_data)
+                for item in data.get("data", []):
+                    fields = item.get("fields", {})
+                    country = fields.get("primary_country", {})
+                    country_name = country.get("name", "") if isinstance(country, dict) else ""
+
+                    events.append(
+                        _normalize_event(
+                            source="reliefweb",
+                            timestamp=fields.get("date", {}).get("created", ""),
+                            region_id=region_id,
+                            text=fields.get("title", ""),
+                            event_type="humanitarian",
+                            metadata={
+                                "url": fields.get("url", ""),
+                                "country": country_name,
+                            },
+                        )
+                    )
+            except Exception as exc:
+                logger.warning("ReliefWeb fetch failed for %s: %s", region_id, exc)
+
+        return events
+
+
+# ---------------------------------------------------------------------------
+# Crisis Monitor Adapter (Free Conflict Data)
+# ---------------------------------------------------------------------------
+
+
+class CrisisMonitorAdapter(BaseAdapter):
+    """Adapter for UC Berkeley's Crisis Data (free, no API key).
+
+    Provides historical and current conflict event data.
+    """
+
+    _API_URL = "https://ucr.cre/pr/"
+
+    @property
+    def name(self) -> str:
+        return "crisis_monitor"
+
+    def fetch(
+        self,
+        region_keywords: dict[str, list[str]],
+        date_range: tuple[str, str] | None = None,
+        max_records: int = 50,
+    ) -> list[dict[str, Any]]:
+        events: list[dict[str, Any]] = []
+
+        for region_id, keywords in region_keywords.items():
+            query = "+".join(keywords[:3])
+
+            try:
+                url = f"https://api.crisis-monitor.org/v1/events?q={query}&limit={max_records}"
+                req = urllib.request.Request(
+                    url,
+                    headers={"User-Agent": "strategify/1.0", "Accept": "application/json"},
+                )
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+
+                for event in data.get("events", []):
+                    events.append(
+                        _normalize_event(
+                            source="crisis_monitor",
+                            timestamp=event.get("date", ""),
+                            region_id=region_id,
+                            text=event.get("title", ""),
+                            event_type=event.get("type", "conflict"),
+                            value=event.get("fatalities"),
+                            metadata=event.get("metadata", {}),
+                        )
+                    )
+            except Exception as exc:
+                logger.warning("CrisisMonitor fetch failed for %s: %s", region_id, exc)
+
+        return events
+
+
+def _post_json(url: str, data: dict[str, Any], timeout: int = 30) -> dict:
+    """POST JSON data to URL and return parsed response."""
+    import json
+
+    json_data = json.dumps(data).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=json_data,
+        headers={
+            "User-Agent": "strategify/1.0",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+    )
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.loads(resp.read().decode("utf-8"))

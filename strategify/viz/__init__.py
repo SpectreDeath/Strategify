@@ -4,7 +4,9 @@ from strategify.viz.export import (
     export_all,
     export_chart_svg,
     export_csv,
+    export_diplomacy_snapshot,
     export_geojson,
+    export_gexf,
     export_latex_table,
 )
 from strategify.viz.maps import create_alliance_map, create_map
@@ -23,4 +25,6 @@ __all__ = [
     "export_latex_table",
     "export_chart_svg",
     "export_all",
+    "export_gexf",
+    "export_diplomacy_snapshot",
 ]

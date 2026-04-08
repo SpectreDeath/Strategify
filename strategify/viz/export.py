@@ -3,6 +3,7 @@
 Supports exporting simulation data and visualizations to multiple formats:
 - CSV for data tables
 - GeoJSON for spatial data
+- GEXF for Gephi network analysis
 - LaTeX tables for papers
 - SVG/PNG charts via matplotlib
 """
@@ -12,7 +13,10 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    import networkx as nx
 
 logger = logging.getLogger(__name__)
 
@@ -281,3 +285,125 @@ def export_all(
         logger.warning("matplotlib not available, skipping SVG export")
 
     return results
+
+
+def export_gexf(
+    model: Any,
+    path: str | Path = "diplomacy_network.gexf",
+) -> Path:
+    """Export diplomacy network to GEXF format for Gephi.
+
+    GEXF (Graph Exchange XML Format) enables advanced network analysis in Gephi:
+    - ForceAtlas2, Yifan Hu layout algorithms
+    - Community detection with visual clustering
+    - Centrality metrics (betweenness, degree, PageRank)
+    - Temporal evolution analysis
+    - Export to PDF/SVG/PNG for reports
+
+    Parameters
+    ----------
+    model:
+        GeopolModel with diplomacy_graph attribute.
+    path:
+        Output GEXF file path.
+
+    Returns
+    -------
+    Path
+        Path to saved GEXF file.
+    """
+    import networkx as nx
+
+    path = Path(path)
+
+    if not hasattr(model, "diplomacy_graph") or model.diplomacy_graph is None:
+        logger.warning("No diplomacy_graph found, building from relations")
+        G = _build_diplomacy_graph(model)
+    else:
+        G = model.diplomacy_graph
+
+    _add_node_attributes(G, model)
+    _add_edge_attributes(G, model)
+
+    nx.write_gexf(G, str(path))
+    logger.info("Exported GEXF to %s", path)
+    return path
+
+
+def _build_diplomacy_graph(model: Any) -> nx.Graph:
+    """Build NetworkX graph from model relations."""
+    import networkx as nx
+
+    G = nx.Graph()
+
+    agents = list(model.schedule.agents)
+    for agent in agents:
+        rid = getattr(agent, "region_id", f"agent_{agent.unique_id}")
+        G.add_node(agent.unique_id, label=rid.upper())
+
+    for i, a in enumerate(agents):
+        for j, b in enumerate(agents):
+            if i < j:
+                weight = model.relations.get_relation(a.unique_id, b.unique_id)
+                if weight != 0:
+                    G.add_edge(a.unique_id, b.unique_id, weight=weight)
+
+    return G
+
+
+def _add_node_attributes(G: nx.Graph, model: Any) -> None:
+    """Add node attributes from agent capabilities and state."""
+    agents = list(model.schedule.agents)
+    agent_map = {a.unique_id: a for a in agents}
+
+    for node_id in G.nodes():
+        if node_id in agent_map:
+            agent = agent_map[node_id]
+            G.nodes[node_id]["posture"] = getattr(agent, "posture", "Deescalate").value
+            G.nodes[node_id]["personality"] = getattr(agent, "personality", "Unknown")
+
+            caps = getattr(agent, "capabilities", {})
+            G.nodes[node_id]["military"] = caps.get("military", 0)
+            G.nodes[node_id]["economic"] = caps.get("economic", 0)
+            G.nodes[node_id]["diplomatic"] = caps.get("diplomatic", 0)
+            G.nodes[node_id]["informational"] = caps.get("informational", 0)
+
+
+def _add_edge_attributes(G: nx.Graph, model: Any) -> None:
+    """Add edge attributes from relations."""
+    for u, v in G.edges():
+        weight = model.relations.get_relation(u, v)
+        G.edges[u, v]["weight"] = weight
+        G.edges[u, v]["relation_type"] = (
+            "alliance" if weight > 0 else "rivalry" if weight < 0 else "neutral"
+        )
+
+
+def export_diplomacy_snapshot(
+    model: Any,
+    output_dir: str | Path = "gephi_snapshots",
+    step: int | None = None,
+) -> Path:
+    """Export a diplomacy network snapshot for Gephi with optional timestep.
+
+    Parameters
+    ----------
+    model:
+        GeopolModel that has been stepped.
+    output_dir:
+        Directory for output files.
+    step:
+        Simulation step number (uses model.schedule.steps if None).
+
+    Returns
+    -------
+    Path
+        Path to saved GEXF file.
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    step = step if step is not None else model.schedule.steps
+    filename = f"diplomacy_step{step:04d}.gexf"
+
+    return export_gexf(model, output_dir / filename)
