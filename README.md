@@ -16,11 +16,13 @@ game-theoretic decision modules, and geospatial data.
 - **Influence Maps** — BFS-based spatial reasoning, escalation contagion, Moran's I spatial autocorrelation
 - **Axelrod Strategies** — 5 personality types (Aggressor, Pacifist, Tit-for-Tat, Neutral, Grudger) via the Axelrod library
 - **Analysis Suite** — VAR models, Granger causality, OLS causal inference, Louvain community detection, Sobol sensitivity analysis, NSGA2 multi-objective optimization, strategic risk assessment, war gaming, alliance forecasting
-- **Real-World Data** — Natural Earth geographic data, OSINT integration (GDELT, ReliefWeb), real-time tension updates
+- **Real-World Data** — Natural Earth geographic data, OSINT integration (GDELT, ReliefWeb, Wikipedia), real-time tension updates
 - **Geopolitical Theories** — Realpolitik, Democratic Peace, Power Transition, Offensive/Defensive Realism, Liberal Institutionalism, Constructivism
-- **OSINT Pipeline** — VADER sentiment analysis, GDELT/ACLED/WorldBank/ReliefWeb adapters with SQLite caching, RSS feed ingestion
+- **OSINT Pipeline** — VADER sentiment analysis, GDELT/ACLED/WorldBank/ReliefWeb/Wikipedia adapters with SQLite caching, RSS feed ingestion
 - **RL Environment** — PettingZoo AEC multi-agent environment for training policies
-- **Visualization** — Interactive Folium maps (satellite/streets/topo basemaps), Pyvis diplomacy networks, Matplotlib choropleths, GEXF export for Gephi network analysis
+- **Visualization** — Interactive Folium maps, Pyvis networks, Matplotlib choropleths, GEXF for Gephi, animated GIFs, PDF reports, interactive timeline
+- **Scenario Presets** — Pre-configured scenarios for Ukraine Crisis, Middle East, and South China Sea
+- **Early Warning Dashboard** — Real-time risk assessment combining OSINT sentiment with strategic analysis
 
 ## Installation
 
@@ -217,6 +219,63 @@ for agent in model.schedule.agents:
         agent.capabilities["military"] = data.military_capability
         agent.capabilities["economic"] = data.gdp_usd
         agent.capabilities["diplomatic"] = data.diplomatic_score
+```
+
+### Scenario Presets
+
+```python
+from strategify.config import get_preset, list_presets
+
+# List available presets
+print(list_presets())  # ['ukraine', 'middle_east', 'south_china_sea']
+
+# Load a preset
+preset = get_preset("ukraine")
+print(preset.name)        # Ukraine Crisis
+print(preset.regions)     # ['UKR', 'RUS', 'BLR', 'POL', ...]
+print(preset.keywords)    # OSINT keywords per region
+```
+
+### Animation & Timeline Export
+
+```python
+from strategify.viz import export_animation, export_timeline
+
+# Run simulation and capture history
+model_history = []
+model = GeopolModel()
+for _ in range(20):
+    model.step()
+    model_history.append(model)
+
+# Export animated GIF
+export_animation(model_history, "simulation.gif")
+
+# Export interactive HTML timeline
+export_timeline(model_history, "timeline.html")
+```
+
+### PDF Report Generation
+
+```python
+from strategify.viz import export_report_pdf
+
+# Generate comprehensive PDF report
+export_report_pdf(model, "report.pdf", include_maps=True, include_charts=True)
+```
+
+### Early Warning Dashboard
+
+```python
+from strategify.viz import create_early_warning_dashboard
+
+# Create dashboard with OSINT data
+osint_data = {"UKR": events_ukr, "RUS": events_rus}
+create_early_warning_dashboard(model, osint_data, "dashboard.html")
+# Opens as interactive HTML with:
+# - Actor status (posture, capabilities)
+# - Risk assessment (threat scores)
+# - OSINT sentiment (tension bars)
 ```
 
 ## Project Structure
