@@ -359,7 +359,10 @@ def _add_node_attributes(G: nx.Graph, model: Any) -> None:
     for node_id in G.nodes():
         if node_id in agent_map:
             agent = agent_map[node_id]
-            G.nodes[node_id]["posture"] = getattr(agent, "posture", "Deescalate").value
+            posture = getattr(agent, "posture", None)
+            G.nodes[node_id]["posture"] = (
+                posture.value if hasattr(posture, "value") else str(posture)
+            )
             G.nodes[node_id]["personality"] = getattr(agent, "personality", "Unknown")
 
             caps = getattr(agent, "capabilities", {})
@@ -407,3 +410,251 @@ def export_diplomacy_snapshot(
     filename = f"diplomacy_step{step:04d}.gexf"
 
     return export_gexf(model, output_dir / filename)
+
+
+def export_animation(
+    model_history: list[Any],
+    output_path: str | Path = "simulation_animation.gif",
+    fps: int = 2,
+) -> Path:
+    """Export simulation as animated GIF.
+
+    Parameters
+    ----------
+    model_history:
+        List of GeopolModel states at each timestep.
+    output_path:
+        Output file path (.gif).
+    fps:
+        Frames per second.
+
+    Returns
+    -------
+    Path
+        Path to saved animation file.
+    """
+    import matplotlib.pyplot as plt
+
+    path = Path(output_path)
+
+    try:
+        from PIL import Image
+    except ImportError:
+        logger.warning("Pillow not available, cannot create animation")
+        return path
+
+    frames = []
+
+    for i, model in enumerate(model_history):
+        fig, ax = plt.subplots(figsize=(8, 4))
+
+        agents = list(model.schedule.agents)
+        postures = [
+            getattr(a, "posture", "Deescalate").value
+            if hasattr(getattr(a, "posture", None), "value")
+            else "Unknown"
+            for a in agents
+        ]
+
+        posture_counts = {"Escalate": 0, "Deescalate": 0, "Maintain": 0}
+        for p in postures:
+            if p in posture_counts:
+                posture_counts[p] += 1
+
+        ax.bar(posture_counts.keys(), posture_counts.values(), color=["red", "green", "blue"])
+        ax.set_title(f"Step {i}")
+        ax.set_ylim(0, len(agents) + 1)
+
+        fig.canvas.draw()
+        image = Image.frombytes("RGB", fig.canvas.get_width_height(), fig.canvas.tostring_rgb())
+        frames.append(image)
+        plt.close(fig)
+
+    if frames:
+        frames[0].save(
+            str(path),
+            save_all=True,
+            append_images=frames[1:],
+            duration=1000 // fps,
+            loop=0,
+        )
+        logger.info("Exported animation to %s", path)
+
+    return path
+
+
+def export_chart_png(
+    model: Any,
+    path: str | Path = "chart.png",
+    chart_type: str = "escalation",
+) -> Path:
+    """Export a chart as PNG.
+
+    Parameters
+    ----------
+    model:
+        GeopolModel that has been stepped.
+    path:
+        Output file path.
+    chart_type:
+        ``"escalation"`` for posture over time,
+        ``"diplomacy"`` for diplomacy weight matrix.
+
+    Returns
+    -------
+    Path
+        Path to saved PNG file.
+    """
+    import matplotlib.pyplot as plt
+
+    path = Path(path)
+
+    if chart_type == "escalation":
+        try:
+            df = model.datacollector.get_agent_vars_dataframe()
+            df_reset = df.reset_index()
+
+            fig, ax = plt.subplots(figsize=(10, 5))
+            for agent in model.schedule.agents:
+                rid = getattr(agent, "region_id", "unknown")
+                agent_data = df_reset[df_reset["region_id"] == rid]
+                if "posture" in agent_data.columns:
+                    escalation = (agent_data["posture"] == "Escalate").astype(int)
+                    ax.plot(
+                        agent_data["Step"], escalation, marker="o", label=rid.upper(), linewidth=2
+                    )
+
+            ax.set_xlabel("Step")
+            ax.set_ylabel("Escalation")
+            ax.set_yticks([0, 1])
+            ax.set_yticklabels(["Deescalate", "Escalate"])
+            ax.legend()
+            ax.set_title("Escalation Trajectory")
+            fig.tight_layout()
+            fig.savefig(str(path), format="png")
+            plt.close(fig)
+        except Exception as exc:
+            logger.warning("Escalation chart failed: %s", exc)
+
+    elif chart_type == "diplomacy":
+        import numpy as np
+
+        agents = list(model.schedule.agents)
+        n = len(agents)
+        matrix = np.zeros((n, n))
+        labels = [getattr(a, "region_id", "?").upper() for a in agents]
+
+        for i, a in enumerate(agents):
+            for j, b in enumerate(agents):
+                if i != j:
+                    matrix[i][j] = model.relations.get_relation(a.unique_id, b.unique_id)
+
+        fig, ax = plt.subplots(figsize=(8, 6))
+        im = ax.imshow(matrix, cmap="RdYlGn", vmin=-1, vmax=1)
+        ax.set_xticks(range(n))
+        ax.set_yticks(range(n))
+        ax.set_xticklabels(labels)
+        ax.set_yticklabels(labels)
+        plt.colorbar(im, label="Relation Weight")
+        ax.set_title("Diplomacy Matrix")
+        fig.tight_layout()
+        fig.savefig(str(path), format="png")
+        plt.close(fig)
+
+    logger.info("Exported PNG chart to %s", path)
+    return path
+
+
+def export_report_pdf(
+    model: Any,
+    output_path: str | Path = "simulation_report.pdf",
+    include_maps: bool = True,
+    include_charts: bool = True,
+) -> Path:
+    """Generate comprehensive PDF report with maps and charts.
+
+    Parameters
+    ----------
+    model:
+        GeopolModel that has been stepped.
+    output_path:
+        Output file path.
+    include_maps:
+        Include map visualizations.
+    include_charts:
+        Include chart visualizations.
+
+    Returns
+    -------
+    Path
+        Path to saved PDF file.
+    """
+    from matplotlib.backends.backend_pdf import PdfPages
+
+    path = Path(output_path)
+
+    try:
+        import matplotlib.pyplot as plt
+
+        with PdfPages(path) as pdf:
+            title_fig, ax = plt.subplots(figsize=(11, 8.5))
+            ax.text(0.5, 0.5, "Strategify Simulation Report", fontsize=24, ha="center", va="center")
+            ax.text(
+                0.5, 0.4, f"Steps: {model.schedule.steps}", fontsize=16, ha="center", va="center"
+            )
+            ax.text(
+                0.5,
+                0.35,
+                f"Agents: {len(model.schedule.agents)}",
+                fontsize=16,
+                ha="center",
+                va="center",
+            )
+            ax.axis("off")
+            pdf.savefig(title_fig)
+            plt.close(title_fig)
+
+            if include_charts:
+                chart_path = path.with_name("temp_chart.png")
+                export_chart_png(model, chart_path, "escalation")
+                img = plt.imread(chart_path)
+                fig, ax = plt.subplots(figsize=(11, 8.5))
+                ax.imshow(img)
+                ax.axis("off")
+                pdf.savefig(fig)
+                plt.close(fig)
+                chart_path.unlink()
+
+                export_chart_png(model, chart_path, "diplomacy")
+                img = plt.imread(chart_path)
+                fig, ax = plt.subplots(figsize=(11, 8.5))
+                ax.imshow(img)
+                ax.axis("off")
+                pdf.savefig(fig)
+                plt.close(fig)
+                chart_path.unlink()
+
+            table_fig, ax = plt.subplots(figsize=(11, 8.5))
+            ax.axis("off")
+            ax.table(
+                cellText=[
+                    [
+                        getattr(a, "region_id", "?").upper(),
+                        getattr(a, "posture", "?").value
+                        if hasattr(getattr(a, "posture", None), "value")
+                        else "?",
+                        getattr(a, "personality", "?"),
+                    ]
+                    for a in model.schedule.agents
+                ],
+                colLabels=["Region", "Posture", "Personality"],
+                loc="center",
+            )
+            pdf.savefig(table_fig)
+            plt.close(table_fig)
+
+        logger.info("Exported PDF report to %s", path)
+    except Exception as exc:
+        logger.warning("PDF export failed: %s", exc)
+
+    return path

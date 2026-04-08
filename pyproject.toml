@@ -5,6 +5,22 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "strategify"
 version = "0.5.0"
+description = "Python framework for geopolitical simulations using agent-based modeling, game theory, and geospatial data"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "SpectreDeath", email = "spectredeath@github.com"},
+]
+keywords = ["geopolitical-simulation", "agent-based-modeling", "game-theory", "mesa", "osint"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 requires-python = ">=3.11"
 dependencies = [
     "mesa==2.3.4",
@@ -20,6 +36,8 @@ dependencies = [
     "vaderSentiment>=3.3",
     "folium>=0.15",
     "pyvis>=0.3",
+    "matplotlib>=3.8",
+    "Pillow>=10.0",
 ]
 
 [project.optional-dependencies]
@@ -53,9 +71,6 @@ docs = [
 strategify = "strategify.sim.run_mesa_geo_server:main"
 strategify-dashboard = "strategify.web.dashboard:run_dashboard"
 strategify-scenario = "strategify.config.cli:main"
-
-[project.entry-points."strategify.plugins"]
-# External packages can register plugins here
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

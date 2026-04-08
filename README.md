@@ -1,5 +1,10 @@
 # strategify
 
+[![PyPI](https://img.shields.io/pypi/v/strategify)](https://pypi.org/project/strategify/)
+[![Python](https://img.shields.io/pypi/pyversions/strategify)](https://pypi.org/project/strategify/)
+[![License](https://img.shields.io/pypi/l/strategify)](https://opensource.org/licenses/MIT)
+[![CodeCov](https://codecov.io/gh/SpectreDeath/Strategify/branch/master/graph/badge.svg)](https://codecov.io/gh/SpectreDeath/Strategify)
+
 A Python framework for geopolitical simulations using agent-based modeling (ABM),
 game-theoretic decision modules, and geospatial data.
 

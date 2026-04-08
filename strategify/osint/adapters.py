@@ -524,3 +524,214 @@ def _post_json(url: str, data: dict[str, Any], timeout: int = 30) -> dict:
     )
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return json.loads(resp.read().decode("utf-8"))
+
+
+# ---------------------------------------------------------------------------
+# Wikipedia Events Adapter (Free Historical/Current Events)
+# ---------------------------------------------------------------------------
+
+
+class WikipediaEventAdapter(BaseAdapter):
+    """Adapter for Wikipedia API (free, no API key required).
+
+    Fetches current events and historical geopolitical events from Wikipedia.
+    Uses the REST API for related pages and MediaWiki API for search.
+    """
+
+    _RELATED_URL = "https://en.wikipedia.org/api/rest_v1/page/related/"
+    _SEARCH_URL = "https://en.wikipedia.org/w/api.php"
+
+    _REGION_TOPICS: dict[str, list[str]] = {
+        "UKR": ["2022_Russian_invasion_of_Ukraine", "War_in_Donbas", "Ukraine_crisis"],
+        "RUS": ["Russia", "Russian_invasion_of_Ukraine", "Russia_Ukraine_war"],
+        "USA": ["United_States", "NATO", "Foreign_relations_of_the_United_States"],
+        "CHN": ["China", "South_China_Sea", "Taiwan"],
+        "IRN": ["Iran", "Iran_nuclear_program", "Iran_Israel_conflict"],
+        "ISR": ["Israel", "Israel_Gaza_war", "Israeli_Palestinian_conflict"],
+        "IND": ["India", "India_Pakistan", "India_China"],
+        "PAK": ["Pakistan", "India_Pakistan", "Afghanistan_Pakistan"],
+    }
+
+    @property
+    def name(self) -> str:
+        return "wikipedia"
+
+    def fetch(
+        self,
+        region_keywords: dict[str, list[str]],
+        date_range: tuple[str, str] | None = None,
+        max_records: int = 50,
+    ) -> list[dict[str, Any]]:
+        events: list[dict[str, Any]] = []
+
+        for region_id, keywords in region_keywords.items():
+            topic_pages = self._REGION_TOPICS.get(region_id, [])
+
+            for topic in topic_pages[:3]:
+                try:
+                    topic_events = self._fetch_related_events(topic, region_id, max_records // 3)
+                    events.extend(topic_events)
+                except Exception as exc:
+                    logger.warning("Wikipedia fetch failed for %s/%s: %s", region_id, topic, exc)
+
+            search_events = self._search_events(keywords[:2], region_id, max_records // 3)
+            events.extend(search_events)
+
+        return events[:max_records]
+
+    def _fetch_related_events(
+        self, topic: str, region_id: str, max_records: int
+    ) -> list[dict[str, Any]]:
+        """Fetch events from Wikipedia related pages."""
+        events: list[dict[str, Any]] = []
+
+        try:
+            url = f"{self._RELATED_URL}{topic}"
+            req = urllib.request.Request(
+                url,
+                headers={"User-Agent": "strategify/1.0", "Accept": "application/json"},
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+
+            for page in data.get("pages", [])[:max_records]:
+                title = page.get("title", "")
+                extract = page.get("extract", "")
+
+                if title and extract:
+                    timestamp = self._extract_date_from_title(
+                        title
+                    ) or self._extract_date_from_text(extract)
+                    url_title = urllib.parse.quote(title.replace(" ", "_"))
+
+                    events.append(
+                        _normalize_event(
+                            source="wikipedia",
+                            timestamp=timestamp,
+                            region_id=region_id,
+                            text=f"{title}: {extract[:200]}",
+                            event_type=self._classify_event(extract),
+                            metadata={
+                                "url": f"https://en.wikipedia.org/wiki/{url_title}",
+                                "title": title,
+                            },
+                        )
+                    )
+        except Exception:
+            pass
+
+        return events
+
+    def _search_events(
+        self, keywords: list[str], region_id: str, max_records: int
+    ) -> list[dict[str, Any]]:
+        """Search Wikipedia for events matching keywords."""
+        events: list[dict[str, Any]] = []
+
+        query = " OR ".join(keywords)
+        params = urllib.parse.urlencode(
+            {
+                "action": "query",
+                "format": "json",
+                "list": "search",
+                "srsearch": query,
+                "srlimit": max_records,
+                "utf8": 1,
+            }
+        )
+
+        try:
+            url = f"{self._SEARCH_URL}?{params}"
+            req = urllib.request.Request(
+                url,
+                headers={"User-Agent": "strategify/1.0"},
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+
+            for result in data.get("query", {}).get("search", []):
+                title = result.get("title", "")
+                snippet = result.get("snippet", "").replace("<br>", " ")
+                url_title = urllib.parse.quote(title.replace(" ", "_"))
+
+                events.append(
+                    _normalize_event(
+                        source="wikipedia",
+                        timestamp=datetime.now().isoformat(),
+                        region_id=region_id,
+                        text=f"{title}: {snippet[:150]}",
+                        event_type=self._classify_event(snippet),
+                        metadata={
+                            "url": f"https://en.wikipedia.org/wiki/{url_title}",
+                            "page_id": result.get("pageid"),
+                        },
+                    )
+                )
+        except Exception:
+            pass
+
+        return events
+
+    def _extract_date_from_title(self, title: str) -> str | None:
+        """Extract date from Wikipedia title."""
+        import re
+
+        patterns = [
+            r"(\d{4})_",
+            r"(\d{4})",
+            r"(January|February|March|April|May|June|July|August|September|October|November|December)_(\d{4})",
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, title)
+            if match:
+                return f"{match.group(1)}-{match.group(2)}-01"
+
+        return None
+
+    def _extract_date_from_text(self, text: str) -> str:
+        """Extract date from text or return current."""
+        import re
+
+        match = re.search(r"\b(19|20)\d{2}\b", text)
+        if match:
+            return f"{match.group(0)}-01-01"
+
+        return datetime.now().isoformat()
+
+    def _classify_event(self, text: str) -> str:
+        """Classify event type from text."""
+        text_lower = text.lower()
+
+        conflict_keywords = [
+            "war",
+            "battle",
+            "military",
+            "invasion",
+            "attack",
+            "conflict",
+            "casualties",
+        ]
+        if any(kw in text_lower for kw in conflict_keywords):
+            return "conflict"
+
+        diplomatic_keywords = [
+            "summit",
+            "treaty",
+            "agreement",
+            "diplomacy",
+            "negotiation",
+            "meeting",
+        ]
+        if any(kw in text_lower for kw in diplomatic_keywords):
+            return "diplomacy"
+
+        economic_keywords = ["sanctions", "trade", "economy", "gdp", "oil", "energy"]
+        if any(kw in text_lower for kw in economic_keywords):
+            return "economic"
+
+        political_keywords = ["election", "government", "president", "parliament", "vote", "policy"]
+        if any(kw in text_lower for kw in political_keywords):
+            return "political"
+
+        return "unknown"

@@ -36,12 +36,13 @@ jobs:
         run: |
           pytest --cov=strategify --cov-report=term-missing --cov-report=xml --cov-fail-under=70 -v
 
-      - name: Upload coverage report
+      - name: Upload coverage to CodeCov
         if: matrix.python-version == '3.12'
-        uses: actions/upload-artifact@v4
+        uses: codecov/codecov-action@v4
         with:
-          name: coverage-report
-          path: coverage.xml
+          file: ./coverage.xml
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   lint:
     runs-on: ubuntu-latest

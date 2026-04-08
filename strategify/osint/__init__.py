@@ -6,6 +6,7 @@ from strategify.osint.adapters import (
     CrisisMonitorAdapter,
     GDELTAdapter,
     ReliefWebAdapter,
+    WikipediaEventAdapter,
     WorldBankAdapter,
 )
 from strategify.osint.cache import SQLiteCache
@@ -41,6 +42,7 @@ __all__ = [
     "WorldBankAdapter",
     "ReliefWebAdapter",
     "CrisisMonitorAdapter",
+    "WikipediaEventAdapter",
     # Cache
     "SQLiteCache",
     # Pipeline

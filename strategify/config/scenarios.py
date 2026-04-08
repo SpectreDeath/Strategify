@@ -8,6 +8,7 @@ scenario file is specified.
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +16,23 @@ from typing import Any
 # Paths
 # ---------------------------------------------------------------------------
 _SCENARIOS_DIR = Path(__file__).resolve().parent.parent / "geo" / "scenarios"
+
+
+# ---------------------------------------------------------------------------
+# Preset Classes
+# ---------------------------------------------------------------------------
+@dataclass
+class ScenarioPreset:
+    """Pre-configured simulation scenario."""
+
+    name: str
+    description: str
+    regions: list[str]
+    initial_relations: dict[tuple[str, str], float]
+    keywords: dict[str, list[str]]
+    duration: int = 50
+    geojson: str | None = None
+
 
 # ---------------------------------------------------------------------------
 # Hardcoded defaults (original Eastern Europe crisis)
@@ -128,3 +146,128 @@ def scenario_to_configs(
     ]
 
     return actor_configs, region_resources, alliances
+
+
+# ---------------------------------------------------------------------------
+# Pre-configured Scenario Presets
+# ---------------------------------------------------------------------------
+
+UKRAINE_PRESET = ScenarioPreset(
+    name="Ukraine Crisis",
+    description=(
+        "Simulation of the 2022 Russia-Ukraine conflict with neighboring NATO and EU states"
+    ),
+    regions=["UKR", "RUS", "BLR", "POL", "MDA", "ROU", "HUN", "SVK", "LVA", "LTU", "EST"],
+    initial_relations={
+        ("RUS", "UKR"): -0.9,
+        ("RUS", "BLR"): 0.8,
+        ("UKR", "POL"): 0.7,
+        ("POL", "RUS"): -0.6,
+        ("UKR", "MDA"): 0.5,
+        ("ROU", "UKR"): 0.5,
+        ("RUS", "LVA"): -0.4,
+        ("RUS", "LTU"): -0.4,
+        ("RUS", "EST"): -0.4,
+    },
+    keywords={
+        "UKR": ["Ukraine", "Russia", "war", "military", "invasion", "Kyiv"],
+        "RUS": ["Russia", "Putin", "sanctions", "Kremlin", "Moscow"],
+        "BLR": ["Belarus", "Lukashenko", "military"],
+        "POL": ["Poland", "NATO", "border", "refugees"],
+        "MDA": ["Moldova", "Transnistria", "Romania"],
+    },
+    duration=50,
+    geojson="real_world.geojson",
+)
+
+MIDDLE_EAST_PRESET = ScenarioPreset(
+    name="Middle East Crisis",
+    description="Israeli-Palestinian conflict with regional Arab states and Iran",
+    regions=["ISR", "PSE", "JOR", "LBN", "SYR", "SAU", "EGY", "IRN", "ARE", "QAT"],
+    initial_relations={
+        ("ISR", "PSE"): -0.9,
+        ("ISR", "IRN"): -0.8,
+        ("ISR", "SAU"): 0.3,
+        ("ISR", "EGY"): 0.2,
+        ("JOR", "PSE"): 0.8,
+        ("IRN", "PSE"): 0.6,
+        ("IRN", "LBN"): 0.7,
+        ("SAU", "IRN"): -0.5,
+        ("EGY", "PSE"): 0.7,
+    },
+    keywords={
+        "ISR": ["Israel", "Gaza", "Jerusalem", " Netanyahu"],
+        "PSE": ["Palestine", "Gaza", "West Bank", "Hamas"],
+        "IRN": ["Iran", "nuclear", "Tehran", "revolutionary"],
+        "SAU": ["Saudi Arabia", "oil", "Gulf"],
+        "EGY": ["Egypt", "Suez", "Cairo"],
+    },
+    duration=40,
+    geojson="middle_east.geojson",
+)
+
+SOUTH_CHINA_SEA_PRESET = ScenarioPreset(
+    name="South China Sea",
+    description="Maritime disputes in the Indo-Pacific with US, China, and ASEAN",
+    regions=["CHN", "VNM", "PHL", "MYS", "BRN", "IDN", "TWN", "USA", "AUS", "JPN", "IND"],
+    initial_relations={
+        ("CHN", "VNM"): -0.6,
+        ("CHN", "PHL"): -0.5,
+        ("CHN", "MYS"): -0.3,
+        ("CHN", "TWN"): -0.9,
+        ("USA", "CHN"): -0.7,
+        ("USA", "JPN"): 0.8,
+        ("USA", "AUS"): 0.8,
+        ("VNM", "USA"): 0.4,
+        ("PHL", "USA"): 0.7,
+        ("IND", "CHN"): -0.5,
+    },
+    keywords={
+        "CHN": ["China", "South China Sea", "Taiwan", "Nine-dash line"],
+        "VNM": ["Vietnam", "South China Sea", "Spratly"],
+        "PHL": ["Philippines", "West Philippine Sea", "Barro Colorado"],
+        "USA": ["United States", "Indo-Pacific", "Freedom of navigation"],
+        "TWN": ["Taiwan", "straits", " Taipei"],
+    },
+    duration=60,
+    geojson="indo_pacific.geojson",
+)
+
+# ---------------------------------------------------------------------------
+# Helper functions
+# ---------------------------------------------------------------------------
+
+
+def get_preset(name: str) -> ScenarioPreset:
+    """Get a preset by name.
+
+    Parameters
+    ----------
+    name:
+        Preset name: "ukraine", "middle_east", or "south_china_sea"
+
+    Returns
+    -------
+    ScenarioPreset
+        The requested preset.
+
+    Raises
+    ------
+    ValueError
+        If preset name is not recognized.
+    """
+    presets = {
+        "ukraine": UKRAINE_PRESET,
+        "middle_east": MIDDLE_EAST_PRESET,
+        "south_china_sea": SOUTH_CHINA_SEA_PRESET,
+    }
+
+    if name.lower() not in presets:
+        raise ValueError(f"Unknown preset: {name}. Available: {list(presets.keys())}")
+
+    return presets[name.lower()]
+
+
+def list_presets() -> list[str]:
+    """List available preset names."""
+    return ["ukraine", "middle_east", "south_china_sea"]
