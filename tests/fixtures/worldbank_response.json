@@ -1,0 +1,14 @@
+{
+  "data": [
+    {
+      "country": {"id": "UKR", "value": "Ukraine"},
+      "date": "2023",
+      "value": 178000000000
+    },
+    {
+      "country": {"id": "RUS", "value": "Russia"},
+      "date": "2023",
+      "value": 1850000000000
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "articles": [
+    {
+      "title": "Military tensions escalate at Ukraine border",
+      "seendate": "20240115T120000",
+      "url": "https://example.com/article1",
+      "domain": "news.example.com",
+      "language": "en"
+    },
+    {
+      "title": "Peace talks resume between Ukraine and Russia",
+      "seendate": "20240114T080000",
+      "url": "https://example.com/article2",
+      "domain": "news.example.com",
+      "language": "en"
+    },
+    {
+      "title": "Economic sanctions announced by EU",
+      "seendate": "20240113T150000",
+      "url": "https://example.com/article3",
+      "domain": "news.example.com",
+      "language": "en"
+    }
+  ]
+}

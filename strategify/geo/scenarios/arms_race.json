@@ -1,0 +1,57 @@
+{
+  "name": "arms_race",
+  "description": "High-tension scenario: aggressive actors with asymmetric military buildup",
+  "geojson": "real_world.geojson",
+  "random_seed": 42,
+  "n_steps": 30,
+  "actors": {
+    "alpha": {
+      "name": "Ukraine",
+      "capabilities": {
+        "military": 0.7,
+        "economic": 0.3
+      },
+      "role": "row",
+      "personality": "Grudger"
+    },
+    "bravo": {
+      "name": "Russia",
+      "capabilities": {
+        "military": 0.9,
+        "economic": 0.5
+      },
+      "role": "row",
+      "personality": "Aggressor"
+    },
+    "charlie": {
+      "name": "Belarus",
+      "capabilities": {
+        "military": 0.6,
+        "economic": 0.3
+      },
+      "role": "col",
+      "personality": "Tit-for-Tat"
+    },
+    "delta": {
+      "name": "Poland",
+      "capabilities": {
+        "military": 0.6,
+        "economic": 0.6
+      },
+      "role": "col",
+      "personality": "Neutral"
+    }
+  },
+  "region_resources": {
+    "alpha": 0.8,
+    "bravo": 2.5,
+    "charlie": 0.7,
+    "delta": 1.2
+  },
+  "alliances": [
+    {"source": "alpha", "target": "bravo", "weight": -0.8},
+    {"source": "alpha", "target": "delta", "weight": 0.7},
+    {"source": "delta", "target": "bravo", "weight": -0.6},
+    {"source": "bravo", "target": "charlie", "weight": 0.8}
+  ]
+}

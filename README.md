@@ -1,0 +1,171 @@
+# strategify
+
+A Python framework for geopolitical simulations using agent-based modeling (ABM),
+game-theoretic decision modules, and geospatial data.
+
+## Features
+
+- **Agent-Based Simulation** — Mesa 2 model with `StateActorAgent` actors on a real-world GeoJSON map (Ukraine, Russia, Belarus, Poland)
+- **Game Theory** — Nash equilibrium via nashpy; Chicken/brinkmanship crisis game with dynamic payoff adjustment
+- **Diplomacy Graph** — NetworkX alliance/rivalry network with weighted edges
+- **Influence Maps** — BFS-based spatial reasoning, escalation contagion, Moran's I spatial autocorrelation
+- **Axelrod Strategies** — 5 personality types (Aggressor, Pacifist, Tit-for-Tat, Neutral, Grudger) via the Axelrod library
+- **Analysis Suite** — VAR models, Granger causality, OLS causal inference, Louvain community detection, Sobol sensitivity analysis, NSGA2 multi-objective optimization, strategic risk assessment, war gaming, alliance forecasting
+- **Real-World Data** — Natural Earth geographic data, OSINT integration (GDELT), real-time tension updates
+- **Geopolitical Theories** — Realpolitik, Democratic Peace, Power Transition, Offensive/Defensive Realism, Liberal Institutionalism, Constructivism
+- **OSINT Pipeline** — VADER sentiment analysis, GDELT/ACLED/WorldBank adapters with SQLite caching
+- **RL Environment** — PettingZoo AEC multi-agent environment for training policies
+- **Visualization** — Interactive Folium maps (satellite/streets/topo basemaps), Pyvis diplomacy networks, Matplotlib choropleths
+
+## Installation
+
+```bash
+# Core (simulation + game theory + maps)
+pip install -e .
+
+# With analysis tools (VAR, sensitivity, optimization, communities)
+pip install -e ".[analysis]"
+
+# With reinforcement learning (PettingZoo, Gymnasium)
+pip install -e ".[rl]"
+
+# Development (pytest, coverage)
+pip install -e ".[dev]"
+
+# Everything
+pip install -e ".[analysis,rl,dev]"
+```
+
+## Quick Start
+
+### Headless run (CSV output)
+
+```bash
+python examples/basic_crisis_scenario/run.py
+```
+
+### Interactive map visualization
+
+```bash
+strategify
+# or: python -m strategify.sim.run_mesa_geo_server
+```
+
+Then open http://localhost:8521 in your browser.
+
+### Grid demo mode
+
+```bash
+python -m strategify.sim.run_mesa_server
+```
+
+## Programmatic Usage
+
+```python
+from strategify import GeopolModel, escalation_game, NormalFormGame
+from strategify.viz import create_map, create_diplomacy_network
+
+# Run simulation
+model = GeopolModel()
+for _ in range(20):
+    model.step()
+
+# Export visualizations
+create_map(model, "map.html")
+create_diplomacy_network(model, "network.html")
+
+# Access data
+df = model.datacollector.get_agent_vars_dataframe()
+```
+
+### Analysis
+
+```python
+from strategify.analysis import (
+    prepare_agent_timeseries,
+    fit_var_model,
+    pairwise_granger_causality,
+    build_causal_data,
+    pairwise_causal_effects,
+    detect_communities,
+)
+
+# Time series analysis
+ts = prepare_agent_timeseries(df)
+var_result = fit_var_model(ts, maxlags=3)
+granger = pairwise_granger_causality(ts)
+
+# Causal inference
+causal_df = build_causal_data(model, n_steps=30)
+effects = pairwise_causal_effects(causal_df)
+
+# Community detection
+communities = detect_communities(model)
+```
+
+### OSINT sentiment
+
+```python
+from strategify.osint import analyze_sentiment, analyze_texts_sentiment
+
+score = analyze_sentiment("Military tensions escalate at the border")
+batch = analyze_texts_sentiment(["headline 1", "headline 2"])
+print(batch["tension_score"])  # 0.0 (calm) to 1.0 (high tension)
+```
+
+### RL environment
+
+```python
+from strategify.rl import GeopolEnv
+
+env = GeopolEnv()
+env.reset()
+for agent in env.agent_iter():
+    obs, rew, term, trunc, info = env.last()
+    action = env.action_space(agent).sample()
+    env.step(action)
+```
+
+## Project Structure
+
+```
+strategify/
+  config/        — settings, constants, scenario definitions
+  geo/           — GeoJSON data (real-world regions, demo grid)
+  game_theory/   — NormalFormGame wrapper, payoff matrices
+  agents/        — BaseActorAgent, StateActorAgent
+  reasoning/     — DiplomacyGraph, InfluenceMap, Axelrod strategies
+  sim/           — GeopolModel, Mesa browser servers
+  analysis/      — VAR, Granger causality, causal inference, communities, sensitivity, optimization
+  osint/         — VADER sentiment pipeline
+  rl/            — PettingZoo AEC environment
+  viz/           — Folium maps, Pyvis networks, Mesa status element
+examples/
+  basic_crisis_scenario/  — headless 20-step run with CSV output
+scripts/
+  fetch_real_world.py     — download Natural Earth GeoJSON
+tests/
+  15 test files covering all modules
+docs/
+  architecture.md         — module overview, data flow
+  algorithms.md           — Mesa scheduling, Nash equilibrium, adjacency
+```
+
+## Running Tests
+
+```bash
+pytest                           # all tests with coverage
+pytest -v                        # verbose
+pytest -m "not slow"             # skip slow sensitivity tests
+pytest --cov=strategify --cov-report=html  # HTML coverage report
+```
+
+## Reproducibility
+
+`GeopolModel` seeds `random` with `42` in `__init__`. Nash equilibrium
+tie-breaking always selects index 0 from `support_enumeration()`.
+
+## Requirements
+
+- Python >= 3.11
+- Mesa 2.3.4 (pinned — do **not** upgrade to Mesa 3)

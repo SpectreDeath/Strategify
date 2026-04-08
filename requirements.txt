@@ -1,0 +1,20 @@
+# Core dependencies (pinned). See pyproject.toml for constraints.
+# Install: pip install -r requirements.txt
+mesa==2.3.4
+mesa-geo>=0.6.0
+nashpy>=0.0.43
+pandas>=2.0
+geopandas>=0.14
+shapely>=2.0
+networkx>=3.2
+axelrod>=4.14
+libpysal>=4.8
+esda>=2.5
+vaderSentiment>=3.3
+folium>=0.15
+pyvis>=0.3
+numpy>=1.24
+
+# Dev dependencies
+pytest>=7.0
+pytest-cov>=4.0

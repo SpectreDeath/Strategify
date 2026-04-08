@@ -1,0 +1,27 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.csv
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+.nul
+test_*.json
+test_map.html
+run1/
+run2/
+
+# Local config (secrets)
+*.env
+.env.local
+config/local.py
+
+# Cache directories
+strategify/geo/.cache/
+strategify/osint/.cache/
