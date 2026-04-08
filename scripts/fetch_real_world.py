@@ -37,6 +37,7 @@ def fetch_and_save_regions(output_path: Path) -> None:
     subset.to_file(output_path, driver="GeoJSON")
     print(f"Saved real-world GeoJSON to {output_path}")
 
+
 if __name__ == "__main__":
     out_file = Path(__file__).parent.parent / "strategify" / "geo" / "real_world.geojson"
     fetch_and_save_regions(out_file)

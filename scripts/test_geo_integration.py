@@ -26,14 +26,17 @@ def test_geo_integration():
 
             print(f"Loaded {len(agents)} GeoAgents into GeoSpace.")
             for agent in agents:
-                print(f"Agent ID: {agent.unique_id}, Region: {getattr(agent, 'region_id', 'Unknown')}")
+                print(  # noqa: E501
+                    f"Agent ID: {agent.unique_id}, Region: {getattr(agent, 'region_id', 'Unknown')}"
+                )
 
             # Test Adjacency
             print("\nAdjacency Test:")
             for agent in agents:
                 neighbors = self.space.get_neighbors(agent)
-                neighbor_ids = [n.region_id for n in neighbors if hasattr(n, 'region_id')]
+                neighbor_ids = [n.region_id for n in neighbors if hasattr(n, "region_id")]
                 print(f"Agent {agent.region_id} borders: {neighbor_ids}")
+
 
 if __name__ == "__main__":
     test_geo_integration()

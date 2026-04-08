@@ -14,8 +14,8 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from strategify.sim.model import GeopolModel
-from strategify.theory import DEFAULT_REGISTRY
+from strategify.sim.model import GeopolModel  # noqa: E402
+from strategify.theory import DEFAULT_REGISTRY  # noqa: E402
 
 
 def run_theory_analysis():

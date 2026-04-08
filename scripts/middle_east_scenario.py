@@ -7,26 +7,25 @@ Usage:
     python scripts/middle_east_scenario.py
 """
 
+import logging
 import sys
 from pathlib import Path
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-import logging
-
 logging.basicConfig(level=logging.INFO)
 
-from strategify import GeopolModel
-from strategify.analysis import (
+from strategify import GeopolModel  # noqa: E402
+from strategify.analysis import (  # noqa: E402
     assess_all_risks,
     compute_threat_score,
     forecast_alliance_stability,
     generate_strategy_report,
 )
-from strategify.dynamics import FactionalPolitics, IdeologyModel
-from strategify.geo import GeoJSONLoader, RegionSubsetConfig
-from strategify.theory import DEFAULT_REGISTRY
+from strategify.dynamics import FactionalPolitics, IdeologyModel  # noqa: E402
+from strategify.geo import GeoJSONLoader, RegionSubsetConfig  # noqa: E402
+from strategify.theory import DEFAULT_REGISTRY  # noqa: E402
 
 # Middle East regional configuration
 MIDDLE_EAST_CONFIG = {
@@ -128,9 +127,10 @@ def analyze_conflict():
     print("\n[2] RISK ASSESSMENT")
     risks = assess_all_risks(model)
     for rid, data in sorted(risks.items()):
-        print(
-            f"    {rid:10}: score={data['threat_score']:.2f} level={data['risk_level']} posture={data['posture']}"
-        )
+        score = data["threat_score"]
+        level = data["risk_level"]
+        posture = data["posture"]
+        print(f"    {rid:10}: score={score:.2f} level={level} posture={posture}")
 
     # Individual threat scores
     print("\n[3] THREAT SCORES")
@@ -143,9 +143,9 @@ def analyze_conflict():
     print("\n[4] ALLIANCE FORECAST")
     stability = forecast_alliance_stability(model, n_future_steps=10)
     for rid, data in sorted(stability.items()):
-        print(
-            f"    {rid:10}: stability={data.stability_score:.2f} fracture={data.fracture_probability:.2f}"
-        )
+        stability_val = data.stability_score
+        fracture_val = data.fracture_probability
+        print(f"    {rid:10}: stability={stability_val:.2f} fracture={fracture_val:.2f}")
 
     # Domestic Dynamics
     print("\n[5] DOMESTIC DYNAMICS")
@@ -156,9 +156,10 @@ def analyze_conflict():
         fp = FactionalPolitics(agent)
         ideology = IdeologyModel(personality)
 
-        print(
-            f"    {rid:10}: {fp.get_dominant_faction().value} ({fp.get_faction_balance()}) - {ideology.get_ideology_label()}"
-        )
+        faction = fp.get_dominant_faction().value
+        balance = fp.get_faction_balance()
+        label = ideology.get_ideology_label()
+        print(f"    {rid:10}: {faction} ({balance}) - {label}")
 
     # Strategic Recommendations
     print("\n[6] STRATEGIC RECOMMENDATIONS")
@@ -275,12 +276,13 @@ def compare_conflict_parties():
         fp_israel = FactionalPolitics(israel)
         fp_pal = FactionalPolitics(palestine)
 
-        print(
-            f"  Israel:    {fp_israel.get_dominant_faction().value} ({fp_israel.get_faction_balance()})"
-        )
-        print(
-            f"  Palestine: {fp_pal.get_dominant_faction().value} ({fp_pal.get_faction_balance()})"
-        )
+        israel_faction = fp_israel.get_dominant_faction().value
+        israel_balance = fp_israel.get_faction_balance()
+        print(f"  Israel:    {israel_faction} ({israel_balance})")
+
+        pal_faction = fp_pal.get_dominant_faction().value
+        pal_balance = fp_pal.get_faction_balance()
+        print(f"  Palestine: {pal_faction} ({pal_balance})")
 
         # Theory comparison
         print("\n[THEORY PREDICTIONS]")
