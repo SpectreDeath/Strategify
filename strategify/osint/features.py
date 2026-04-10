@@ -109,9 +109,7 @@ def compute_region_features(
         Mapping ``region_id`` -> ``{feature_name: value}``.
     """
     if not hasattr(world_map, "regions"):
-        raise TypeError(
-            f"world_map must have a 'regions' attribute, got {type(world_map).__name__}"
-        )
+        raise TypeError(f"world_map must have a 'regions' attribute, got {type(world_map).__name__}")
 
     features = {}
     for region in world_map.regions:

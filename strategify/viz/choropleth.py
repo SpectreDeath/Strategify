@@ -93,10 +93,7 @@ class HeadlessChoropleth:
 
             # Escalation level
             esc_level = "Cooperative"
-            if (
-                hasattr(self.model, "escalation_ladder")
-                and self.model.escalation_ladder is not None
-            ):
+            if hasattr(self.model, "escalation_ladder") and self.model.escalation_ladder is not None:
                 esc_level = self.model.escalation_ladder.get_level_name(agent.unique_id)
 
             records.append(
@@ -324,9 +321,7 @@ class HeadlessChoropleth:
                     fontsize=8,
                     fontweight="bold",
                     color="white",
-                    path_effects=[
-                        matplotlib.patheffects.withStroke(linewidth=2, foreground="black")
-                    ],
+                    path_effects=[matplotlib.patheffects.withStroke(linewidth=2, foreground="black")],
                 )
 
             ax.set_title(f"Step {step}", fontsize=12, fontweight="bold")

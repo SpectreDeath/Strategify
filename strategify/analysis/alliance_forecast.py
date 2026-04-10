@@ -89,11 +89,7 @@ class BayesianAllianceTracker:
             alpha = self.posterior_alpha
             beta = self.posterior_beta
             mean = alpha / (alpha + beta) if alpha + beta > 0 else 0.5
-            std = (
-                np.sqrt((alpha * beta) / ((alpha + beta) ** 2 * (alpha + beta + 1)))
-                if alpha + beta > 1
-                else 0.3
-            )
+            std = np.sqrt((alpha * beta) / ((alpha + beta) ** 2 * (alpha + beta + 1))) if alpha + beta > 1 else 0.3
             z_value = 1.96
             return (max(0.0, mean - z_value * std), min(1.0, mean + z_value * std))
 
@@ -156,13 +152,11 @@ def compute_alliance_strength(
         return 0.5
 
     # Weight positive relations vs negative
-    ally_strength = sum(
-        model.relations.get_relation(agent.unique_id, auid) for auid in allies
-    ) / max(1, len(allies))
+    ally_strength = sum(model.relations.get_relation(agent.unique_id, auid) for auid in allies) / max(1, len(allies))
 
-    rival_strength = abs(
-        sum(model.relations.get_relation(agent.unique_id, ruid) for ruid in rivals)
-    ) / max(1, len(rivals))
+    rival_strength = abs(sum(model.relations.get_relation(agent.unique_id, ruid) for ruid in rivals)) / max(
+        1, len(rivals)
+    )
 
     # Net alliance strength
     strength = (ally_strength - rival_strength + 1) / 2
@@ -220,9 +214,7 @@ def predict_fracture_probability(
     for other in model.schedule.agents:
         if getattr(other, "region_id", "") == region_id:
             continue
-        rel = (
-            model.relations.get_relation(agent.unique_id, other.unique_id) if model.relations else 0
-        )
+        rel = model.relations.get_relation(agent.unique_id, other.unique_id) if model.relations else 0
         if rel < -0.3:  # Rival
             other_military = other.capabilities.get("military", 0.5)
             if other_military > current_military:

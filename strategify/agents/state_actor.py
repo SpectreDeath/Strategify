@@ -109,9 +109,7 @@ class StateActorAgent(BaseActorAgent):
         # 3. Escalation pressure (if ladder exists)
         escalation_pressure = 0.0
         if hasattr(self.model, "escalation_ladder") and self.model.escalation_ladder is not None:
-            escalation_pressure = self.model.escalation_ladder.get_escalation_pressure(
-                self.unique_id
-            )
+            escalation_pressure = self.model.escalation_ladder.get_escalation_pressure(self.unique_id)
 
         # 4. Resource pressure (if env_manager exists)
         resource_pressure = 0.0
@@ -139,9 +137,7 @@ class StateActorAgent(BaseActorAgent):
         if self._diplomacy_strategy is None:
             self._diplomacy_strategy = DiplomacyStrategy(self.personality)
         strategy_action = self._diplomacy_strategy.decide(self.last_opponent_action)
-        personality_bias = (
-            PERSONALITY_BIAS_BASE if strategy_action == "Escalate" else -PERSONALITY_BIAS_BASE
-        )
+        personality_bias = PERSONALITY_BIAS_BASE if strategy_action == "Escalate" else -PERSONALITY_BIAS_BASE
 
         # 6. Multi-game evaluation
         game_scores = self._evaluate_games(rival_id)
@@ -239,9 +235,8 @@ class StateActorAgent(BaseActorAgent):
         # Fallback: pick any non-allied agent as a potential target
         if rival_id is None:
             for agent in self.model.schedule.agents:
-                if (
-                    agent.unique_id != self.unique_id
-                    and agent.unique_id not in self.model.relations.get_allies(self.unique_id)
+                if agent.unique_id != self.unique_id and agent.unique_id not in self.model.relations.get_allies(
+                    self.unique_id
                 ):
                     return agent.unique_id
 
@@ -341,9 +336,7 @@ class StateActorAgent(BaseActorAgent):
             if rival_id:
                 rival_agent = self.model._agent_registry.get(rival_id)
                 if rival_agent is None:
-                    rival_agent = next(
-                        (a for a in self.model.schedule.agents if a.unique_id == rival_id), None
-                    )
+                    rival_agent = next((a for a in self.model.schedule.agents if a.unique_id == rival_id), None)
                 if rival_agent and hasattr(rival_agent, "stability"):
                     logger.info(
                         "Agent %s launched CyberAttack on %s!",

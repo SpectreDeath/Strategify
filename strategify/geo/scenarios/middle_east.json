@@ -1,0 +1,82 @@
+{
+  "name": "middle_east",
+  "description": "Middle East current day scenario with Israel, Palestine, Iran, and neighboring states",
+  "geojson": "middle_east.geojson",
+  "random_seed": 42,
+  "actors": {
+    "ISR": {
+      "capabilities": {"military": 0.7, "economic": 0.6, "diplomatic": 0.7, "informational": 0.8},
+      "role": "col",
+      "personality": "Aggressor"
+    },
+    "PSE": {
+      "capabilities": {"military": 0.2, "economic": 0.1, "diplomatic": 0.3, "informational": 0.4},
+      "role": "row",
+      "personality": "Grudger"
+    },
+    "JOR": {
+      "capabilities": {"military": 0.3, "economic": 0.3, "diplomatic": 0.5, "informational": 0.3},
+      "role": "col",
+      "personality": "Neutral"
+    },
+    "LBN": {
+      "capabilities": {"military": 0.2, "economic": 0.2, "diplomatic": 0.3, "informational": 0.3},
+      "role": "row",
+      "personality": "Tit-for-Tat"
+    },
+    "SYR": {
+      "capabilities": {"military": 0.4, "economic": 0.2, "diplomatic": 0.3, "informational": 0.4},
+      "role": "col",
+      "personality": "Aggressor"
+    },
+    "IRQ": {
+      "capabilities": {"military": 0.4, "economic": 0.3, "diplomatic": 0.3, "informational": 0.3},
+      "role": "row",
+      "personality": "Pacifist"
+    },
+    "IRN": {
+      "capabilities": {"military": 0.6, "economic": 0.4, "diplomatic": 0.5, "informational": 0.6},
+      "role": "col",
+      "personality": "Aggressor"
+    },
+    "SAU": {
+      "capabilities": {"military": 0.5, "economic": 0.8, "diplomatic": 0.5, "informational": 0.5},
+      "role": "row",
+      "personality": "Neutral"
+    },
+    "ARE": {
+      "capabilities": {"military": 0.3, "economic": 0.7, "diplomatic": 0.6, "informational": 0.5},
+      "role": "col",
+      "personality": "Neutral"
+    },
+    "EGY": {
+      "capabilities": {"military": 0.5, "economic": 0.4, "diplomatic": 0.6, "informational": 0.5},
+      "role": "row",
+      "personality": "Tit-for-Tat"
+    },
+    "TUR": {
+      "capabilities": {"military": 0.7, "economic": 0.6, "diplomatic": 0.5, "informational": 0.6},
+      "role": "col",
+      "personality": "Neutral"
+    },
+    "KWT": {
+      "capabilities": {"military": 0.2, "economic": 0.5, "diplomatic": 0.4, "informational": 0.3},
+      "role": "row",
+      "personality": "Pacifist"
+    }
+  },
+  "region_resources": {
+    "ISR": 1.5, "PSE": 0.3, "JOR": 0.8, "LBN": 0.5, "SYR": 0.6,
+    "IRQ": 1.0, "IRN": 2.0, "SAU": 3.0, "ARE": 1.2, "EGY": 1.5,
+    "TUR": 2.0, "KWT": 0.8
+  },
+  "alliances": [
+    {"source": "ISR", "target": "USA", "weight": 0.9},
+    {"source": "IRN", "target": "SYR", "weight": 0.7},
+    {"source": "IRN", "target": "LBN", "weight": 0.6},
+    {"source": "JOR", "target": "PSE", "weight": 0.6},
+    {"source": "EGY", "target": "PSE", "weight": 0.5},
+    {"source": "SAU", "target": "ARE", "weight": 0.7},
+    {"source": "SAU", "target": "KWT", "weight": 0.6}
+  ]
+}

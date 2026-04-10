@@ -159,14 +159,10 @@ class FactionalPolitics:
     def get_faction_balance(self) -> str:
         """Get overall internal balance."""
         military_power = sum(
-            f.power
-            for f in self._factions
-            if f.faction_type in (FactionType.MILITARY, FactionType.SECURITY)
+            f.power for f in self._factions if f.faction_type in (FactionType.MILITARY, FactionType.SECURITY)
         )
         diplomatic_power = sum(
-            f.power
-            for f in self._factions
-            if f.faction_type in (FactionType.DIPLOMATIC, FactionType.ECONOMIC)
+            f.power for f in self._factions if f.faction_type in (FactionType.DIPLOMATIC, FactionType.ECONOMIC)
         )
 
         if military_power > diplomatic_power + 0.2:
@@ -220,9 +216,7 @@ class IdeologyModel:
         personality: str = "Neutral",
         positions: dict[IdeologyAxis, float] | None = None,
     ) -> None:
-        self.positions = positions or self.PERSONALITY_POSITIONS.get(
-            personality, {axis: 0.5 for axis in IdeologyAxis}
-        )
+        self.positions = positions or self.PERSONALITY_POSITIONS.get(personality, {axis: 0.5 for axis in IdeologyAxis})
 
     def get_position(self, axis: IdeologyAxis | None = None) -> float | dict:
         """Get position on axis/axes."""
@@ -290,11 +284,7 @@ class PublicOpinion:
     def _initialize_opinion(self) -> None:
         """Initialize based on agent state."""
         agent = next(
-            (
-                a
-                for a in self.model.schedule.agents
-                if getattr(a, "region_id", "") == self.region_id
-            ),
+            (a for a in self.model.schedule.agents if getattr(a, "region_id", "") == self.region_id),
             None,
         )
         if agent is None:
@@ -327,11 +317,7 @@ class PublicOpinion:
     def update_approval(self) -> None:
         """Update approval based on current events."""
         agent = next(
-            (
-                a
-                for a in self.model.schedule.agents
-                if getattr(a, "region_id", "") == self.region_id
-            ),
+            (a for a in self.model.schedule.agents if getattr(a, "region_id", "") == self.region_id),
             None,
         )
         if agent is None:

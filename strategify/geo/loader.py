@@ -147,9 +147,7 @@ class GeoJSONLoader:
         # Simplify geometries for performance
         if config.simplify_tolerance is not None:
             gdf = gdf.copy()
-            gdf["geometry"] = gdf.geometry.simplify(
-                config.simplify_tolerance, preserve_topology=True
-            )
+            gdf["geometry"] = gdf.geometry.simplify(config.simplify_tolerance, preserve_topology=True)
 
         # Keep only region_id + geometry
         gdf = gdf[["region_id", "geometry"]].copy()
@@ -247,9 +245,7 @@ class GeoJSONLoader:
         """Map country names to internal region IDs."""
         if config.id_map:
             gdf = gdf.copy()
-            gdf["region_id"] = (
-                gdf[config.name_column].map(config.id_map).fillna(gdf[config.name_column])
-            )
+            gdf["region_id"] = gdf[config.name_column].map(config.id_map).fillna(gdf[config.name_column])
         else:
             gdf = gdf.copy()
             gdf["region_id"] = gdf[config.name_column]

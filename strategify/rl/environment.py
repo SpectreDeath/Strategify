@@ -57,9 +57,7 @@ class GeopolEnv(AECEnv):
         economic = agent_obj.capabilities.get("economic", 0.5)
         net_inf = 0.0
         if self.model.influence_map:
-            net_inf = self.model.influence_map.get_net_influence(
-                agent_obj.region_id, agent_obj.unique_id
-            )
+            net_inf = self.model.influence_map.get_net_influence(agent_obj.region_id, agent_obj.unique_id)
 
         escalation_count = 1.0 if agent_obj.posture == "Escalate" else 0.0
         stability = getattr(agent_obj, "stability", 1.0)
@@ -119,11 +117,7 @@ class GeopolEnv(AECEnv):
         self._step_count = 0
         from strategify.agents.state_actor import StateActorAgent
 
-        self.agents = [
-            f"agent_{a.region_id}"
-            for a in self.model.schedule.agents
-            if isinstance(a, StateActorAgent)
-        ]
+        self.agents = [f"agent_{a.region_id}" for a in self.model.schedule.agents if isinstance(a, StateActorAgent)]
         self.possible_agents = self.agents[:]
         self.rewards = {a: 0.0 for a in self.agents}
         self.terminations = {a: False for a in self.agents}
@@ -132,9 +126,7 @@ class GeopolEnv(AECEnv):
 
         # Initialize spaces
         for agent in self.agents:
-            self.observation_spaces[agent] = spaces.Box(
-                low=-1.0, high=2.0, shape=(8,), dtype=np.float32
-            )
+            self.observation_spaces[agent] = spaces.Box(low=-1.0, high=2.0, shape=(8,), dtype=np.float32)
             self.action_spaces[agent] = spaces.Discrete(2)
 
         self.agent_selection = self.agents[0]
@@ -181,17 +173,10 @@ class GeopolEnv(AECEnv):
 
             resource_penalty = 0.0
             if self.model.env_manager:
-                resource_penalty = (
-                    self.model.env_manager.get_resource_pressure(agent_obj.region_id) * -3.0
-                )
+                resource_penalty = self.model.env_manager.get_resource_pressure(agent_obj.region_id) * -3.0
 
             self.rewards[agent] = (
-                escalation_cost
-                + economic_gain
-                + alliance_bonus
-                + spiral_penalty
-                + stability_penalty
-                + resource_penalty
+                escalation_cost + economic_gain + alliance_bonus + spiral_penalty + stability_penalty + resource_penalty
             )
 
         # Advance agent selection

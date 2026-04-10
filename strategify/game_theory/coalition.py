@@ -273,9 +273,7 @@ class CoalitionStateTracker:
         return {
             "n_coalitions": len(self.coalitions),
             "coalitions": [sorted(list(c)) for c in self.coalitions],
-            "n_cooperation_edges": sum(
-                1 for s in self.cooperation_scores.values() if s >= self._coalition_threshold
-            ),
+            "n_cooperation_edges": sum(1 for s in self.cooperation_scores.values() if s >= self._coalition_threshold),
         }
 
 

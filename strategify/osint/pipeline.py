@@ -137,9 +137,7 @@ class FeaturePipeline:
         """Return all computed features."""
         return dict(self._features)
 
-    def _compute_region_features(
-        self, region_id: str, events: list[dict[str, Any]]
-    ) -> dict[str, float]:
+    def _compute_region_features(self, region_id: str, events: list[dict[str, Any]]) -> dict[str, float]:
         """Compute feature dict from events for a single region."""
         texts = [e["text"] for e in events if e.get("text")]
 

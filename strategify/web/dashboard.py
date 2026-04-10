@@ -132,8 +132,7 @@ def run_dashboard() -> None:
 
     if not importlib.util.find_spec("streamlit"):
         raise ImportError(
-            "Streamlit and Plotly are required for the web dashboard. "
-            "Install with: pip install strategify[web]"
+            "Streamlit and Plotly are required for the web dashboard. Install with: pip install strategify[web]"
         )
 
     import streamlit as st  # noqa: E402
@@ -228,9 +227,7 @@ def _render_controls(st) -> None:
     from strategify.config.scenarios import list_scenarios
 
     scenarios = list_scenarios()
-    scenario = st.selectbox(
-        "Scenario", scenarios, index=0 if scenarios else None, label_visibility="collapsed"
-    )
+    scenario = st.selectbox("Scenario", scenarios, index=0 if scenarios else None, label_visibility="collapsed")
     n_steps = st.slider("Max Steps", 5, 100, 20, 5)
 
     col1, col2 = st.columns(2, gap="small")
@@ -298,9 +295,7 @@ def _render_controls(st) -> None:
             st.warning("Simulation complete!")
             st.rerun()
 
-    steps_per_run = st.slider(
-        "Manual Steps per run", 1, 20, 5, help="Number of simulation steps per execution"
-    )
+    steps_per_run = st.slider("Manual Steps per run", 1, 20, 5, help="Number of simulation steps per execution")
 
     col_a, col_b, col_c = st.columns(3, gap="small")
     with col_a:
@@ -658,8 +653,7 @@ def _render_analysis_tab(st, model: Any) -> None:
                     alert_type = alert.get("type", "unknown")
                     level = alert.get("level", "watch")
                     st.markdown(
-                        f"  \u26a0\ufe0f [{level.upper()}] {alert_type}: "
-                        f"{region.upper()} at step {step}",
+                        f"  \u26a0\ufe0f [{level.upper()}] {alert_type}: {region.upper()} at step {step}",
                     )
             else:
                 st.markdown(

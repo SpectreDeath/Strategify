@@ -275,12 +275,8 @@ def export_all(
     results["latex"] = export_latex_table(model, output_dir / "actors.tex")
 
     try:
-        results["svg_escalation"] = export_chart_svg(
-            model, output_dir / "escalation.svg", "escalation"
-        )
-        results["svg_diplomacy"] = export_chart_svg(
-            model, output_dir / "diplomacy.svg", "diplomacy"
-        )
+        results["svg_escalation"] = export_chart_svg(model, output_dir / "escalation.svg", "escalation")
+        results["svg_diplomacy"] = export_chart_svg(model, output_dir / "diplomacy.svg", "diplomacy")
     except ImportError:
         logger.warning("matplotlib not available, skipping SVG export")
 
@@ -360,9 +356,7 @@ def _add_node_attributes(G: nx.Graph, model: Any) -> None:
         if node_id in agent_map:
             agent = agent_map[node_id]
             posture = getattr(agent, "posture", None)
-            G.nodes[node_id]["posture"] = (
-                posture.value if hasattr(posture, "value") else str(posture)
-            )
+            G.nodes[node_id]["posture"] = posture.value if hasattr(posture, "value") else str(posture)
             G.nodes[node_id]["personality"] = getattr(agent, "personality", "Unknown")
 
             caps = getattr(agent, "capabilities", {})
@@ -377,9 +371,7 @@ def _add_edge_attributes(G: nx.Graph, model: Any) -> None:
     for u, v in G.edges():
         weight = model.relations.get_relation(u, v)
         G.edges[u, v]["weight"] = weight
-        G.edges[u, v]["relation_type"] = (
-            "alliance" if weight > 0 else "rivalry" if weight < 0 else "neutral"
-        )
+        G.edges[u, v]["relation_type"] = "alliance" if weight > 0 else "rivalry" if weight < 0 else "neutral"
 
 
 def export_diplomacy_snapshot(
@@ -450,9 +442,7 @@ def export_animation(
 
         agents = list(model.schedule.agents)
         postures = [
-            getattr(a, "posture", "Deescalate").value
-            if hasattr(getattr(a, "posture", None), "value")
-            else "Unknown"
+            getattr(a, "posture", "Deescalate").value if hasattr(getattr(a, "posture", None), "value") else "Unknown"
             for a in agents
         ]
 
@@ -520,9 +510,7 @@ def export_chart_png(
                 agent_data = df_reset[df_reset["region_id"] == rid]
                 if "posture" in agent_data.columns:
                     escalation = (agent_data["posture"] == "Escalate").astype(int)
-                    ax.plot(
-                        agent_data["Step"], escalation, marker="o", label=rid.upper(), linewidth=2
-                    )
+                    ax.plot(agent_data["Step"], escalation, marker="o", label=rid.upper(), linewidth=2)
 
             ax.set_xlabel("Step")
             ax.set_ylabel("Escalation")
@@ -599,9 +587,7 @@ def export_report_pdf(
         with PdfPages(path) as pdf:
             title_fig, ax = plt.subplots(figsize=(11, 8.5))
             ax.text(0.5, 0.5, "Strategify Simulation Report", fontsize=24, ha="center", va="center")
-            ax.text(
-                0.5, 0.4, f"Steps: {model.schedule.steps}", fontsize=16, ha="center", va="center"
-            )
+            ax.text(0.5, 0.4, f"Steps: {model.schedule.steps}", fontsize=16, ha="center", va="center")
             ax.text(
                 0.5,
                 0.35,
@@ -640,9 +626,7 @@ def export_report_pdf(
                 cellText=[
                     [
                         getattr(a, "region_id", "?").upper(),
-                        getattr(a, "posture", "?").value
-                        if hasattr(getattr(a, "posture", None), "value")
-                        else "?",
+                        getattr(a, "posture", "?").value if hasattr(getattr(a, "posture", None), "value") else "?",
                         getattr(a, "personality", "?"),
                     ]
                     for a in model.schedule.agents

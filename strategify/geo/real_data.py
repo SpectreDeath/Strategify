@@ -243,9 +243,7 @@ class LiveDataUpdater:
                     # Update based on tension score
                     tension = feats.get("tension_score", 0)
                     if tension > 0.6:
-                        agent.capabilities["military"] = min(
-                            1.0, agent.capabilities.get("military", 0.5) + 0.1
-                        )
+                        agent.capabilities["military"] = min(1.0, agent.capabilities.get("military", 0.5) + 0.1)
 
             self._last_update = step
         except Exception:

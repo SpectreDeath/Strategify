@@ -166,9 +166,7 @@ def fetch_rss_feed(
         for entry in root.iter("{http://www.w3.org/2005/Atom}entry"):
             if len(items) >= max_items:
                 break
-            title = entry.findtext("atom:title", "", ns) or entry.findtext(
-                "{http://www.w3.org/2005/Atom}title", ""
-            )
+            title = entry.findtext("atom:title", "", ns) or entry.findtext("{http://www.w3.org/2005/Atom}title", "")
             link_el = entry.find("{http://www.w3.org/2005/Atom}link", ns)
             link = link_el.get("href", "") if link_el is not None else ""
             pub = entry.findtext("atom:published", "", ns) or entry.findtext(

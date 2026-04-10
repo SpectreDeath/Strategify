@@ -1,0 +1,133 @@
+{
+  "type": "FeatureCollection",
+  "name": "middle_east",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "region_id": "EGY", "name": "Egypt" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [25.0, 22.0], [30.0, 22.0], [35.0, 31.0], [35.0, 31.7], 
+          [32.0, 31.0], [25.0, 31.0], [25.0, 22.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "region_id": "ISR", "name": "Israel" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [34.5, 31.0], [34.9, 31.2], [35.5, 31.8], [35.2, 32.5], 
+          [34.8, 32.5], [34.5, 32.0], [34.5, 31.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "region_id": "PSE", "name": "Palestine" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [34.5, 31.4], [34.8, 31.5], [35.2, 31.8], [35.2, 32.0],
+          [34.8, 32.0], [34.5, 31.8], [34.5, 31.4]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "region_id": "JOR", "name": "Jordan" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [35.2, 31.0], [36.0, 31.0], [39.0, 31.0], [39.0, 32.5],
+          [36.0, 32.5], [35.2, 32.0], [35.2, 31.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "region_id": "LBN", "name": "Lebanon" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [35.2, 33.0], [35.8, 33.0], [36.0, 34.0], [35.8, 34.5],
+          [35.2, 34.5], [35.2, 33.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "region_id": "SYR", "name": "Syria" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [36.0, 32.5], [42.0, 32.5], [42.0, 37.0], [36.0, 37.0], [36.0, 32.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "region_id": "IRQ", "name": "Iraq" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [38.0, 29.0], [48.0, 29.0], [48.0, 37.0], [42.0, 37.0], [42.0, 32.5], [38.0, 32.5], [38.0, 29.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "region_id": "KWT", "name": "Kuwait" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [46.5, 28.5], [48.5, 28.5], [48.5, 30.0], [46.5, 30.0], [46.5, 28.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "region_id": "SAU", "name": "Saudi Arabia" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [35.0, 16.0], [55.0, 16.0], [55.0, 32.0], [48.0, 32.0], [48.0, 29.0],
+          [38.0, 29.0], [39.0, 31.0], [36.0, 31.0], [35.2, 31.0], [35.0, 16.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "region_id": "ARE", "name": "UAE" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [51.0, 22.0], [56.0, 22.0], [56.0, 26.0], [51.0, 26.0], [51.0, 22.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "region_id": "IRN", "name": "Iran" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [44.0, 25.0], [64.0, 25.0], [64.0, 40.0], [44.0, 40.0], [44.0, 25.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "region_id": "TUR", "name": "Turkey" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [26.0, 35.0], [45.0, 35.0], [45.0, 42.0], [26.0, 42.0], [26.0, 35.0]
+        ]]
+      }
+    }
+  ]
+}

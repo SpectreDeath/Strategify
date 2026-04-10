@@ -170,11 +170,7 @@ def detect_contagion_spread(
                 "step": step,
                 "regions": escalating,
                 "count": len(escalating),
-                "level": (
-                    AlertLevel.CRITICAL
-                    if len(escalating) >= len(ts_df.columns) - 1
-                    else AlertLevel.WARNING
-                ),
+                "level": (AlertLevel.CRITICAL if len(escalating) >= len(ts_df.columns) - 1 else AlertLevel.WARNING),
                 "type": "contagion_spread",
             }
         ]

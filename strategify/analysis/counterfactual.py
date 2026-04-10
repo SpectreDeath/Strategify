@@ -101,11 +101,7 @@ def apply_intervention(
         elif itype == "set_escalation":
             rid = intervention["region"]
             agent = agents_by_rid.get(rid)
-            if (
-                agent
-                and hasattr(model, "escalation_ladder")
-                and model.escalation_ladder is not None
-            ):
+            if agent and hasattr(model, "escalation_ladder") and model.escalation_ladder is not None:
                 from strategify.agents.escalation import EscalationLevel
 
                 level = EscalationLevel(intervention["level"])

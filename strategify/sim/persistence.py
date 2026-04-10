@@ -72,9 +72,7 @@ def save_state(model: Any, path: str | Path, metadata: dict | None = None) -> Pa
     escalation_data = None
     if hasattr(model, "escalation_ladder") and model.escalation_ladder is not None:
         escalation_data = {
-            "levels": {
-                str(uid): int(level) for uid, level in model.escalation_ladder.levels.items()
-            },
+            "levels": {str(uid): int(level) for uid, level in model.escalation_ladder.levels.items()},
             "costs": dict(model.escalation_ladder.transition_costs),
         }
 

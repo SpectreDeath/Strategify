@@ -337,9 +337,7 @@ def compute_win_probability(
 
     if attacker is None or defender is None:
         return (
-            {"probability": 0.5, "ci_lower": 0.2, "ci_upper": 0.8, "uncertainty": 0.3}
-            if include_uncertainty
-            else 0.5
+            {"probability": 0.5, "ci_lower": 0.2, "ci_upper": 0.8, "uncertainty": 0.3} if include_uncertainty else 0.5
         )
 
     att_military = attacker.capabilities.get("military", 0.5)
@@ -357,17 +355,13 @@ def compute_win_probability(
     for aid in att_allies:
         ally = next((a for a in model.schedule.agents if a.unique_id == aid), None)
         if ally:
-            ally_strength_att += (
-                ally.capabilities.get("military", 0.5) + ally.capabilities.get("economic", 0.5)
-            ) / 2
+            ally_strength_att += (ally.capabilities.get("military", 0.5) + ally.capabilities.get("economic", 0.5)) / 2
 
     ally_strength_def = 0.0
     for aid in def_allies:
         ally = next((a for a in model.schedule.agents if a.unique_id == aid), None)
         if ally:
-            ally_strength_def += (
-                ally.capabilities.get("military", 0.5) + ally.capabilities.get("economic", 0.5)
-            ) / 2
+            ally_strength_def += (ally.capabilities.get("military", 0.5) + ally.capabilities.get("economic", 0.5)) / 2
 
     total_att_power = att_power + ally_strength_att * 0.5
     total_def_power = def_power + ally_strength_def * 0.5

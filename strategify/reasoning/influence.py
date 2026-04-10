@@ -158,9 +158,7 @@ class InfluenceMap:
         for agent in self.model.schedule.agents:
             rid = getattr(agent, "region_id", "unknown")
             region_order.append(rid)
-            escalation_values.append(
-                1.0 if getattr(agent, "posture", "Deescalate") == "Escalate" else 0.0
-            )
+            escalation_values.append(1.0 if getattr(agent, "posture", "Deescalate") == "Escalate" else 0.0)
 
         if len(region_order) < 3:
             return {}

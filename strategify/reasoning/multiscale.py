@@ -93,12 +93,8 @@ class MultiScaleModel:
         for reg_agent in regional_model.schedule.agents:
             if hasattr(reg_agent, "capabilities"):
                 # Regional agents inherit a fraction of global capabilities
-                reg_agent.capabilities["military"] = min(
-                    1.0, global_agent.capabilities.get("military", 0.5) * 0.8
-                )
-                reg_agent.capabilities["economic"] = min(
-                    1.0, global_agent.capabilities.get("economic", 0.5) * 0.8
-                )
+                reg_agent.capabilities["military"] = min(1.0, global_agent.capabilities.get("military", 0.5) * 0.8)
+                reg_agent.capabilities["economic"] = min(1.0, global_agent.capabilities.get("economic", 0.5) * 0.8)
 
     def _sync_regional_to_global(self, region_id: str, regional_model: Any) -> None:
         """Pass regional simulation results back to the global model.
@@ -116,11 +112,7 @@ class MultiScaleModel:
             return
 
         # Count regional escalation
-        escalated = sum(
-            1
-            for a in regional_model.schedule.agents
-            if getattr(a, "posture", "Deescalate") == "Escalate"
-        )
+        escalated = sum(1 for a in regional_model.schedule.agents if getattr(a, "posture", "Deescalate") == "Escalate")
         total = len(regional_model.schedule.agents)
         escalation_ratio = escalated / total if total > 0 else 0.0
 
@@ -142,11 +134,7 @@ class MultiScaleModel:
         """Return multi-scale simulation summary."""
         regional_summaries = {}
         for rid, model in self.regional_models.items():
-            escalated = sum(
-                1
-                for a in model.schedule.agents
-                if getattr(a, "posture", "Deescalate") == "Escalate"
-            )
+            escalated = sum(1 for a in model.schedule.agents if getattr(a, "posture", "Deescalate") == "Escalate")
             regional_summaries[rid] = {
                 "n_agents": len(model.schedule.agents),
                 "escalated": escalated,

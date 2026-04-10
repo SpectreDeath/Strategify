@@ -220,9 +220,7 @@ def _generate_diplomacy_summary(model: Any) -> str:
             rel = "Rivalry"
         else:
             rel = "Neutral"
-        edges.append(
-            f"<li>Agent {u} &mdash; Agent {v}: <strong>{rel}</strong> ({weight:+.1f})</li>"
-        )
+        edges.append(f"<li>Agent {u} &mdash; Agent {v}: <strong>{rel}</strong> ({weight:+.1f})</li>")
 
     return f"""
     <div class="section">

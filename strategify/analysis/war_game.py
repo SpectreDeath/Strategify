@@ -184,9 +184,7 @@ def run_war_game(
             model.step()
 
         # Compute outcome score
-        escalate_count = sum(
-            1 for a in model.schedule.agents if getattr(a, "posture", "") == "Escalate"
-        )
+        escalate_count = sum(1 for a in model.schedule.agents if getattr(a, "posture", "") == "Escalate")
         outcome = -escalate_count  # Negative is bad (more escalation)
         outcomes.append(outcome)
 
@@ -282,9 +280,7 @@ def simulate_counter_strategy(
         "initial_economic": initial_economic,
         "final_economic": final_economic,
         "economic_change": final_economic - initial_economic,
-        "effectiveness_score": (
-            -(impact.get("military_impact", 0) + impact.get("economic_impact", 0))
-        ),
+        "effectiveness_score": (-(impact.get("military_impact", 0) + impact.get("economic_impact", 0))),
     }
 
 

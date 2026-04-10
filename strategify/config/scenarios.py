@@ -141,9 +141,7 @@ def scenario_to_configs(
 
     region_resources: dict[str, float] = dict(data["region_resources"])
 
-    alliances: list[tuple[str, str, float]] = [
-        (a["source"], a["target"], a["weight"]) for a in data["alliances"]
-    ]
+    alliances: list[tuple[str, str, float]] = [(a["source"], a["target"], a["weight"]) for a in data["alliances"]]
 
     return actor_configs, region_resources, alliances
 
@@ -154,9 +152,7 @@ def scenario_to_configs(
 
 UKRAINE_PRESET = ScenarioPreset(
     name="Ukraine Crisis",
-    description=(
-        "Simulation of the 2022 Russia-Ukraine conflict with neighboring NATO and EU states"
-    ),
+    description=("Simulation of the 2022 Russia-Ukraine conflict with neighboring NATO and EU states"),
     regions=["UKR", "RUS", "BLR", "POL", "MDA", "ROU", "HUN", "SVK", "LVA", "LTU", "EST"],
     initial_relations={
         ("RUS", "UKR"): -0.9,

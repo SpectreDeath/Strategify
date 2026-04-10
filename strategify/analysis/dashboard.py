@@ -167,9 +167,7 @@ class MonteCarloEngine:
                         z = 1.96  # 95% confidence
                         denominator = 1 + z**2 / n
                         center = (p_hat + z**2 / (2 * n)) / denominator
-                        margin = (
-                            z * np.sqrt(p_hat * (1 - p_hat) / n + z**2 / (4 * n**2))
-                        ) / denominator
+                        margin = (z * np.sqrt(p_hat * (1 - p_hat) / n + z**2 / (4 * n**2))) / denominator
                         ci_lower = max(0.0, center - margin)
                         ci_upper = min(1.0, center + margin)
                         confidence_intervals[rid][step] = (ci_lower, ci_upper)
@@ -365,9 +363,7 @@ class MonteCarloEngine:
                         z = 1.96
                         denominator = 1 + z**2 / n
                         center = (p_hat + z**2 / (2 * n)) / denominator
-                        margin = (
-                            z * np.sqrt(p_hat * (1 - p_hat) / n + z**2 / (4 * n**2))
-                        ) / denominator
+                        margin = (z * np.sqrt(p_hat * (1 - p_hat) / n + z**2 / (4 * n**2))) / denominator
                         ci_lower = float(max(0.0, center - margin))
                         ci_upper = float(min(1.0, center + margin))
                         confidence_intervals[rid][step] = (ci_lower, ci_upper)
@@ -416,9 +412,7 @@ class MonteCarloEngine:
             return {"regions": [], "steps": [], "matrix": []}
 
         steps = sorted(result.escalation_probabilities[regions[0]].keys())
-        matrix = [
-            [result.escalation_probabilities[rid].get(s, 0.0) for s in steps] for rid in regions
-        ]
+        matrix = [[result.escalation_probabilities[rid].get(s, 0.0) for s in steps] for rid in regions]
         return {"regions": regions, "steps": steps, "matrix": matrix}
 
 
@@ -502,9 +496,7 @@ class IntelligenceBriefing:
             personality = getattr(agent, "personality", "Unknown")
             mil = agent.capabilities.get("military", 0.0)
             eco = agent.capabilities.get("economic", 0.0)
-            lines.append(
-                f"  {rid.upper()}: {agent.posture} [{personality}] mil={mil:.2f} eco={eco:.2f}"
-            )
+            lines.append(f"  {rid.upper()}: {agent.posture} [{personality}] mil={mil:.2f} eco={eco:.2f}")
         return "\n".join(lines)
 
     def _probability_analysis(self, mc: MonteCarloResult) -> str:

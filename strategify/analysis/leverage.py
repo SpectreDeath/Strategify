@@ -279,9 +279,7 @@ class LeverageAnalyzer:
 
             adjacency_count = len(region_influence)
 
-            raw_score = (
-                min(total_influence / 5.0, 1.0) * 0.5 + min(adjacency_count / 10.0, 1.0) * 0.5
-            )
+            raw_score = min(total_influence / 5.0, 1.0) * 0.5 + min(adjacency_count / 10.0, 1.0) * 0.5
 
         return LeverageScore(
             leverage_type=LeverageType.GEOGRAPHIC,
@@ -467,9 +465,7 @@ class LeverageHistory:
                 history.append((snap["step"], profile.overall_score))
         return history
 
-    def get_type_history(
-        self, region_id: str, leverage_type: LeverageType
-    ) -> list[tuple[int, float]]:
+    def get_type_history(self, region_id: str, leverage_type: LeverageType) -> list[tuple[int, float]]:
         """Get time series for a specific leverage type."""
         history = []
         for snap in self._snapshots:
@@ -606,11 +602,7 @@ def detect_leverage_anomalies(
                         "change": change,
                         "direction": "rising" if change > 0 else "falling",
                         "magnitude": abs(change),
-                        "level": (
-                            LeverageAlertLevel.CRITICAL
-                            if abs(change) >= 0.3
-                            else LeverageAlertLevel.UNSTABLE
-                        ),
+                        "level": (LeverageAlertLevel.CRITICAL if abs(change) >= 0.3 else LeverageAlertLevel.UNSTABLE),
                     }
                 )
 
@@ -757,9 +749,7 @@ def detect_leverage_regime_change(
     previous_regime = get_regime_snapshot(first_half_steps)
     current_regime = get_regime_snapshot(second_half_steps)
 
-    total_change = sum(
-        abs(current_regime.get(lt, 0) - previous_regime.get(lt, 0)) for lt in LeverageType
-    )
+    total_change = sum(abs(current_regime.get(lt, 0) - previous_regime.get(lt, 0)) for lt in LeverageType)
 
     return {
         "regime_change_detected": total_change >= volatility_threshold,

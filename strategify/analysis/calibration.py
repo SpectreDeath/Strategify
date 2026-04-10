@@ -115,11 +115,7 @@ def compute_calibration_error(
         sim_cols = [c for c in simulation_ts.columns if c in mapping]
         hist_cols = [mapping[c] for c in sim_cols]
         sim_data = simulation_ts[sim_cols].values
-        hist_data = (
-            historical_ts[hist_cols].values
-            if all(c in historical_ts.columns for c in hist_cols)
-            else None
-        )
+        hist_data = historical_ts[hist_cols].values if all(c in historical_ts.columns for c in hist_cols) else None
     else:
         min_cols = min(simulation_ts.shape[1], historical_ts.shape[1])
         sim_data = simulation_ts.iloc[:, :min_cols].values

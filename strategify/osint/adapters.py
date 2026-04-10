@@ -186,9 +186,7 @@ class GDELTAdapter(BaseAdapter):
     def _classify(text: str) -> str:
         """Simple keyword-based event classification."""
         text_lower = text.lower()
-        if any(
-            w in text_lower for w in ("military", "army", "troops", "war", "conflict", "attack")
-        ):
+        if any(w in text_lower for w in ("military", "army", "troops", "war", "conflict", "attack")):
             return "conflict"
         if any(w in text_lower for w in ("sanctions", "embargo", "trade war")):
             return "economic"
@@ -579,9 +577,7 @@ class WikipediaEventAdapter(BaseAdapter):
 
         return events[:max_records]
 
-    def _fetch_related_events(
-        self, topic: str, region_id: str, max_records: int
-    ) -> list[dict[str, Any]]:
+    def _fetch_related_events(self, topic: str, region_id: str, max_records: int) -> list[dict[str, Any]]:
         """Fetch events from Wikipedia related pages."""
         events: list[dict[str, Any]] = []
 
@@ -599,9 +595,7 @@ class WikipediaEventAdapter(BaseAdapter):
                 extract = page.get("extract", "")
 
                 if title and extract:
-                    timestamp = self._extract_date_from_title(
-                        title
-                    ) or self._extract_date_from_text(extract)
+                    timestamp = self._extract_date_from_title(title) or self._extract_date_from_text(extract)
                     url_title = urllib.parse.quote(title.replace(" ", "_"))
 
                     events.append(
@@ -622,9 +616,7 @@ class WikipediaEventAdapter(BaseAdapter):
 
         return events
 
-    def _search_events(
-        self, keywords: list[str], region_id: str, max_records: int
-    ) -> list[dict[str, Any]]:
+    def _search_events(self, keywords: list[str], region_id: str, max_records: int) -> list[dict[str, Any]]:
         """Search Wikipedia for events matching keywords."""
         events: list[dict[str, Any]] = []
 

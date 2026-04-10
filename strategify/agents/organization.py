@@ -86,9 +86,7 @@ class OrganizationAgent(BaseActorAgent):
         if not member_agents:
             return {"action": "Deescalate", "type": "observe"}
 
-        escalation_count = sum(
-            1 for a in member_agents if getattr(a, "posture", "Deescalate") == "Escalate"
-        )
+        escalation_count = sum(1 for a in member_agents if getattr(a, "posture", "Deescalate") == "Escalate")
         escalation_ratio = escalation_count / len(member_agents)
 
         if self.org_type == "IGO":

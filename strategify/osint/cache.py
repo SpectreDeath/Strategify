@@ -70,9 +70,7 @@ class SQLiteCache:
         """
         conn = self._conn()
         try:
-            row = conn.execute(
-                "SELECT value, expires_at FROM cache WHERE key = ?", (key,)
-            ).fetchone()
+            row = conn.execute("SELECT value, expires_at FROM cache WHERE key = ?", (key,)).fetchone()
         finally:
             conn.close()
 
@@ -105,8 +103,7 @@ class SQLiteCache:
         conn = self._conn()
         try:
             conn.execute(
-                "INSERT OR REPLACE INTO cache (key, value, created_at, expires_at) "
-                "VALUES (?, ?, ?, ?)",
+                "INSERT OR REPLACE INTO cache (key, value, created_at, expires_at) VALUES (?, ?, ?, ?)",
                 (key, value_str, created_at, expires_at),
             )
             conn.commit()

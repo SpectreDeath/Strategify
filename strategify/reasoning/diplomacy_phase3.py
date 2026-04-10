@@ -173,9 +173,7 @@ class DiplomaticMemory:
 
     def summary(self) -> dict[str, Any]:
         """Return memory system summary."""
-        total_entries = sum(
-            len(entries) for agent_mem in self._memory.values() for entries in agent_mem.values()
-        )
+        total_entries = sum(len(entries) for agent_mem in self._memory.values() for entries in agent_mem.values())
         return {
             "total_entries": total_entries,
             "agents_tracked": len(self._memory),
@@ -345,8 +343,7 @@ class StrategicSignaling:
         return [
             s
             for s in self._signals
-            if s.fulfilled is None
-            and (agent_id is None or s.sender_id == agent_id or s.receiver_id == agent_id)
+            if s.fulfilled is None and (agent_id is None or s.sender_id == agent_id or s.receiver_id == agent_id)
         ]
 
     def get_perception_modifier(self, observer_id: int, target_id: int) -> float:
@@ -358,9 +355,7 @@ class StrategicSignaling:
         recent = [
             s
             for s in self._signals
-            if s.sender_id == target_id
-            and s.receiver_id == observer_id
-            and self.model.schedule.steps - s.step <= 5
+            if s.sender_id == target_id and s.receiver_id == observer_id and self.model.schedule.steps - s.step <= 5
         ]
         modifier = 0.0
         for s in recent:
@@ -436,9 +431,7 @@ class MultilateralSummit:
 
         # N > 2: pairwise dispatch with aggregation
         actions_map = list(GAME_ACTIONS_FALLBACK)
-        vote_scores: dict[int, dict[str, float]] = {
-            uid: {a: 0.0 for a in actions_map} for uid in participant_ids
-        }
+        vote_scores: dict[int, dict[str, float]] = {uid: {a: 0.0 for a in actions_map} for uid in participant_ids}
 
         for uid_a, uid_b in combinations(participant_ids, 2):
             pair_result = self._solve_pair(uid_a, uid_b, base_game)

@@ -86,14 +86,17 @@ class ConflictEngine:
 
         # Damage calculation: base 10% loss to both, adjusted by power ratio
         base_dmg = 0.1
-        if p1 > p2:
+        if p1 > p2 and p1 > 0:
             ratio = p2 / p1
             u1.strength = max(0.0, u1.strength - (base_dmg * ratio))
             u2.strength = max(0.0, u2.strength - base_dmg)
-        else:
+        elif p2 > 0:
             ratio = p1 / p2
             u1.strength = max(0.0, u1.strength - base_dmg)
             u2.strength = max(0.0, u2.strength - (base_dmg * ratio))
+        else:
+            u1.strength = max(0.0, u1.strength - base_dmg)
+            u2.strength = max(0.0, u2.strength - base_dmg)
 
         # Readiness drop after combat
         u1.readiness = max(0.0, u1.readiness - 0.2)
@@ -106,8 +109,10 @@ class ConflictEngine:
         """Apply population and GDP reduction to a region in conflict."""
         # Reduce population by 0.1% for every combat event
         if self.model.population_model:
-            pop = self.model.population_model.get_population(region_id)
-            self.model.population_model.set_population(region_id, pop * 0.999)
+            agent = self.model._agent_registry.get(region_id)
+            if agent:
+                pop = self.model.population_model.get_population(agent.unique_id)
+                self.model.population_model.set_population(agent.unique_id, pop * 0.999)
 
         # Reduce GDP growth or direct impact if trade network exists
         if self.model.trade_network:

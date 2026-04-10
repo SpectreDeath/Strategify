@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_58472cfa5c978bc8c0d0d5c4c484a436 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_58472cfa5c978bc8c0d0d5c4c484a436" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_58472cfa5c978bc8c0d0d5c4c484a436 = L.map(
+                "map_58472cfa5c978bc8c0d0d5c4c484a436",
+                {
+                    center: [50.0, 30.0],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 4,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_3b7ce7fba44401593711491169121986 = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Esri",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_3b7ce7fba44401593711491169121986.addTo(map_58472cfa5c978bc8c0d0d5c4c484a436);
+        
+    
+        function geo_json_e5af5177c285def30dcbf04fcd75d376_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#795548", "fillColor": "#795548", "fillOpacity": 0.8, "weight": 2};
+            }
+        }
+
+        function geo_json_e5af5177c285def30dcbf04fcd75d376_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_e5af5177c285def30dcbf04fcd75d376 = L.geoJson(null, {
+                onEachFeature: geo_json_e5af5177c285def30dcbf04fcd75d376_onEachFeature,
+            
+                style: geo_json_e5af5177c285def30dcbf04fcd75d376_styler,
+            ...{
+}
+        });
+
+        function geo_json_e5af5177c285def30dcbf04fcd75d376_add (data) {
+            geo_json_e5af5177c285def30dcbf04fcd75d376
+                .addData(data);
+        }
+            geo_json_e5af5177c285def30dcbf04fcd75d376_add({"features": [{"geometry": {"coordinates": [[[3896182.1777645745, 1804722.766257293], [6122571.993630046, 1804722.766257293], [6122571.993630046, 3763310.627144653], [5343335.558077131, 3763310.627144653], [5343335.558077131, 3375646.034919311], [4230140.650144396, 3375646.034919311], [4341460.140937669, 3632749.143384427], [4007501.6685578483, 3632749.143384427], [3918446.07592323, 3632749.143384427], [3896182.1777645745, 1804722.766257293]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_e5af5177c285def30dcbf04fcd75d376.bindTooltip(
+                `<div>
+                     SAU
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+        var popup_bf676b44b501a79278e3fdfdf2f03438 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a54ddfb34caef3390226dd72b1d2ef3a = $(`<div id="html_a54ddfb34caef3390226dd72b1d2ef3a" style="width: 100.0%; height: 100.0%;">         <b>SAU</b><br>         Posture: <b>Escalate</b><br>         Personality: Neutral<br>         Net Influence: -0.03<br>         Military: 0.30<br>         Economic: 0.45<br>         GDP: 2.77<br>Trade Bal: 0.00<br>Escalation: Military<br>         </div>`)[0];
+                popup_bf676b44b501a79278e3fdfdf2f03438.setContent(html_a54ddfb34caef3390226dd72b1d2ef3a);
+            
+        
+
+        geo_json_e5af5177c285def30dcbf04fcd75d376.bindPopup(popup_bf676b44b501a79278e3fdfdf2f03438)
+        ;
+
+        
+    
+    
+            geo_json_e5af5177c285def30dcbf04fcd75d376.addTo(map_58472cfa5c978bc8c0d0d5c4c484a436);
+        
+    
+        function geo_json_d3cf4c6da6b64fa3759a12e6ab8f5e84_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#00BCD4", "fillColor": "#00BCD4", "fillOpacity": 0.8, "weight": 2};
+            }
+        }
+
+        function geo_json_d3cf4c6da6b64fa3759a12e6ab8f5e84_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_d3cf4c6da6b64fa3759a12e6ab8f5e84 = L.geoJson(null, {
+                onEachFeature: geo_json_d3cf4c6da6b64fa3759a12e6ab8f5e84_onEachFeature,
+            
+                style: geo_json_d3cf4c6da6b64fa3759a12e6ab8f5e84_styler,
+            ...{
+}
+        });
+
+        function geo_json_d3cf4c6da6b64fa3759a12e6ab8f5e84_add (data) {
+            geo_json_d3cf4c6da6b64fa3759a12e6ab8f5e84
+                .addData(data);
+        }
+            geo_json_d3cf4c6da6b64fa3759a12e6ab8f5e84_add({"features": [{"geometry": {"coordinates": [[[4230140.650144396, 3375646.034919311], [5343335.558077131, 3375646.034919311], [5343335.558077131, 4439106.787250586], [4675418.613317491, 4439106.787250586], [4675418.613317491, 3829123.837028439], [4230140.650144396, 3829123.837028439], [4230140.650144396, 3375646.034919311]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_d3cf4c6da6b64fa3759a12e6ab8f5e84.bindTooltip(
+                `<div>
+                     IRQ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+        var popup_fdfa25b87e06d95a4358fea44a9f535f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fe0be9ab78559a90a0049a3968c737b8 = $(`<div id="html_fe0be9ab78559a90a0049a3968c737b8" style="width: 100.0%; height: 100.0%;">         <b>IRQ</b><br>         Posture: <b>Escalate</b><br>         Personality: Pacifist<br>         Net Influence: -0.12<br>         Military: 0.24<br>         Economic: 0.17<br>         GDP: 0.34<br>Trade Bal: 0.00<br>Escalation: Cooperative<br>         </div>`)[0];
+                popup_fdfa25b87e06d95a4358fea44a9f535f.setContent(html_fe0be9ab78559a90a0049a3968c737b8);
+            
+        
+
+        geo_json_d3cf4c6da6b64fa3759a12e6ab8f5e84.bindPopup(popup_fdfa25b87e06d95a4358fea44a9f535f)
+        ;
+
+        
+    
+    
+            geo_json_d3cf4c6da6b64fa3759a12e6ab8f5e84.addTo(map_58472cfa5c978bc8c0d0d5c4c484a436);
+        
+    
+        function geo_json_00472ceb966a45cf5fb43fc71c2c4887_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#9E9E9E", "fillColor": "#9E9E9E", "fillOpacity": 0.3, "weight": 2};
+            }
+        }
+
+        function geo_json_00472ceb966a45cf5fb43fc71c2c4887_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_00472ceb966a45cf5fb43fc71c2c4887 = L.geoJson(null, {
+                onEachFeature: geo_json_00472ceb966a45cf5fb43fc71c2c4887_onEachFeature,
+            
+                style: geo_json_00472ceb966a45cf5fb43fc71c2c4887_styler,
+            ...{
+}
+        });
+
+        function geo_json_00472ceb966a45cf5fb43fc71c2c4887_add (data) {
+            geo_json_00472ceb966a45cf5fb43fc71c2c4887
+                .addData(data);
+        }
+            geo_json_00472ceb966a45cf5fb43fc71c2c4887_add({"features": [{"geometry": {"coordinates": [[[3840522.4323679376, 3632749.143384427], [3885050.2286852472, 3658750.2802829924], [3951841.9231612114, 3737086.056237238], [3918446.07592323, 3829123.837028439], [3873918.27960592, 3829123.837028439], [3840522.4323679376, 3763310.627144653], [3840522.4323679376, 3632749.143384427]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_00472ceb966a45cf5fb43fc71c2c4887.bindTooltip(
+                `<div>
+                     ISR
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+        var popup_70168e6433803f923753928583708d58 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1c04cec2612ab2bc3915cd4300fc42d4 = $(`<div id="html_1c04cec2612ab2bc3915cd4300fc42d4" style="width: 100.0%; height: 100.0%;">         <b>ISR</b><br>         Posture: <b>Deescalate</b><br>         Personality: Aggressor<br>         Net Influence: 0.42<br>         Military: 0.42<br>         Economic: 0.34<br>         GDP: 1.03<br>Trade Bal: 0.00<br>Escalation: Cooperative<br>         </div>`)[0];
+                popup_70168e6433803f923753928583708d58.setContent(html_1c04cec2612ab2bc3915cd4300fc42d4);
+            
+        
+
+        geo_json_00472ceb966a45cf5fb43fc71c2c4887.bindPopup(popup_70168e6433803f923753928583708d58)
+        ;
+
+        
+    
+    
+            geo_json_00472ceb966a45cf5fb43fc71c2c4887.addTo(map_58472cfa5c978bc8c0d0d5c4c484a436);
+        
+    
+        function geo_json_3772166c00c41a63bec7af5f2884459a_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#2196F3", "fillColor": "#2196F3", "fillOpacity": 0.8, "weight": 2};
+            }
+        }
+
+        function geo_json_3772166c00c41a63bec7af5f2884459a_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_3772166c00c41a63bec7af5f2884459a = L.geoJson(null, {
+                onEachFeature: geo_json_3772166c00c41a63bec7af5f2884459a_onEachFeature,
+            
+                style: geo_json_3772166c00c41a63bec7af5f2884459a_styler,
+            ...{
+}
+        });
+
+        function geo_json_3772166c00c41a63bec7af5f2884459a_add (data) {
+            geo_json_3772166c00c41a63bec7af5f2884459a
+                .addData(data);
+        }
+            geo_json_3772166c00c41a63bec7af5f2884459a_add({"features": [{"geometry": {"coordinates": [[[3918446.07592323, 3895303.9633938945], [3985237.7703991937, 3895303.9633938945], [4007501.6685578483, 4028802.026134408], [3985237.7703991937, 4096139.0404472337], [3918446.07592323, 4096139.0404472337], [3918446.07592323, 3895303.9633938945]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_3772166c00c41a63bec7af5f2884459a.bindTooltip(
+                `<div>
+                     LBN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+        var popup_89fcad681659393b367e726c0642bcc9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c11312113a0f3e1c6be2ab2c568c4920 = $(`<div id="html_c11312113a0f3e1c6be2ab2c568c4920" style="width: 100.0%; height: 100.0%;">         <b>LBN</b><br>         Posture: <b>Escalate</b><br>         Personality: Tit-for-Tat<br>         Net Influence: 0.12<br>         Military: 0.12<br>         Economic: 0.11<br>         GDP: 0.11<br>Trade Bal: 0.00<br>Escalation: Military<br>         </div>`)[0];
+                popup_89fcad681659393b367e726c0642bcc9.setContent(html_c11312113a0f3e1c6be2ab2c568c4920);
+            
+        
+
+        geo_json_3772166c00c41a63bec7af5f2884459a.bindPopup(popup_89fcad681659393b367e726c0642bcc9)
+        ;
+
+        
+    
+    
+            geo_json_3772166c00c41a63bec7af5f2884459a.addTo(map_58472cfa5c978bc8c0d0d5c4c484a436);
+        
+    
+        function geo_json_261ea76ff39edecf11cd5e2349a958f1_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#800000", "fillColor": "#800000", "fillOpacity": 0.8, "weight": 2};
+            }
+        }
+
+        function geo_json_261ea76ff39edecf11cd5e2349a958f1_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_261ea76ff39edecf11cd5e2349a958f1 = L.geoJson(null, {
+                onEachFeature: geo_json_261ea76ff39edecf11cd5e2349a958f1_onEachFeature,
+            
+                style: geo_json_261ea76ff39edecf11cd5e2349a958f1_styler,
+            ...{
+}
+        });
+
+        function geo_json_261ea76ff39edecf11cd5e2349a958f1_add (data) {
+            geo_json_261ea76ff39edecf11cd5e2349a958f1
+                .addData(data);
+        }
+            geo_json_261ea76ff39edecf11cd5e2349a958f1_add({"features": [{"geometry": {"coordinates": [[[5176356.321887221, 3312159.8598184395], [5398995.303473768, 3312159.8598184395], [5398995.303473768, 3503549.8435043753], [5176356.321887221, 3503549.8435043753], [5176356.321887221, 3312159.8598184395]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_261ea76ff39edecf11cd5e2349a958f1.bindTooltip(
+                `<div>
+                     KWT
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+        var popup_c25f5600b135cb45d5d76b4815145491 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a7b6958274a8440e1e2dec0bb681d50a = $(`<div id="html_a7b6958274a8440e1e2dec0bb681d50a" style="width: 100.0%; height: 100.0%;">         <b>KWT</b><br>         Posture: <b>Escalate</b><br>         Personality: Pacifist<br>         Net Influence: 0.12<br>         Military: 0.12<br>         Economic: 0.28<br>         GDP: 0.46<br>Trade Bal: 0.00<br>Escalation: Cooperative<br>         </div>`)[0];
+                popup_c25f5600b135cb45d5d76b4815145491.setContent(html_a7b6958274a8440e1e2dec0bb681d50a);
+            
+        
+
+        geo_json_261ea76ff39edecf11cd5e2349a958f1.bindPopup(popup_c25f5600b135cb45d5d76b4815145491)
+        ;
+
+        
+    
+    
+            geo_json_261ea76ff39edecf11cd5e2349a958f1.addTo(map_58472cfa5c978bc8c0d0d5c4c484a436);
+        
+    
+        function geo_json_3eeaa3d3bd5cd427c75fc966c0cb00b2_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#E91E63", "fillColor": "#E91E63", "fillOpacity": 0.3, "weight": 2};
+            }
+        }
+
+        function geo_json_3eeaa3d3bd5cd427c75fc966c0cb00b2_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_3eeaa3d3bd5cd427c75fc966c0cb00b2 = L.geoJson(null, {
+                onEachFeature: geo_json_3eeaa3d3bd5cd427c75fc966c0cb00b2_onEachFeature,
+            
+                style: geo_json_3eeaa3d3bd5cd427c75fc966c0cb00b2_styler,
+            ...{
+}
+        });
+
+        function geo_json_3eeaa3d3bd5cd427c75fc966c0cb00b2_add (data) {
+            geo_json_3eeaa3d3bd5cd427c75fc966c0cb00b2
+                .addData(data);
+        }
+            geo_json_3eeaa3d3bd5cd427c75fc966c0cb00b2_add({"features": [{"geometry": {"coordinates": [[[3918446.07592323, 3632749.143384427], [4007501.6685578483, 3632749.143384427], [4341460.140937669, 3632749.143384427], [4341460.140937669, 3829123.837028439], [4007501.6685578483, 3829123.837028439], [3918446.07592323, 3763310.627144653], [3918446.07592323, 3632749.143384427]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_3eeaa3d3bd5cd427c75fc966c0cb00b2.bindTooltip(
+                `<div>
+                     JOR
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+        var popup_6a57cfd5e3b48bed6a8bad51dde8aa1f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_31441f157edd1792e424781561f388ff = $(`<div id="html_31441f157edd1792e424781561f388ff" style="width: 100.0%; height: 100.0%;">         <b>JOR</b><br>         Posture: <b>Deescalate</b><br>         Personality: Neutral<br>         Net Influence: -0.11<br>         Military: 0.18<br>         Economic: 0.17<br>         GDP: 0.27<br>Trade Bal: 0.00<br>Escalation: Cooperative<br>         </div>`)[0];
+                popup_6a57cfd5e3b48bed6a8bad51dde8aa1f.setContent(html_31441f157edd1792e424781561f388ff);
+            
+        
+
+        geo_json_3eeaa3d3bd5cd427c75fc966c0cb00b2.bindPopup(popup_6a57cfd5e3b48bed6a8bad51dde8aa1f)
+        ;
+
+        
+    
+    
+            geo_json_3eeaa3d3bd5cd427c75fc966c0cb00b2.addTo(map_58472cfa5c978bc8c0d0d5c4c484a436);
+        
+    
+        function geo_json_5afe09bfd72a205d0bbedfcb40b9933e_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#F44336", "fillColor": "#F44336", "fillOpacity": 0.3, "weight": 2};
+            }
+        }
+
+        function geo_json_5afe09bfd72a205d0bbedfcb40b9933e_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_5afe09bfd72a205d0bbedfcb40b9933e = L.geoJson(null, {
+                onEachFeature: geo_json_5afe09bfd72a205d0bbedfcb40b9933e_onEachFeature,
+            
+                style: geo_json_5afe09bfd72a205d0bbedfcb40b9933e_styler,
+            ...{
+}
+        });
+
+        function geo_json_5afe09bfd72a205d0bbedfcb40b9933e_add (data) {
+            geo_json_5afe09bfd72a205d0bbedfcb40b9933e
+                .addData(data);
+        }
+            geo_json_5afe09bfd72a205d0bbedfcb40b9933e_add({"features": [{"geometry": {"coordinates": [[[4898057.594904037, 2875744.624352243], [7124447.410769508, 2875744.624352243], [7124447.410769508, 4865942.279503175], [4898057.594904037, 4865942.279503175], [4898057.594904037, 2875744.624352243]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_5afe09bfd72a205d0bbedfcb40b9933e.bindTooltip(
+                `<div>
+                     IRN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+        var popup_c52e075fbf11388c4f2f25132f4eeaad = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_26368cd8bb006b7b24b4555b80654917 = $(`<div id="html_26368cd8bb006b7b24b4555b80654917" style="width: 100.0%; height: 100.0%;">         <b>IRN</b><br>         Posture: <b>Deescalate</b><br>         Personality: Aggressor<br>         Net Influence: 0.36<br>         Military: 0.36<br>         Economic: 0.22<br>         GDP: 0.91<br>Trade Bal: 0.00<br>Escalation: Cooperative<br>         </div>`)[0];
+                popup_c52e075fbf11388c4f2f25132f4eeaad.setContent(html_26368cd8bb006b7b24b4555b80654917);
+            
+        
+
+        geo_json_5afe09bfd72a205d0bbedfcb40b9933e.bindPopup(popup_c52e075fbf11388c4f2f25132f4eeaad)
+        ;
+
+        
+    
+    
+            geo_json_5afe09bfd72a205d0bbedfcb40b9933e.addTo(map_58472cfa5c978bc8c0d0d5c4c484a436);
+        
+    
+        function geo_json_b80ecb44f6797ffb3f1e5195de515769_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#009688", "fillColor": "#009688", "fillOpacity": 0.8, "weight": 2};
+            }
+        }
+
+        function geo_json_b80ecb44f6797ffb3f1e5195de515769_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_b80ecb44f6797ffb3f1e5195de515769 = L.geoJson(null, {
+                onEachFeature: geo_json_b80ecb44f6797ffb3f1e5195de515769_onEachFeature,
+            
+                style: geo_json_b80ecb44f6797ffb3f1e5195de515769_styler,
+            ...{
+}
+        });
+
+        function geo_json_b80ecb44f6797ffb3f1e5195de515769_add (data) {
+            geo_json_b80ecb44f6797ffb3f1e5195de515769
+                .addData(data);
+        }
+            geo_json_b80ecb44f6797ffb3f1e5195de515769_add({"features": [{"geometry": {"coordinates": [[[3840522.4323679376, 3684806.4424220272], [3873918.27960592, 3697855.330337704], [3918446.07592323, 3737086.056237238], [3918446.07592323, 3763310.627144653], [3873918.27960592, 3763310.627144653], [3840522.4323679376, 3737086.056237238], [3840522.4323679376, 3684806.4424220272]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_b80ecb44f6797ffb3f1e5195de515769.bindTooltip(
+                `<div>
+                     PSE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+        var popup_eb1277695225bb2002351226aba3d059 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6df459b0682c1fb3603bcf250f2f61d9 = $(`<div id="html_6df459b0682c1fb3603bcf250f2f61d9" style="width: 100.0%; height: 100.0%;">         <b>PSE</b><br>         Posture: <b>Escalate</b><br>         Personality: Grudger<br>         Net Influence: -0.03<br>         Military: 0.12<br>         Economic: 0.06<br>         GDP: 0.03<br>Trade Bal: 0.00<br>Escalation: Military<br>         </div>`)[0];
+                popup_eb1277695225bb2002351226aba3d059.setContent(html_6df459b0682c1fb3603bcf250f2f61d9);
+            
+        
+
+        geo_json_b80ecb44f6797ffb3f1e5195de515769.bindPopup(popup_eb1277695225bb2002351226aba3d059)
+        ;
+
+        
+    
+    
+            geo_json_b80ecb44f6797ffb3f1e5195de515769.addTo(map_58472cfa5c978bc8c0d0d5c4c484a436);
+        
+    
+        function geo_json_878e6c1c096f058451e91f55618c0475_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#CDDC39", "fillColor": "#CDDC39", "fillOpacity": 0.8, "weight": 2};
+            }
+        }
+
+        function geo_json_878e6c1c096f058451e91f55618c0475_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_878e6c1c096f058451e91f55618c0475 = L.geoJson(null, {
+                onEachFeature: geo_json_878e6c1c096f058451e91f55618c0475_onEachFeature,
+            
+                style: geo_json_878e6c1c096f058451e91f55618c0475_styler,
+            ...{
+}
+        });
+
+        function geo_json_878e6c1c096f058451e91f55618c0475_add (data) {
+            geo_json_878e6c1c096f058451e91f55618c0475
+                .addData(data);
+        }
+            geo_json_878e6c1c096f058451e91f55618c0475_add({"features": [{"geometry": {"coordinates": [[[2782987.269831839, 2511525.2348457123], [3339584.723798207, 2511525.2348457123], [3896182.1777645745, 3632749.143384427], [3896182.1777645745, 3723995.067295089], [3562223.705384754, 3632749.143384427], [2782987.269831839, 3632749.143384427], [2782987.269831839, 2511525.2348457123]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_878e6c1c096f058451e91f55618c0475.bindTooltip(
+                `<div>
+                     EGY
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+        var popup_0fdea07258a53467bb4edeaac583777a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0ec93d03de598c5d55d9328c060e1ec5 = $(`<div id="html_0ec93d03de598c5d55d9328c060e1ec5" style="width: 100.0%; height: 100.0%;">         <b>EGY</b><br>         Posture: <b>Escalate</b><br>         Personality: Tit-for-Tat<br>         Net Influence: 0.30<br>         Military: 0.30<br>         Economic: 0.22<br>         GDP: 0.69<br>Trade Bal: 0.00<br>Escalation: Military<br>         </div>`)[0];
+                popup_0fdea07258a53467bb4edeaac583777a.setContent(html_0ec93d03de598c5d55d9328c060e1ec5);
+            
+        
+
+        geo_json_878e6c1c096f058451e91f55618c0475.bindPopup(popup_0fdea07258a53467bb4edeaac583777a)
+        ;
+
+        
+    
+    
+            geo_json_878e6c1c096f058451e91f55618c0475.addTo(map_58472cfa5c978bc8c0d0d5c4c484a436);
+        
+    
+        function geo_json_cc6ed16b36634d791a43769a11f63f2f_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#9E9E9E", "fillColor": "#9E9E9E", "fillOpacity": 0.3, "weight": 2};
+            }
+        }
+
+        function geo_json_cc6ed16b36634d791a43769a11f63f2f_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_cc6ed16b36634d791a43769a11f63f2f = L.geoJson(null, {
+                onEachFeature: geo_json_cc6ed16b36634d791a43769a11f63f2f_onEachFeature,
+            
+                style: geo_json_cc6ed16b36634d791a43769a11f63f2f_styler,
+            ...{
+}
+        });
+
+        function geo_json_cc6ed16b36634d791a43769a11f63f2f_add (data) {
+            geo_json_cc6ed16b36634d791a43769a11f63f2f
+                .addData(data);
+        }
+            geo_json_cc6ed16b36634d791a43769a11f63f2f_add({"features": [{"geometry": {"coordinates": [[[2894306.760625113, 4163881.144064293], [5009377.085697311, 4163881.144064293], [5009377.085697311, 5160979.444049781], [2894306.760625113, 5160979.444049781], [2894306.760625113, 4163881.144064293]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_cc6ed16b36634d791a43769a11f63f2f.bindTooltip(
+                `<div>
+                     TUR
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+        var popup_4dd127049f4d10b1a5dda2ec036006c8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c5cf71f9293ea6990533388be65c2248 = $(`<div id="html_c5cf71f9293ea6990533388be65c2248" style="width: 100.0%; height: 100.0%;">         <b>TUR</b><br>         Posture: <b>Deescalate</b><br>         Personality: Neutral<br>         Net Influence: 0.42<br>         Military: 0.42<br>         Economic: 0.34<br>         GDP: 1.37<br>Trade Bal: 0.00<br>Escalation: Cooperative<br>         </div>`)[0];
+                popup_4dd127049f4d10b1a5dda2ec036006c8.setContent(html_c5cf71f9293ea6990533388be65c2248);
+            
+        
+
+        geo_json_cc6ed16b36634d791a43769a11f63f2f.bindPopup(popup_4dd127049f4d10b1a5dda2ec036006c8)
+        ;
+
+        
+    
+    
+            geo_json_cc6ed16b36634d791a43769a11f63f2f.addTo(map_58472cfa5c978bc8c0d0d5c4c484a436);
+        
+    
+        function geo_json_81f0e0bca2f72497088f6566b9575e2b_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#CDDC39", "fillColor": "#CDDC39", "fillOpacity": 0.3, "weight": 2};
+            }
+        }
+
+        function geo_json_81f0e0bca2f72497088f6566b9575e2b_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_81f0e0bca2f72497088f6566b9575e2b = L.geoJson(null, {
+                onEachFeature: geo_json_81f0e0bca2f72497088f6566b9575e2b_onEachFeature,
+            
+                style: geo_json_81f0e0bca2f72497088f6566b9575e2b_styler,
+            ...{
+}
+        });
+
+        function geo_json_81f0e0bca2f72497088f6566b9575e2b_add (data) {
+            geo_json_81f0e0bca2f72497088f6566b9575e2b
+                .addData(data);
+        }
+            geo_json_81f0e0bca2f72497088f6566b9575e2b_add({"features": [{"geometry": {"coordinates": [[[5677294.030456952, 2511525.2348457123], [6233891.48442332, 2511525.2348457123], [6233891.48442332, 2999080.943470641], [5677294.030456952, 2999080.943470641], [5677294.030456952, 2511525.2348457123]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_81f0e0bca2f72497088f6566b9575e2b.bindTooltip(
+                `<div>
+                     ARE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+        var popup_93301299f2f472d67148a45708448ce7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c40ffd5536c0dce470652b79d64f46a4 = $(`<div id="html_c40ffd5536c0dce470652b79d64f46a4" style="width: 100.0%; height: 100.0%;">         <b>ARE</b><br>         Posture: <b>Deescalate</b><br>         Personality: Neutral<br>         Net Influence: 0.18<br>         Military: 0.18<br>         Economic: 0.39<br>         GDP: 0.97<br>Trade Bal: 0.00<br>Escalation: Cooperative<br>         </div>`)[0];
+                popup_93301299f2f472d67148a45708448ce7.setContent(html_c40ffd5536c0dce470652b79d64f46a4);
+            
+        
+
+        geo_json_81f0e0bca2f72497088f6566b9575e2b.bindPopup(popup_93301299f2f472d67148a45708448ce7)
+        ;
+
+        
+    
+    
+            geo_json_81f0e0bca2f72497088f6566b9575e2b.addTo(map_58472cfa5c978bc8c0d0d5c4c484a436);
+        
+    
+        function geo_json_e3a5e4d0f771673c1c2970b19d4dbeae_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#FF9800", "fillColor": "#FF9800", "fillOpacity": 0.3, "weight": 2};
+            }
+        }
+
+        function geo_json_e3a5e4d0f771673c1c2970b19d4dbeae_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_e3a5e4d0f771673c1c2970b19d4dbeae = L.geoJson(null, {
+                onEachFeature: geo_json_e3a5e4d0f771673c1c2970b19d4dbeae_onEachFeature,
+            
+                style: geo_json_e3a5e4d0f771673c1c2970b19d4dbeae_styler,
+            ...{
+}
+        });
+
+        function geo_json_e3a5e4d0f771673c1c2970b19d4dbeae_add (data) {
+            geo_json_e3a5e4d0f771673c1c2970b19d4dbeae
+                .addData(data);
+        }
+            geo_json_e3a5e4d0f771673c1c2970b19d4dbeae_add({"features": [{"geometry": {"coordinates": [[[4007501.6685578483, 3829123.837028439], [4675418.613317491, 3829123.837028439], [4675418.613317491, 4439106.787250586], [4007501.6685578483, 4439106.787250586], [4007501.6685578483, 3829123.837028439]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_e3a5e4d0f771673c1c2970b19d4dbeae.bindTooltip(
+                `<div>
+                     SYR
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+        var popup_66613e1b1691e4e4e2067e64c20bcd1b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_94acd7d28b8ba13b10aa60c1b9cf3aab = $(`<div id="html_94acd7d28b8ba13b10aa60c1b9cf3aab" style="width: 100.0%; height: 100.0%;">         <b>SYR</b><br>         Posture: <b>Deescalate</b><br>         Personality: Aggressor<br>         Net Influence: -0.11<br>         Military: 0.24<br>         Economic: 0.11<br>         GDP: 0.14<br>Trade Bal: 0.00<br>Escalation: Cooperative<br>         </div>`)[0];
+                popup_66613e1b1691e4e4e2067e64c20bcd1b.setContent(html_94acd7d28b8ba13b10aa60c1b9cf3aab);
+            
+        
+
+        geo_json_e3a5e4d0f771673c1c2970b19d4dbeae.bindPopup(popup_66613e1b1691e4e4e2067e64c20bcd1b)
+        ;
+
+        
+    
+    
+            geo_json_e3a5e4d0f771673c1c2970b19d4dbeae.addTo(map_58472cfa5c978bc8c0d0d5c4c484a436);
+        
+</script>
+</html>

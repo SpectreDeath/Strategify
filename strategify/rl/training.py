@@ -25,9 +25,7 @@ class SimplePolicy:
         """Return action (0=Deescalate, 1=Escalate)."""
         raise NotImplementedError
 
-    def update(
-        self, obs: np.ndarray, action: int, reward: float, next_obs: np.ndarray, agent_id: str
-    ) -> None:
+    def update(self, obs: np.ndarray, action: int, reward: float, next_obs: np.ndarray, agent_id: str) -> None:
         """Update policy from experience."""
         pass
 

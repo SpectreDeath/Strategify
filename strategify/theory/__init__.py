@@ -160,8 +160,7 @@ class RealpolitikTheory(GeopoliticalTheory):
                 for a in model.schedule.agents:
                     if a.unique_id == auid:
                         ally_bonus += (
-                            a.capabilities.get("military", 0.5) * 0.5
-                            + a.capabilities.get("economic", 0.5) * 0.5
+                            a.capabilities.get("military", 0.5) * 0.5 + a.capabilities.get("economic", 0.5) * 0.5
                         )
 
         if metric == PowerMetric.MILITARY:
@@ -333,14 +332,8 @@ class OffensiveRealism(GeopoliticalTheory):
             for other in model.schedule.agents:
                 if getattr(other, "region_id", "") == getattr(agent, "region_id", ""):
                     continue
-                other_power = (
-                    other.capabilities.get("military", 0.5)
-                    + other.capabilities.get("economic", 0.5)
-                ) / 2
-                my_power = (
-                    agent.capabilities.get("military", 0.5)
-                    + agent.capabilities.get("economic", 0.5)
-                ) / 2
+                other_power = (other.capabilities.get("military", 0.5) + other.capabilities.get("economic", 0.5)) / 2
+                my_power = (agent.capabilities.get("military", 0.5) + agent.capabilities.get("economic", 0.5)) / 2
 
                 if my_power > other_power * 1.3:
                     return TheoryResult(

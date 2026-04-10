@@ -324,9 +324,7 @@ class GeopolModel(Model):
         for org_cfg in orgs:
             # Create a point geometry for the org (use first member's centroid or default)
             member_rids = org_cfg.get("members", [])
-            member_agents = [
-                a for a in self.schedule.agents if getattr(a, "region_id", "") in member_rids
-            ]
+            member_agents = [a for a in self.schedule.agents if getattr(a, "region_id", "") in member_rids]
             member_ids = [a.unique_id for a in member_agents]
 
             # Place org at centroid of first member, or default location
@@ -360,9 +358,7 @@ class GeopolModel(Model):
         one agent whose ``unique_id`` is the row index.
         """
         agents = []
-        ac = mg.AgentCreator(
-            agent_class=StateActorAgent, model=self, crs=str(gdf.crs or "EPSG:4326")
-        )
+        ac = mg.AgentCreator(agent_class=StateActorAgent, model=self, crs=str(gdf.crs or "EPSG:4326"))
         for idx, row in gdf.iterrows():
             agent = ac.create_agent(geometry=row.geometry, unique_id=idx)
             agent.region_id = row["region_id"]
@@ -598,9 +594,7 @@ class GeopolModel(Model):
         from shapely.geometry import Point
 
         # Spawn one 'Insurgent' group in 'bravo' (lower caps)
-        bravo = next(
-            (a for a in self.schedule.agents if getattr(a, "region_id", "") == "bravo"), None
-        )
+        bravo = next((a for a in self.schedule.agents if getattr(a, "region_id", "") == "bravo"), None)
         if bravo:
             # Place it slightly offset from centroid
             loc = Point(bravo.geometry.centroid.x + 1000, bravo.geometry.centroid.y + 1000)

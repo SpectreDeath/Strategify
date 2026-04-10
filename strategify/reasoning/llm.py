@@ -205,9 +205,7 @@ class LLMDecisionEngine:
             }
         ).encode("utf-8")
 
-        req = urllib.request.Request(
-            url, data=payload, headers={"Content-Type": "application/json"}
-        )
+        req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=60) as resp:
             data = json.loads(resp.read().decode("utf-8"))
         return data.get("response", "")
@@ -290,9 +288,7 @@ class LLMDecisionEngine:
             except Exception as exc:
                 logger.warning("LLM query attempt %d failed: %s", attempt + 1, exc)
 
-        logger.info(
-            "LLM failed after %d attempts, returning None for Nash fallback", self.max_retries + 1
-        )
+        logger.info("LLM failed after %d attempts, returning None for Nash fallback", self.max_retries + 1)
         return None
 
     def query_or_fallback(

@@ -94,9 +94,7 @@ class PopulationModel:
             resources = self.model.region_resources.get(agent.region_id, 1.0)
 
             # Resource constraint: growth slows if resources are scarce
-            resource_factor = min(
-                1.0, resources / max(self.population[uid] / _POP_BASE_FACTOR, 0.1)
-            )
+            resource_factor = min(1.0, resources / max(self.population[uid] / _POP_BASE_FACTOR, 0.1))
 
             # Escalation penalty: conflict reduces population growth
             escalation_penalty = 0.0
@@ -112,6 +110,12 @@ class PopulationModel:
     def get_population(self, unique_id: int) -> float:
         """Return current population for an agent."""
         return self.population.get(unique_id, 0.0)
+
+    def set_population(self, unique_id: int, value: float) -> None:
+        """Set population for an agent (e.g., after combat casualties)."""
+        self.population[unique_id] = value
+        if unique_id in self.population_history:
+            self.population_history[unique_id].append(value)
 
     def get_growth_rate(self, unique_id: int) -> float:
         """Return per-step growth rate for an agent."""
@@ -186,9 +190,7 @@ class TradeNetwork:
         self.flows_graph = nx.DiGraph()
 
         for agent in agents:
-            base_gdp = agent.capabilities.get("economic", 0.5) * self.model.region_resources.get(
-                agent.region_id, 1.0
-            )
+            base_gdp = agent.capabilities.get("economic", 0.5) * self.model.region_resources.get(agent.region_id, 1.0)
             uid = agent.unique_id
             self.gdp[uid] = base_gdp
             self.gdp_history[uid] = [base_gdp]
@@ -254,9 +256,9 @@ class TradeNetwork:
         # Recompute GDP with growth
         for agent in agents:
             uid = agent.unique_id
-            base_production = agent.capabilities.get(
-                "economic", 0.5
-            ) * self.model.region_resources.get(agent.region_id, 1.0)
+            base_production = agent.capabilities.get("economic", 0.5) * self.model.region_resources.get(
+                agent.region_id, 1.0
+            )
 
             # Sum trade flows
             exports = 0.0
@@ -300,11 +302,7 @@ class TradeNetwork:
             return []
         if uid not in self.flows_graph:
             return []
-        return [
-            n
-            for n in self.flows_graph.neighbors(uid)
-            if self.flows_graph[uid][n].get("volume", 0) > 0
-        ]
+        return [n for n in self.flows_graph.neighbors(uid) if self.flows_graph[uid][n].get("volume", 0) > 0]
 
     def impose_sanction(self, source_uid: int, target_uid: int) -> None:
         """Impose a trade sanction from source on target.

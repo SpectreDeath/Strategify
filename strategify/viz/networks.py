@@ -48,12 +48,7 @@ def create_diplomacy_network(
         size = 20 + military * 30
 
         label = f"{rid.upper()}"
-        title = (
-            f"Region: {rid.upper()}\n"
-            f"Posture: {posture}\n"
-            f"Personality: {personality}\n"
-            f"Military: {military:.2f}"
-        )
+        title = f"Region: {rid.upper()}\nPosture: {posture}\nPersonality: {personality}\nMilitary: {military:.2f}"
 
         net.add_node(
             agent.unique_id,

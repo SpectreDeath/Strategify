@@ -115,12 +115,8 @@ class TemporalDynamics:
             election_mod = 1.1 if in_election else 1.0  # Election = higher military
 
             # Apply combined modifiers
-            agent.capabilities["military"] = min(
-                1.0, base.get("military", 0.5) * mil_mod * election_mod
-            )
-            agent.capabilities["economic"] = min(
-                1.0, base.get("economic", 0.5) * eco_mod * eco_cycle_mod
-            )
+            agent.capabilities["military"] = min(1.0, base.get("military", 0.5) * mil_mod * election_mod)
+            agent.capabilities["economic"] = min(1.0, base.get("economic", 0.5) * eco_mod * eco_cycle_mod)
 
     def get_season(self) -> str:
         """Return current season name."""
@@ -151,9 +147,7 @@ class TemporalDynamics:
 
     def summary(self) -> dict[str, Any]:
         """Return temporal state summary."""
-        agents_in_election = sum(
-            1 for e in self.election_cycles.values() if e.get("in_election", False)
-        )
+        agents_in_election = sum(1 for e in self.election_cycles.values() if e.get("in_election", False))
         return {
             "step": self._step,
             "season": self.current_season,

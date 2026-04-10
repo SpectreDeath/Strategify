@@ -90,11 +90,7 @@ class AdaptiveWeightLearner:
             out=np.zeros_like(self.correct_predictions),
         )
 
-        target_weights = (
-            accuracy / accuracy.sum()
-            if accuracy.sum() > 0
-            else np.ones(self.n_factors) / self.n_factors
-        )
+        target_weights = accuracy / accuracy.sum() if accuracy.sum() > 0 else np.ones(self.n_factors) / self.n_factors
 
         self.weights = (1 - self.learning_rate) * self.weights + self.learning_rate * target_weights
         self.weights = np.clip(self.weights, 0.05, 0.5)
@@ -331,9 +327,7 @@ def compute_regional_risk_matrix(
     np.ndarray
         Matrix where entry [i,j] shows risk influence of j on i.
     """
-    region_ids = sorted(
-        [getattr(a, "region_id", "") for a in model.schedule.agents if hasattr(a, "region_id")]
-    )
+    region_ids = sorted([getattr(a, "region_id", "") for a in model.schedule.agents if hasattr(a, "region_id")])
     n = len(region_ids)
     matrix = np.zeros((n, n))
 

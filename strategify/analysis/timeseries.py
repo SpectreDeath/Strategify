@@ -29,9 +29,7 @@ def prepare_agent_timeseries(df: pd.DataFrame) -> pd.DataFrame:
     """
     df_reset = df.reset_index()
     df_reset["escalation"] = (df_reset["posture"] == "Escalate").astype(float)
-    pivot = df_reset.pivot_table(
-        index="Step", columns="region_id", values="escalation", aggfunc="first"
-    )
+    pivot = df_reset.pivot_table(index="Step", columns="region_id", values="escalation", aggfunc="first")
     return pivot.fillna(0.0)
 
 
