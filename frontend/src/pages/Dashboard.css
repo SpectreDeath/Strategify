@@ -1,0 +1,96 @@
+.dashboard {
+  padding: 2rem;
+  background: #0f0f1a;
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+  color: #e94560;
+  margin: 0;
+}
+
+.subtitle {
+  color: #666;
+  margin: 0.5rem 0 0;
+}
+
+.risk-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.risk-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #0f3460;
+}
+
+.risk-card h3 {
+  color: #a2a8d3;
+  margin: 0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.risk-score {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #e94560;
+  margin: 0.5rem 0;
+}
+
+.risk-trend {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.risk-trend.up {
+  background: rgba(233, 69, 96, 0.2);
+  color: #e94560;
+}
+
+.risk-trend.down {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+}
+
+.risk-trend.neutral {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.chart-container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #0f3460;
+}
+
+.chart-container h2 {
+  color: #a2a8d3;
+  font-size: 1rem;
+  margin: 0 0 1rem;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: #666;
+}

@@ -1,0 +1,127 @@
+.simulation {
+  padding: 2rem;
+  background: #0f0f1a;
+  min-height: 100vh;
+}
+
+.page-header h1 {
+  color: #e94560;
+  margin: 0;
+}
+
+.page-header .subtitle {
+  color: #666;
+  margin: 0.5rem 0 2rem;
+}
+
+.scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.scenario-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #0f3460;
+}
+
+.scenario-card h3 {
+  color: #e94560;
+  margin: 0 0 0.5rem;
+}
+
+.scenario-card p {
+  color: #666;
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+}
+
+.scenario-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: #a2a8d3;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-start {
+  background: #e94560;
+  color: white;
+}
+
+.btn-start:hover {
+  background: #d63d56;
+}
+
+.btn-stop {
+  background: #533483;
+  color: white;
+}
+
+.sim-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sim-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #a2a8d3;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #0f3460;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e94560, #533483);
+  transition: width 0.3s ease;
+}
+
+.agent-config {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #0f3460;
+}
+
+.agent-config h2 {
+  color: #a2a8d3;
+  font-size: 1rem;
+  margin: 0 0 1rem;
+}
+
+.personality-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.personality-chip {
+  padding: 0.5rem 1rem;
+  background: rgba(233, 69, 96, 0.1);
+  border: 1px solid #e94560;
+  border-radius: 20px;
+  color: #e94560;
+  font-size: 0.85rem;
+}

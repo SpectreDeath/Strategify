@@ -1,0 +1,61 @@
+.analysis-page {
+  padding: 2rem;
+  background: #0f0f1a;
+  min-height: 100vh;
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.analysis-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #0f3460;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.analysis-card:hover {
+  border-color: #e94560;
+  transform: translateY(-2px);
+}
+
+.analysis-card.selected {
+  border-color: #e94560;
+  background: linear-gradient(135deg, #1a1a2e 0%, #2a1a3e 100%);
+}
+
+.analysis-card h3 {
+  color: #e94560;
+  margin: 0 0 0.5rem;
+}
+
+.analysis-card p {
+  color: #666;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.analysis-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.chart-container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #0f3460;
+}
+
+.chart-container h2 {
+  color: #a2a8d3;
+  font-size: 1rem;
+  margin: 0 0 1rem;
+}

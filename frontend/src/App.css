@@ -1,0 +1,43 @@
+:root {
+  --bg-primary: #0f0f1a;
+  --bg-secondary: #1a1a2e;
+  --bg-tertiary: #16213e;
+  --accent: #e94560;
+  --accent-hover: #d63d56;
+  --border: #0f3460;
+  --text-primary: #ffffff;
+  --text-secondary: #a2a8d3;
+  --text-muted: #666;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.main-content {
+  min-height: calc(100vh - 70px);
+}
+
+/* Page header styles used across pages */
+.page-header h1 {
+  color: var(--accent);
+  margin: 0;
+}
+
+.page-header .subtitle {
+  color: var(--text-muted);
+  margin: 0.5rem 0 0;
+}
