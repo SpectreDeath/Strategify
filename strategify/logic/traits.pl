@@ -13,6 +13,7 @@
 
 :- use_module(library(lists)).
 :- use_module(library(apply)).
+:- use_module(library(random)).
 
 % ---------------------------------------------------------------------------
 % SECTION 1: TRAIT DEFINITIONS
@@ -39,22 +40,52 @@ action_utility(escalate, 1).
 action_utility(deescalate, 0).
 
 % ---------------------------------------------------------------------------
+% SECTION 2B: HELPER PREDICATES
+% ---------------------------------------------------------------------------
+
+% count_cooperations(+History, -Count)
+% Count number of deescalate actions in history
+count_cooperations([], 0).
+count_cooperations([H|T], Count) :-
+    ( H = deescalate
+    -> count_cooperations(T, C),
+       Count is C + 1
+    ; count_cooperations(T, Count)
+    ).
+
+% count_defections(+History, -Count)
+% Count number of escalate actions in history
+count_defections([], 0).
+count_defections([H|T], Count) :-
+    ( H = escalate
+    -> count_defections(T, C),
+       Count is C + 1
+    ; count_defections(T, Count)
+    ).
+
+% has_defected(+History)
+% True if history contains at least one escalation
+has_defected([escalate|_]) :- !.
+has_defected([_|T]) :- has_defected(T).
+
+% ---------------------------------------------------------------------------
 % SECTION 3: BEHAVIORAL RULES
 % ---------------------------------------------------------------------------
 
 % rule(+AgentProfile, +OpponentHistory, -Action)
 % Core decision predicate that determines action based on traits
+% Profile format: profile(Traits, Resources, TOMLevel)
 
 % Rule: RECIPROCITY - "I do what you did to me"
-rule(Profile, History, Action) :-
-    member(trait(reciprocity), Profile^traits),
+rule(profile(Traits,_,_), History, Action) :-
+    member(trait(reciprocity), Traits),
     last(History, LastAction),
     !,
     Action = LastAction.  % Mirror the opponent's last move
 
 % Rule: TIT_FOR_TAT - Copy opponent's first move, then reciprocate
-rule(Profile, History, Action) :-
-    member(trait(tit_for_tat), Profile^traits),
+rule(profile(Traits,_,_), History, Action) :-
+    member(trait(tit_for_tat), Traits),
     !,
     ( length(History, 0) 
     -> Action = deescalate  % Start cooperative
@@ -63,8 +94,8 @@ rule(Profile, History, Action) :-
     ).
 
 % Rule: FORGIVENESS - "If you cheated once but cooperated twice, I trust you again"
-rule(Profile, History, Action) :-
-    member(trait(forgiveness), Profile^traits),
+rule(profile(Traits,_,_), History, Action) :-
+    member(trait(forgiveness), Traits),
     !,
     ( length(History, L), L < 3
     -> Action = deescalate  % Forgive early
@@ -77,27 +108,27 @@ rule(Profile, History, Action) :-
     ).
 
 % Rule: GRUDGER - "Once you defect, I never cooperate again"
-rule(Profile, History, Action) :-
-    member(trait(grudger), Profile^traits),
+rule(profile(Traits,_,_), History, Action) :-
+    member(trait(grudger), Traits),
     !,
-    ( member(defect, History)
+    ( has_defected(History)
     -> Action = escalate
     ; Action = deescalate
     ).
 
 % Rule: AGGRESSION - "If I have more resources, I always compete"
-rule(Profile, _History, escalate) :-
-    member(trait(aggression), Profile^traits),
-    Profile^resources > 5.0,
+rule(profile(Traits, Resources, _), _History, escalate) :-
+    member(trait(aggression), Traits),
+    Resources > 5.0,
     !.
 
 % Rule: PACIFIST - Always deescalate
-rule(Profile, _History, deescalate) :-
-    member(trait(pacifist), Profile^traits),
+rule(profile(Traits,_,_), _History, deescalate) :-
+    member(trait(pacifist), Traits),
     !.
 
 % Default: If no trait matches, use Neutral behavior (majority vote)
-rule(Profile, History, Action) :-
+rule(profile(_,_,_), History, Action) :-
     ( length(History, 0) 
     -> Action = deescalate
     ; count_cooperations(History, Coop),

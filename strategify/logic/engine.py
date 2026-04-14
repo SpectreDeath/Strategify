@@ -9,7 +9,6 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
 
 from strategify.logic.types import AgentProfile, DecisionResult, Trait
 
@@ -286,6 +285,19 @@ class PrologEngine:
             return
 
         try:
+            # Retract existing facts to prevent memory leak
+            for level in ["low", "medium", "high", "unknown"]:
+                try:
+                    self._prolog.retractall(f"risk_level({level})")
+                except Exception:
+                    pass
+            for gain in ["none", "low", "medium", "high", "unknown"]:
+                try:
+                    self._prolog.retractall(f"potential_gain({gain})")
+                except Exception:
+                    pass
+
+            # Assert new facts
             self._prolog.assertz(f"risk_level({risk_level})")
             self._prolog.assertz(f"potential_gain({potential_gain})")
             logger.debug(f"Context set: risk={risk_level}, gain={potential_gain}")
