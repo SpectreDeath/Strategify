@@ -61,6 +61,9 @@ dev = [
     "pytest-cov>=4.0",
     "pytest-timeout>=2.2",
 ]
+logic = [
+    "pyswip>=0.2",
+]
 docs = [
     "mkdocs>=1.5",
     "mkdocs-material>=9.4",
