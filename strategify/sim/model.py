@@ -264,11 +264,12 @@ class GeopolModel(Model):
         # Conflict Engine (Phase 6)
         self.conflict_engine = ConflictEngine(self)
         self.environmental_manager = EnvironmentalManager(self)
-        
+
         # Phase 14: Governance
         self.enable_governance = enable_governance
         if self.enable_governance:
             from strategify.reasoning.governance import GovernanceEngine
+
             self.governance = GovernanceEngine(self)
         else:
             self.governance = None
@@ -442,6 +443,9 @@ class GeopolModel(Model):
         # Step propaganda engine (information warfare — after agent actions)
         if self.propaganda is not None:
             self.propaganda.step()
+
+        # Phase 16: Sync world events to Prolog epistemology
+        self._sync_events_to_prolog()
 
         # Collect data AFTER agents have acted
         self.datacollector.collect(self)
@@ -637,15 +641,15 @@ class GeopolModel(Model):
         """Add an agent to the model, schedule, and registry."""
         self.schedule.add(agent)
         if not hasattr(agent, "geometry"):
-             # For organization or non-state actors that might not be mg.GeoAgent
-             # (though they usually are in this project)
-             pass
+            # For organization or non-state actors that might not be mg.GeoAgent
+            # (though they usually are in this project)
+            pass
         else:
-             try:
-                 self.space.add_agents([agent])
-             except Exception:
-                 # Already in space
-                 pass
+            try:
+                self.space.add_agents([agent])
+            except Exception:
+                # Already in space
+                pass
 
         rid = getattr(agent, "region_id", None)
         if rid:
@@ -662,3 +666,45 @@ class GeopolModel(Model):
         rid = getattr(agent, "region_id", None)
         if rid in self._agent_registry:
             del self._agent_registry[rid]
+
+    # ---------------------------------------------------------------------------
+    # Phase 16: Prolog Epistemology Integration
+    # ---------------------------------------------------------------------------
+
+    def _sync_events_to_prolog(self) -> None:
+        """Translate major world events to Prolog facts for epistemology.
+
+        This bridges the Python simulation to the Prolog knowledge base,
+        enabling agents to reason about what they know vs believe.
+        """
+        if not hasattr(self, "prolog_bridge") or self.prolog_bridge is None:
+            return
+
+        if not getattr(self.prolog_bridge, "_initialized", False):
+            return
+
+        try:
+            # Track step as a time fact
+            self.prolog_bridge._prolog.assertz(f"step({self.schedule.steps})")
+
+            # Track major posture changes as events
+            for agent in self.schedule.agents:
+                if isinstance(agent, StateActorAgent):
+                    region = getattr(agent, "region_id", None)
+                    posture = getattr(agent, "posture", None)
+                    if region and posture:
+                        # Assert posture change event
+                        self.prolog_bridge._prolog.assertz(f"action({region}, {posture})")
+
+            # Track conflict events
+            if hasattr(self, "conflict_engine"):
+                recent_conflicts = getattr(self.conflict_engine, "_recent_combat", [])
+                for conflict in recent_conflicts[-3:]:  # Last 3 conflicts
+                    if conflict:
+                        atkr = conflict.get("attacker")
+                        defdr = conflict.get("defender")
+                        if atkr and defdr:
+                            self.prolog_bridge._prolog.assertz(f"event(combat, {atkr}, {defdr})")
+
+        except Exception as e:
+            logger.debug(f"Prolog event sync skipped: {e}")
