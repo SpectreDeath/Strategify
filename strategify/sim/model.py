@@ -28,6 +28,7 @@ from strategify.config.scenarios import (
     scenario_to_configs,
 )
 from strategify.geo.loader import AdjacencyBuilder, GeoJSONLoader
+from strategify.logic.bridge import StrategicBridge
 from strategify.config.settings import (
     RANDOM_SEED,
     REAL_WORLD_GEOJSON,
@@ -224,6 +225,13 @@ class GeopolModel(Model):
             self._load_organizations(scenario_data)
 
         # Coalition dispatch engine (optional)
+        self.region_gdf["population"] = None
+        self.region_gdf["gdp"] = None
+        self.region_gdf["faction_influence"] = None
+
+        # Phase 16: Deep Epistemology Bridge
+        self.prolog_bridge = StrategicBridge()
+        self.prolog_bridge.assert_fact("simulation_started", verified=True)
         self.coalition_engine = None
         self.coalition_tracker = None
         self._enable_coalition = enable_escalation_ladder  # piggyback on escalation flag

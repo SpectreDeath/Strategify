@@ -267,6 +267,7 @@ personality(cautious).
 personality(opportunistic).
 personality(analyst).
 personality(idealist).
+personality(gullible).
 
 % --- STATE VARIABLES FOR DECISION CONTEXT ---
 % These are typically set dynamically by the Python side
@@ -274,6 +275,7 @@ personality(idealist).
 :- dynamic potential_gain/1.
 :- dynamic source_verified/1.
 :- dynamic is_fact/1.
+:- dynamic is_propaganda/1.
 
 % Default state assertions
 risk_level(unknown).
@@ -376,3 +378,15 @@ decide_knowledgeable(Agent, Profile, deescalate) :-
     \+ knows(Agent, situation_safe),
     % Default to caution when uncertain
     decide(Agent, Profile, deescalate).
+
+% --- DISINFORMATION MECHANICS (Phase 16) ---
+% A gullible agent believes propaganda
+believes(Agent, Fact) :-
+    is_propaganda(Fact),
+    personality(Agent, gullible).
+
+% Analyst only believes propaganda if cleverly verified (mock)
+believes(Agent, Fact) :-
+    is_propaganda(Fact),
+    personality(Agent, analyst),
+    source_verified(Fact).

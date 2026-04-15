@@ -72,6 +72,9 @@ else:
 # ---------------------------------------------------------------------------
 
 
+from strategify.logic.bridge import StrategicBridge
+from strategify.logic.clj import ClojureBridge
+
 class LLMDecisionEngine:
     """Queries a language model for geopolitical decision-making.
 
@@ -103,15 +106,57 @@ class LLMDecisionEngine:
         self.api_key = api_key
         self.max_retries = max_retries
         self._cache = LLMStrategyCache()
+        
+        # Phase 15: Initialize cognitive bridges
+        self.prolog_bridge = StrategicBridge()
+        self.clj_bridge = ClojureBridge()
 
     def _build_prompt(self, state: dict[str, Any]) -> str:
-        """Build the decision prompt from simulation state."""
+        """Build the decision prompt from simulation state including Epistemology & Counterfactuals."""
+        agent_id = state.get("region_id", "unknown")
+        
+        # 1. Epistemology from Prolog Top-down
+        # We query what the agent actually believes and knows.
+        # In a full implementation, we would extract all known facts. For now, we mock the fact extraction 
+        # or use specific critical facts from the state.
+        epistemology_text = "No specific beliefs recorded."
+        if self.prolog_bridge._initialized:
+            # Let's say we check if agent believes "situation_safe" or "rival_weak"
+            beliefs = []
+            if self.prolog_bridge.believes(agent_id, "situation_safe"):
+                beliefs.append("Believes the current strategic situation is safe.")
+            if self.prolog_bridge.believes(agent_id, "rival_weak"):
+                beliefs.append("Believes the primary rival is structurally weak.")
+            if beliefs:
+                epistemology_text = "; ".join(beliefs)
+                
+        # 2. Counterfactual Futures from Clojure
+        futures_text = "No counterfactuals available."
+        if self.clj_bridge._available:
+            # Generate timelines for the possible actions
+            possible_actions = ["escalate", "deescalate"]
+            clj_state = {
+                "version": 0,
+                "players": {agent_id: {"resources": state.get("economic", 50)}},
+                "board": {},
+                "history": [],
+                "metadata": {}
+            }
+            try:
+                timelines = self.clj_bridge.branch_timelines(clj_state, possible_actions)
+                if timelines:
+                    futures_text = json.dumps([t.get("history", []) for t in timelines])
+            except Exception as e:
+                logger.warning(f"Failed to branch timelines: {e}")
+
         return (
             "You are a geopolitical strategy advisor. Given the current state, "
             "recommend an action for the agent.\n\n"
             "Respond with EXACTLY this JSON format and nothing else:\n"
             '{"reasoning": "<brief analysis>", "action": "Escalate" or "Deescalate"}\n\n'
             f"State:\n{json.dumps(state, indent=2, default=str)}\n\n"
+            f"Epistemology (Your Beliefs & Knowledge):\n{epistemology_text}\n\n"
+            f"Counterfactual Futures (Lisp Simulation):\n{futures_text}\n\n"
             "Consider: military balance, economic strength, alliances, "
             "escalation history, and current geopolitical tension.\n\n"
             "Response:"

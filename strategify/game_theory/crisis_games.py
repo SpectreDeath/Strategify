@@ -148,6 +148,21 @@ def governance_game() -> NormalFormGame:
     return NormalFormGame(A, B)
 
 
+def disinformation_game() -> NormalFormGame:
+    """Information warfare: Propaganda vs Censorship.
+
+    Actions: ["SpreadFakeNews", "Censor"]
+
+    Payoff intuition:
+      Both Censor       -> stability, high trust (3, 3)
+      Spread/Censor    -> asymmetric info advantage vs control (4, 1) or (1, 4)
+      Both Spread      -> maximal confusion, mutual trust loss (-2, -2)
+    """
+    A = np.array([[-2, 4], [1, 3]], dtype=float)
+    B = np.array([[-2, 1], [4, 3]], dtype=float)
+    return NormalFormGame(A, B)
+
+
 # ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
@@ -162,6 +177,7 @@ GAME_REGISTRY: dict[str, Callable[[], NormalFormGame]] = {
     "maneuver": maneuver_game,
     "hybrid": hybrid_game,
     "governance": governance_game,
+    "disinformation": disinformation_game,
 }
 
 GAME_ACTIONS: dict[str, list[str]] = {
@@ -174,6 +190,7 @@ GAME_ACTIONS: dict[str, list[str]] = {
     "maneuver": ["Infiltrate", "Defend"],
     "hybrid": ["FundProxy", "CounterInsurgency"],
     "governance": ["Comply", "Defy"],
+    "disinformation": ["SpreadFakeNews", "Censor"],
 }
 
 

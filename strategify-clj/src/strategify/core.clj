@@ -30,11 +30,14 @@
 
 ;; Record for immutable game state
 (defrecord GameStateRecord
-    [version  ;; Version counter for immutability tracking
+     [version  ;; Version counter for immutability tracking
      players ;; Map of player-id -> player data
      board   ;; Current board/positions
      history ;; Vector of all moves
-     metadata])
+     metadata
+     economic-reserve
+     stability
+     un-resolutions])
 
 (extend-type GameStateRecord
   GameState
@@ -44,7 +47,10 @@
       (:players state)
       (merge (:board state) {(:position move) (:player move)})
       (conj (:history state) move)
-      (:metadata state)))
+      (:metadata state)
+      (:economic-reserve state)
+      (:stability state)
+      (:un-resolutions state)))
 
   (get-positions [state]
     (:board state))
@@ -226,7 +232,10 @@
    :players (into {} (map (fn [[k v]] [k (into {} v)]) (:players state)))
    :board (:board state)
    :history (:history state)
-   :metadata (:metadata state)})
+   :metadata (:metadata state)
+   :economic-reserve (:economic-reserve state)
+   :stability (:stability state)
+   :un-resolutions (:un-resolutions state)})
 
 (defn map->state
   "Convert map back to state"
@@ -236,7 +245,28 @@
     (:players m)
     (:board m)
     (:history m)
-    (:metadata m)))
+    (:metadata m)
+    (get m :economic-reserve 0)
+    (get m :stability 1.0)
+    (get m :un-resolutions [])))
+
+;; ============================================================================
+;; SECTION 9: COMBAT FAST-PATH (Phase 17)
+;; ============================================================================
+
+(defn resolve-combat
+  "Probabilistic outcome of a 1-month campaign."
+  [combat-payload]
+  (let [p1-strength (get combat-payload :p1-strength 10)
+        p2-strength (get combat-payload :p2-strength 10)
+        terrain-mod (get combat-payload :terrain-modifier 1.0)
+        p1-effective (* p1-strength terrain-mod)
+        ratio (if (> p2-strength 0) (/ p1-effective p2-strength) 10.0)
+        p1-damage (/ 1.0 ratio)
+        p2-damage ratio]
+     {:p1-remaining (max 0 (- p1-strength p1-damage))
+      :p2-remaining (max 0 (- p2-strength p2-damage))
+      :kinetic-intensity (+ p1-damage p2-damage)}))
 
 ;; ============================================================================
 ;; MAIN ENTRY POINT

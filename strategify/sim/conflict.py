@@ -114,19 +114,39 @@ class ConflictEngine:
         suppression = min(0.8, total_pk_strength / 4.0)
         suppression_modifier = 1.0 - suppression
 
-        # Damage calculation: base 10% loss to both, adjusted by power ratio
-        base_dmg = 0.1 * suppression_modifier
-        if p1 > p2 and p1 > 0:
-            ratio = p2 / p1
-            u1.strength = max(0.0, u1.strength - (base_dmg * ratio))
-            u2.strength = max(0.0, u2.strength - base_dmg)
-        elif p2 > 0:
-            ratio = p1 / p2
-            u1.strength = max(0.0, u1.strength - base_dmg)
-            u2.strength = max(0.0, u2.strength - (base_dmg * ratio))
-        else:
-            u1.strength = max(0.0, u1.strength - base_dmg)
-            u2.strength = max(0.0, u2.strength - base_dmg)
+        # Phase 17: Fast-Path Combat via Clojure Engine
+        clojure_succeeded = False
+        if hasattr(self.model, "clj_bridge") and self.model.clj_bridge and self.model.clj_bridge._available:
+            payload = {
+                "p1-strength": p1 * suppression_modifier,
+                "p2-strength": p2 * suppression_modifier, # Pass suppressed strengths
+                "terrain-modifier": modifier
+            }
+            import json
+            code = f"""
+            (require '[strategify.core :as s])
+            (s/resolve-combat '{json.dumps(payload)})
+            """
+            result = self.model.clj_bridge.execute(code)
+            if result and isinstance(result, dict) and "p1-remaining" in result:
+                u1.strength = result.get("p1-remaining", u1.strength)
+                u2.strength = result.get("p2-remaining", u2.strength)
+                clojure_succeeded = True
+
+        if not clojure_succeeded:
+            # Fallback Damage calculation: base 10% loss to both, adjusted by power ratio
+            base_dmg = 0.1 * suppression_modifier
+            if p1 > p2 and p1 > 0:
+                ratio = p2 / p1
+                u1.strength = max(0.0, u1.strength - (base_dmg * ratio))
+                u2.strength = max(0.0, u2.strength - base_dmg)
+            elif p2 > 0:
+                ratio = p1 / p2
+                u1.strength = max(0.0, u1.strength - base_dmg)
+                u2.strength = max(0.0, u2.strength - (base_dmg * ratio))
+            else:
+                u1.strength = max(0.0, u1.strength - base_dmg)
+                u2.strength = max(0.0, u2.strength - base_dmg)
 
         # Readiness drop after combat
         u1.readiness = max(0.0, u1.readiness - 0.2)
