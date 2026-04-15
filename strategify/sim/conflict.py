@@ -24,6 +24,17 @@ _DEFAULT_TERRAIN_MODIFIERS = {
     "Plain": 1.0,
 }
 
+# Global fallback for regions where GeoJSON property is missing
+# (Can be extended via plugins or settings)
+DEFAULT_TERRAIN_MAP: dict[str, str] = {
+    "UKR": "Plain",
+    "RUS": "Forest",
+    "POL": "Forest",
+    "BLR": "Forest",
+    "Ukraine": "Plain",
+    "Russia": "Forest",
+}
+
 
 class ConflictEngine:
     """Orchestrates military engagements between units.
@@ -84,8 +95,27 @@ class ConflictEngine:
         p1 = u1.strength * u1.readiness * u1.combat_multiplier * modifier
         p2 = u2.strength * u2.readiness * u2.combat_multiplier
 
+        # Phase 13: Asymmetric Surprise Bonus
+        from strategify.agents.non_state import NonStateActor
+        if isinstance(u1.owner, NonStateActor) and u1.owner.posture in ["Infiltrate", "HitAndRun"]:
+            p1 *= 1.5  # Ambush bonus
+        if isinstance(u2.owner, NonStateActor) and u2.owner.posture in ["Infiltrate", "HitAndRun"]:
+            p2 *= 1.5
+
+        # Phase 14: Peacekeeping suppression
+        suppression_modifier = 1.0
+        total_pk_strength = 0.0
+        from strategify.agents.state_actor import StateActorAgent
+        for agent in self.model.schedule.agents:
+            if isinstance(agent, StateActorAgent):
+                total_pk_strength += agent.military.get_peacekeeping_strength(region_id)
+        
+        # Max 80% reduction in damage from peacekeeping
+        suppression = min(0.8, total_pk_strength / 4.0)
+        suppression_modifier = 1.0 - suppression
+
         # Damage calculation: base 10% loss to both, adjusted by power ratio
-        base_dmg = 0.1
+        base_dmg = 0.1 * suppression_modifier
         if p1 > p2 and p1 > 0:
             ratio = p2 / p1
             u1.strength = max(0.0, u1.strength - (base_dmg * ratio))
@@ -111,8 +141,19 @@ class ConflictEngine:
         if self.model.population_model:
             agent = self.model._agent_registry.get(region_id)
             if agent:
+                # Suppression also reduces collateral damage
+                total_pk_strength = 0.0
+                from strategify.agents.state_actor import StateActorAgent
+                for a in self.model.schedule.agents:
+                    if isinstance(a, StateActorAgent):
+                        total_pk_strength += a.military.get_peacekeeping_strength(region_id)
+                
+                # Collateral suppression: max 90% reduction
+                col_suppression = min(0.9, total_pk_strength / 3.0)
+                loss_factor = 0.001 * (1.0 - col_suppression)
+                
                 pop = self.model.population_model.get_population(agent.unique_id)
-                self.model.population_model.set_population(agent.unique_id, pop * 0.999)
+                self.model.population_model.set_population(agent.unique_id, pop * (1.0 - loss_factor))
 
         # Reduce GDP growth or direct impact if trade network exists
         if self.model.trade_network:
@@ -122,15 +163,21 @@ class ConflictEngine:
     def _get_terrain(self, region_id: str) -> str:
         """Resolve terrain type for a region.
 
-        Priority: explicit override → GeoDataFrame ``terrain`` column → ``"Plain"``.
+        Priority: explicit override → GeoDataFrame ``terrain`` column → ``DEFAULT_TERRAIN_MAP`` → ``"Plain"``.
         """
         if region_id in self.terrain_overrides:
             return self.terrain_overrides[region_id]
+
         gdf = getattr(self.model, "region_gdf", None)
         if gdf is not None and "terrain" in gdf.columns:
             row = gdf[gdf["region_id"] == region_id]
             if not row.empty:
                 return str(row.iloc[0]["terrain"])
+
+        # Secondary fallback: global map
+        if region_id in DEFAULT_TERRAIN_MAP:
+            return DEFAULT_TERRAIN_MAP[region_id]
+
         return "Plain"
 
     def step(self) -> None:

@@ -12,6 +12,7 @@ from typing import Any
 from shapely.geometry import base as shp_base
 
 from strategify.agents.base import BaseActorAgent
+from strategify.agents.military import MilitaryComponent
 
 logger = logging.getLogger(__name__)
 
@@ -44,11 +45,22 @@ class NonStateActor(BaseActorAgent):
         self.influence: float = 0.1
         self.posture: str = "Infiltrate"
         self.capabilities: dict = {"military": 0.1, "economic": 0.0}
+        self.budget: float = 0.0  # Proxy funding received
+        self.military = MilitaryComponent(self)
 
     def decide(self) -> dict:
         """Sample an asymmetric action."""
-        # Simple heuristic: if influence is high, Sabotage. Else, Infiltrate.
-        if self.influence > 0.6:
+        # Phase 13: Self-equip if budget allows
+        if self.budget > 0.5 and len(self.military.units) < 3:
+            from strategify.agents.military import UnitType
+            self.military.add_unit(UnitType.Infantry)
+            self.budget -= 0.5
+            logger.info("NSA %s: Equipped new insurgent unit from budget.", self.unique_id)
+
+        # Simple heuristic: if military power present, consider HitAndRun
+        if self.military.units and self.influence > 0.4:
+            action = "HitAndRun"
+        elif self.influence > 0.6:
             action = "Sabotage"
         elif self.influence > 0.3:
             action = "Subvert"
@@ -75,9 +87,18 @@ class NonStateActor(BaseActorAgent):
                 self.influence = min(1.0, self.influence + 0.05)
             elif act == "Infiltrate":
                 self.influence = min(1.0, self.influence + 0.02)
+            elif act == "HitAndRun":
+                # Order units to HitAndRun
+                for u in self.military.units:
+                    u.mission = "HitAndRun"
+                    u.target_region = self.target_region
+                self.influence = max(0.0, self.influence - 0.1)  # Risk of exposure
 
     def step(self) -> None:
         """Standard Mesa step."""
         self.observe()
+        # Step military component (logistics, missions)
+        self.military.step()
+        
         action = self.decide()
         self._apply(action)

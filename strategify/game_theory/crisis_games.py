@@ -101,6 +101,53 @@ def cyber_game() -> NormalFormGame:
     return NormalFormGame(A, B)
 
 
+def maneuver_game() -> NormalFormGame:
+    """Military maneuvering: deployment vs interdiction.
+
+    Actions: ["Infiltrate", "Defend"]
+
+    Payoff intuition::
+
+      Both Defend      -> status quo                 (3, 3)
+      Infiltrate/Defend -> limited gain vs resistance  (4, 2) or (2, 4)
+      Both Infiltrate  -> local skirmish damage      (-1, -1)
+    """
+    A = np.array([[-1, 4], [2, 3]], dtype=float)
+    B = np.array([[-1, 2], [4, 3]], dtype=float)
+    return NormalFormGame(A, B)
+
+
+def hybrid_game() -> NormalFormGame:
+    """Asymmetric proxy warfare: funding vs containment.
+
+    Actions: ["FundProxy", "CounterInsurgency"]
+
+    Payoff intuition::
+
+      Both Counter      -> status quo                 (3, 3)
+      Fund/Counter     -> friction vs frustration    (4, 2) or (1, 4)
+      Both Fund        -> maximum instability        (-2, -2)
+    """
+    A = np.array([[-2, 4], [1, 3]], dtype=float)
+    B = np.array([[-2, 1], [4, 3]], dtype=float)
+    return NormalFormGame(A, B)
+
+
+def governance_game() -> NormalFormGame:
+    """Resolution compliance game: Comply vs Defy.
+
+    Actions: ["Comply", "Defy"]
+
+    Payoff intuition:
+      Both Comply -> high global stability (4, 4)
+      One Defies  -> short-term gain for defier (5), cost for other (0)
+      Both Defy   -> resolution collapse, high tension (-2, -2)
+    """
+    A = np.array([[-2, 5], [0, 4]], dtype=float)
+    B = np.array([[-2, 0], [5, 4]], dtype=float)
+    return NormalFormGame(A, B)
+
+
 # ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
@@ -112,6 +159,9 @@ GAME_REGISTRY: dict[str, Callable[[], NormalFormGame]] = {
     "alliance": alliance_formation_game,
     "military": military_confrontation_game,
     "cyber": cyber_game,
+    "maneuver": maneuver_game,
+    "hybrid": hybrid_game,
+    "governance": governance_game,
 }
 
 GAME_ACTIONS: dict[str, list[str]] = {
@@ -121,6 +171,9 @@ GAME_ACTIONS: dict[str, list[str]] = {
     "alliance": ["Commit", "Defect"],
     "military": ["Act", "Restrain"],
     "cyber": ["CyberAttack", "Defend"],
+    "maneuver": ["Infiltrate", "Defend"],
+    "hybrid": ["FundProxy", "CounterInsurgency"],
+    "governance": ["Comply", "Defy"],
 }
 
 

@@ -47,23 +47,36 @@ class InfluenceMap:
         self.influence_data = {rid: {} for rid in region_ids}
         self.contagion_data = {rid: 0.0 for rid in region_ids}
 
-        # 1. Influence from military strength
-        # Each agent projects force that decays with BFS distance,
-        # but is also enhanced by the 'connectivity' (shared boundary) of the path.
-        # For prototype simplicity in Phase 1, we use direct neighbor weights for contagion
-        # and standard BFS for distant influence, but we store the weights for future iterations.
+        # 1. Influence from military strength and unit presence
         for agent in self.model.schedule.agents:
             uid = agent.unique_id
-            strength = agent.capabilities.get("military", 0.5)
+            # Abstract capability (projects across the map)
+            capability_strength = agent.capabilities.get("military", 0.5)
             origin = getattr(agent, "region_id", "unknown")
 
+            # Physical unit presence (projects most power where units actually are)
+            # We calculate this per region later to avoid O(N^2) here
+            
             distances = self._calculate_distances(origin)
 
             for rid, dist in distances.items():
-                decayed = strength / (dist + DISTANCE_DECAY_OFFSET)
                 if uid not in self.influence_data[rid]:
                     self.influence_data[rid][uid] = 0.0
+
+                # Decayed abstract influence
+                decayed = capability_strength / (dist + DISTANCE_DECAY_OFFSET)
                 self.influence_data[rid][uid] += decayed
+
+        # 1b. Add direct physical power from units in specific regions
+        for rid in self.influence_data.keys():
+            for agent in self.model.schedule.agents:
+                if hasattr(agent, "military") and agent.military.units:
+                    # Get power this specific agent has physically present IN this region
+                    physical_power = agent.military.get_total_power(region_id=rid)
+                    if physical_power > 0:
+                        if agent.unique_id not in self.influence_data[rid]:
+                            self.influence_data[rid][agent.unique_id] = 0.0
+                        self.influence_data[rid][agent.unique_id] += physical_power
 
         # 2. Contagion from 'Escalate' postures
         for agent in self.model.schedule.agents:

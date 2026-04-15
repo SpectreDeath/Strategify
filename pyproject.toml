@@ -78,6 +78,11 @@ strategify-scenario = "strategify.config.cli:main"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--cov=strategify --cov-report=term-missing --cov-fail-under=70 --timeout=20"
+filterwarnings = [
+    "ignore::DeprecationWarning:mesa.*:",
+    "ignore::DeprecationWarning:libpysal.*:",
+    "ignore::FutureWarning:geopandas.*:",
+]
 
 [tool.coverage.run]
 source = ["strategify"]

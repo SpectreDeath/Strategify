@@ -63,6 +63,11 @@ class Unit:
         self.strength = 1.0
         self.readiness = 1.0
 
+        # Phase 12: Missions
+        self.mission: str = "Patrol"
+        self.target_region: str | None = None
+        self.target_location: Point | None = None
+
         # Constants based on type
         self.max_range = self._get_max_range()
         self.combat_multiplier = self._get_combat_multiplier()
@@ -88,9 +93,76 @@ class Unit:
     def move_to(self, new_location: Point) -> None:
         """Move the unit to a new location, consuming readiness."""
         dist = self.location.distance(new_location)
+        if dist < 1.0:  # Already there
+            return
         cost = (dist / self.max_range) * 0.2  # Up to 20% readiness loss
         self.readiness = max(0.0, self.readiness - cost)
         self.location = new_location
+
+    def step_mission(self) -> None:
+        """Progress the unit's current mission (Movement towards target)."""
+        if self.mission == "HitAndRun":
+            # Dynamic target generation
+            self._execute_hit_and_run_logic()
+
+        if self.mission == "Withdraw":
+            target = self.base_location
+        elif self.mission == "Peacekeeping":
+            # Move towards the target region's centroid
+            if self.target_region:
+                target_agent = self.owner.model.get_agent_by_region(self.target_region)
+                if target_agent:
+                    target = target_agent.geometry.centroid
+                else:
+                    return
+            elif self.target_location:
+                target = self.target_location
+            else:
+                return
+        elif self.target_location:
+            target = self.target_location
+        else:
+            return
+
+        dist = self.location.distance(target)
+        if dist <= 1000.0:  # Close enough
+            if self.mission == "Withdraw":
+                self.mission = "Patrol"
+            return
+        
+    def _execute_hit_and_run_logic(self) -> None:
+        """Find a neighbor region and set it as target for escape."""
+        try:
+            # Find current region ID
+            current_rid = "unknown"
+            from strategify.agents.state_actor import StateActorAgent
+            if isinstance(self.owner, StateActorAgent):
+                current_rid = self.owner.region_id
+            else:
+                # Find region this unit is currently in
+                for agent in self.owner.model.schedule.agents:
+                    if isinstance(agent, StateActorAgent) and agent.geometry.intersects(self.location):
+                        current_rid = agent.region_id
+                        break
+                
+                # Fallback if spatial lookup fails but target_region is set
+                if current_rid == "unknown" and hasattr(self.owner, "target_region"):
+                    current_rid = getattr(self.owner, "target_region")
+            
+            # Use pre-calculated adjacency
+            neighbor_rids = self.owner.model.adjacency.get(current_rid, [])
+            if neighbor_rids:
+                target_rid = self.owner.model.random.choice(neighbor_rids)
+                target_agent = self.owner.model.get_agent_by_region(target_rid)
+                if target_agent:
+                    self.target_location = target_agent.geometry.centroid
+                    if hasattr(self.owner, "target_region"):
+                        self.owner.target_region = target_rid
+                else:
+                    logger.error("DEBUG: Neighbor %s not found in registry.", target_rid)
+        except Exception as e:
+            logger.error("Error in HitAndRun move: %s", e)
+            pass
 
     def __repr__(self) -> str:
         utype = self.unit_type.value
@@ -152,10 +224,32 @@ class MilitaryComponent:
         self.units.append(unit)
         return unit
 
-    def get_total_power(self) -> float:
-        """Return aggregate combat power of all units."""
-        return sum(u.strength * u.readiness * u.combat_multiplier for u in self.units)
+    def get_total_power(self, region_id: str | None = None) -> float:
+        """Return aggregate combat power of all units, optionally filtered by region."""
+        power = 0.0
+        for u in self.units:
+            if region_id is not None:
+                # Approximate check: is unit within the region geometry?
+                # (O(N) geom check, use sparingly)
+                agent = self.owner.model.get_agent_by_region(region_id)
+                if agent and not agent.geometry.contains(u.location):
+                    continue
+            power += u.strength * u.readiness * u.combat_multiplier
+        return power
 
     def step(self) -> None:
         """Step military component: manage logistics and unit lifecycle."""
         self.logistics.update()
+        for unit in self.units:
+            unit.step_mission()
+
+    def get_peacekeeping_strength(self, region_id: str) -> float:
+        """Return total strength of units on peacekeeping missions in a region."""
+        strength = 0.0
+        for u in self.units:
+            if u.mission == "Peacekeeping":
+                # Check if unit is actually in the region
+                agent = self.owner.model.get_agent_by_region(region_id)
+                if agent and agent.geometry.contains(u.location):
+                    strength += u.strength * u.readiness
+        return strength

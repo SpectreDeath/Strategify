@@ -71,10 +71,12 @@ class StateActorAgent(BaseActorAgent):
         self.factions = get_default_factions()
         self.stability: float = 1.0
 
-        # Multi-game: games this agent participates in
         self.active_games: list[str] = ["escalation"]
         if self.capabilities.get("military", 0.5) > 0.7:
             self.active_games.append("cyber")
+
+        # Phase 14: Governance seats
+        self.un_seat_type: str = "Non-Permanent" # Permanent or Non-Permanent
 
     # ------------------------------------------------------------------
     # Decision-making
@@ -88,6 +90,12 @@ class StateActorAgent(BaseActorAgent):
 
             imap = InfluenceMap(self.model)
             imap.compute()
+
+        # Phase 13: Dynamic Hybrid Game participation
+        from strategify.agents.non_state import NonStateActor
+        nsas_nearby = any(isinstance(a, NonStateActor) for a in self.model.schedule.agents)
+        if nsas_nearby and "hybrid" not in self.active_games:
+            self.active_games.append("hybrid")
 
         # 1. Spatial & Alliance Reasoning
         net_inf = imap.get_net_influence(self.region_id, self.unique_id)
@@ -151,6 +159,18 @@ class StateActorAgent(BaseActorAgent):
                 # (cooperation) as a baseline, assuming coalitions are cooperative.
                 coalition_bias = -0.5
 
+        # 6c. Governance bias (if governance exists)
+        governance_bias = 0.0
+        if self.model.governance:
+            resolutions = self.model.governance.get_resolutions_for_region(self.region_id)
+            for res in resolutions:
+                if res.resolution_type.value == "ceasefire":
+                    # Massive pressure to de-escalate
+                    governance_bias -= 10.0
+                elif res.resolution_type.value == "sanctions":
+                    # Economic pain
+                    governance_bias -= 2.0
+
         # 7. Aggregate all signals
         adjustment = (
             (net_inf * INFLUENCE_WEIGHT)
@@ -161,6 +181,7 @@ class StateActorAgent(BaseActorAgent):
             + osint_bias
             + coalition_bias
             + military_bias
+            + governance_bias
             - (escalation_pressure * 2.0)
             + (resource_pressure * 1.5)
             + game_scores.get("escalation_bias", 0.0)
@@ -212,6 +233,7 @@ class StateActorAgent(BaseActorAgent):
 
         return {
             "action": chosen,
+            "target_id": rival_id,
             "escalation_action": escalation_action,
             "game_scores": game_scores,
             "stability": self.stability,
@@ -241,6 +263,27 @@ class StateActorAgent(BaseActorAgent):
                     return agent.unique_id
 
         return rival_id
+
+    def vote(self, resolution: Any) -> str:
+        """Vote on a UN resolution based on personality and self-interest."""
+        # Simple heuristic:
+        # 1. Pacifists always vote Aye.
+        # 2. Aggressors vote No if they are the target, otherwise Aye if they aren't involved.
+        # 3. Neutral/Rational vote Aye if tension is high (>0.5).
+
+        if self.personality == "Pacifist":
+            return "Aye"
+        
+        if self.personality == "Aggressor":
+            if self.region_id in resolution.target_regions:
+                return "No"
+            return "Aye"
+
+        # Default rational behavior: support stability
+        if self.model.governance and self.model.governance.global_tension > 0.5:
+            return "Aye"
+        
+        return "Aye"
 
     def _evaluate_games(self, rival_id: int | None) -> dict[str, float]:
         """Evaluate all active games and return aggregated scores.
@@ -324,8 +367,71 @@ class StateActorAgent(BaseActorAgent):
     def _apply(self, action: dict) -> None:
         super()._apply(action)
         self.posture = action["action"]
-        # Step military component (logistics, readiness recovery)
+        target_id = action.get("target_id")
+
+        # Step military component (logistics, readiness recovery, unit missions)
         self.military.step()
+
+        # Phase 12: Translate strategic action to unit missions
+        target_agent = None
+        if target_id is not None:
+            target_agent = next((a for a in self.model.schedule.agents if a.unique_id == target_id), None)
+
+        if self.posture == "Deploy":
+            # For deployment, move units to the border or towards a target
+            target_loc = None
+            if target_agent:
+                # Move halfway between us
+                target_loc = Point(
+                    (self.geometry.centroid.x + target_agent.geometry.centroid.x) / 2,
+                    (self.geometry.centroid.y + target_agent.geometry.centroid.y) / 2
+                )
+            for u in self.military.units:
+                u.mission = "Patrol"
+                u.target_location = target_loc
+
+        elif self.posture == "Invade" and target_agent:
+            # Move units into the rival's territory
+            for u in self.military.units:
+                u.mission = "Occupy"
+                u.target_region = target_agent.region_id
+                u.target_location = target_agent.geometry.centroid
+
+        elif self.posture == "Withdraw":
+            # Return units to base
+            for u in self.military.units:
+                u.mission = "Withdraw"
+                u.target_location = u.base_location
+
+        elif self.posture == "FundProxy":
+            # Find an NSA in a rival's region or current region
+            from strategify.agents.non_state import NonStateActor
+            target_nsa = None
+            rival_rids = {a.region_id for a in self.model.schedule.agents 
+                         if self.model.relations.get_relation(self.unique_id, a.unique_id) < 0}
+            
+            for agent in self.model.schedule.agents:
+                if isinstance(agent, NonStateActor):
+                    if agent.target_region in rival_rids or agent.target_region == self.region_id:
+                        target_nsa = agent
+                        break
+            
+            if target_nsa:
+                funding_amount = 0.5
+                self.capabilities["economic"] = max(0.0, self.capabilities.get("economic", 0.5) - 0.1)
+                target_nsa.budget += funding_amount
+                logger.info("Agent %s: Funded proxy NSA %s with %.2f.", self.region_id, target_nsa.unique_id, funding_amount)
+
+                # Attribution Check (Phase 13)
+                if self.model.random.random() < 0.15:
+                    logger.warning("Agent %s: Proxy funding of %s was ATTRIBUTED!", self.region_id, target_nsa.unique_id)
+                    # Blowback: reduce relations with everyone
+                    for other in self.model.schedule.agents:
+                        if other.unique_id != self.unique_id:
+                            self.model.relations.set_relation(
+                                self.unique_id, other.unique_id,
+                                self.model.relations.get_relation(self.unique_id, other.unique_id) - 0.2
+                            )
 
         # Phase 8: Cyber Warfare effects
         game_scores = action.get("game_scores", {})
@@ -354,9 +460,28 @@ class StateActorAgent(BaseActorAgent):
         self.stability = (self.stability * 0.7) + (support * 0.3)
 
         # Phase 9: Resource pressure hits stability
-        if hasattr(self.model, "env_manager"):
+        if hasattr(self.model, "env_manager") and self.model.env_manager:
             pressure = self.model.env_manager.get_resource_pressure(self.region_id)
             self.stability = max(0.0, self.stability - (pressure * 0.05))
+
+        # Phase 12: Foreign occupation hits stability
+        # Find units from rivals that are in this region with 'Occupy' mission
+        rival_occupation_units = 0
+        for agent in self.model.schedule.agents:
+            if agent.unique_id == self.unique_id:
+                continue
+            # Is this agent a rival?
+            if self.model.relations.get_relation(self.unique_id, agent.unique_id) < 0:
+                for u in agent.military.units:
+                    if u.mission == "Occupy" and u.target_region == self.region_id:
+                        # Check if unit is actually in the region
+                        if self.geometry.contains(u.location):
+                            rival_occupation_units += 1
+
+        if rival_occupation_units > 0:
+            drain = rival_occupation_units * 0.05
+            self.stability = max(0.0, self.stability - drain)
+            logger.info("Agent %s: Stability drained by %d occupying units.", self.region_id, rival_occupation_units)
 
         # Low stability event
         if self.stability < 0.4:

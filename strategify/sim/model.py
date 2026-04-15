@@ -27,6 +27,7 @@ from strategify.config.scenarios import (
     load_scenario,
     scenario_to_configs,
 )
+from strategify.geo.loader import AdjacencyBuilder, GeoJSONLoader
 from strategify.config.settings import (
     RANDOM_SEED,
     REAL_WORLD_GEOJSON,
@@ -83,6 +84,7 @@ class GeopolModel(Model):
         enable_health: bool = False,
         enable_temporal: bool = True,
         enable_propaganda: bool = False,
+        enable_governance: bool = True,
         active_games: list[str] | None = None,
         region_gdf: gpd.GeoDataFrame | None = None,
     ) -> None:
@@ -119,10 +121,10 @@ class GeopolModel(Model):
         self.space = mg.GeoSpace(crs=self.crs, warn_crs_conversion=False)
         self.relations = DiplomacyGraph(self)
         self.region_resources = dict(region_resources)
+        self._agent_registry: dict[str, Any] = {}
+        self.global_tension = 0.0
 
         # Load regions from GeoDataFrame or GeoJSON file
-        from strategify.geo.loader import GeoJSONLoader
-
         if region_gdf is not None:
             if region_gdf.crs != self.crs:
                 self.region_gdf = region_gdf.to_crs(self.crs)
@@ -132,6 +134,9 @@ class GeopolModel(Model):
             if not geojson_path.exists():
                 raise FileNotFoundError(f"GeoJSON file not found: {geojson_path}")
             self.region_gdf = GeoJSONLoader.load_from_geojson(geojson_path, target_crs=self.crs)
+
+        # Pre-calculate adjacency (Phase 13)
+        self.adjacency = AdjacencyBuilder.build(self.region_gdf)
 
         # Create agents from GeoDataFrame
         ac = mg.AgentCreator(agent_class=StateActorAgent, model=self, crs=self.crs)
@@ -158,9 +163,15 @@ class GeopolModel(Model):
             if agent.capabilities.get("military", 0.5) > 0.7 and "cyber" not in agent.active_games:
                 agent.active_games.append("cyber")
 
+            # Phase 14: UN membership
+            if rid in ["Alpha", "Bravo"]:
+                agent.un_seat_type = "Permanent"
+            else:
+                agent.un_seat_type = "Non-Permanent"
+
             # Ensure color is assigned for this region
             get_region_color(rid)
-            self.schedule.add(agent)
+            self.add_actor(agent)
 
             # Spawn initial military units based on capability
             mil_cap = agent.capabilities.get("military", 0.5)
@@ -172,8 +183,8 @@ class GeopolModel(Model):
             if mil_cap > 0.8:
                 agent.military.add_unit(UnitType.Air)
 
-        # Agent registry for O(1) region_id -> agent lookups
-        self._agent_registry: dict[str, Any] = {getattr(a, "region_id", ""): a for a in agents}
+        # Diplomacy setup
+        self.relations.update_relations()
 
         # Diplomacy setup
         self.relations.update_relations()
@@ -244,8 +255,15 @@ class GeopolModel(Model):
 
         # Conflict Engine (Phase 6)
         self.conflict_engine = ConflictEngine(self)
-
-        # Environmental Manager (Phase 9)
+        self.environmental_manager = EnvironmentalManager(self)
+        
+        # Phase 14: Governance
+        self.enable_governance = enable_governance
+        if self.enable_governance:
+            from strategify.reasoning.governance import GovernanceEngine
+            self.governance = GovernanceEngine(self)
+        else:
+            self.governance = None
         self.env_manager = EnvironmentalManager(self)
         self.env_manager.initialize()
 
@@ -346,8 +364,7 @@ class GeopolModel(Model):
             org.region_id = org_cfg.get("name", f"org_{len(self.organizations)}")
             get_region_color(org.region_id)
 
-            self.space.add_agents(org)
-            self.schedule.add(org)
+            self.add_actor(org)
             self.organizations.append(org)
             self.relations.update_relations()
 
@@ -600,7 +617,40 @@ class GeopolModel(Model):
             loc = Point(bravo.geometry.centroid.x + 1000, bravo.geometry.centroid.y + 1000)
             insurgent = NonStateActor(self.next_id(), self, loc, self.crs, "Insurgent")
             insurgent.target_region = "bravo"
-            self.space.add_agents(insurgent)
-            self.schedule.add(insurgent)
+            self.add_actor(insurgent)
             self.non_state_actors.append(insurgent)
             logger.info("Spawned Insurgent group in region 'bravo'.")
+
+    def get_agent_by_region(self, region_id: str) -> Any | None:
+        """Helper to get agent object by region_id."""
+        return self._agent_registry.get(region_id)
+
+    def add_actor(self, agent: Any) -> None:
+        """Add an agent to the model, schedule, and registry."""
+        self.schedule.add(agent)
+        if not hasattr(agent, "geometry"):
+             # For organization or non-state actors that might not be mg.GeoAgent
+             # (though they usually are in this project)
+             pass
+        else:
+             try:
+                 self.space.add_agents([agent])
+             except Exception:
+                 # Already in space
+                 pass
+
+        rid = getattr(agent, "region_id", None)
+        if rid:
+            self._agent_registry[rid] = agent
+
+    def remove_actor(self, agent: Any) -> None:
+        """Remove an agent from the model, schedule, and registry."""
+        self.schedule.remove(agent)
+        try:
+            self.space.remove_agent(agent)
+        except Exception:
+            pass
+
+        rid = getattr(agent, "region_id", None)
+        if rid in self._agent_registry:
+            del self._agent_registry[rid]
