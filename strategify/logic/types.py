@@ -156,7 +156,6 @@ class AgentProfile:
             "Aggressor": [Trait.AGGRESSION],
             "Pacifist": [Trait.PACIFIST],
             "Tit-for-Tat": [Trait.TIT_FOR_TAT],
-            "Tit-for-Tat": [Trait.TIT_FOR_TAT],
             "Neutral": [Trait.TIT_FOR_TAT],
             "Grudger": [Trait.GRUDGER],
         }
@@ -165,7 +164,6 @@ class AgentProfile:
 
     def to_prolog_term(self) -> str:
         """Convert to Prolog term format."""
-        traits_list = "[" + ",".join(t.value for t in self.traits) + "]"
         return f"profile(traits,{self.resources},{self.tom_level})"
 
 

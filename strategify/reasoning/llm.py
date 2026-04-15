@@ -17,6 +17,9 @@ import json
 import logging
 from typing import Any
 
+from strategify.logic.bridge import StrategicBridge
+from strategify.logic.clj import ClojureBridge
+
 logger = logging.getLogger(__name__)
 
 try:
@@ -72,9 +75,6 @@ else:
 # ---------------------------------------------------------------------------
 
 
-from strategify.logic.bridge import StrategicBridge
-from strategify.logic.clj import ClojureBridge
-
 class LLMDecisionEngine:
     """Queries a language model for geopolitical decision-making.
 
@@ -106,7 +106,7 @@ class LLMDecisionEngine:
         self.api_key = api_key
         self.max_retries = max_retries
         self._cache = LLMStrategyCache()
-        
+
         # Phase 15: Initialize cognitive bridges
         self.prolog_bridge = StrategicBridge()
         self.clj_bridge = ClojureBridge()
@@ -114,10 +114,10 @@ class LLMDecisionEngine:
     def _build_prompt(self, state: dict[str, Any]) -> str:
         """Build the decision prompt from simulation state including Epistemology & Counterfactuals."""
         agent_id = state.get("region_id", "unknown")
-        
+
         # 1. Epistemology from Prolog Top-down
         # We query what the agent actually believes and knows.
-        # In a full implementation, we would extract all known facts. For now, we mock the fact extraction 
+        # In a full implementation, we would extract all known facts. For now, we mock the fact extraction
         # or use specific critical facts from the state.
         epistemology_text = "No specific beliefs recorded."
         if self.prolog_bridge._initialized:
@@ -129,7 +129,7 @@ class LLMDecisionEngine:
                 beliefs.append("Believes the primary rival is structurally weak.")
             if beliefs:
                 epistemology_text = "; ".join(beliefs)
-                
+
         # 2. Counterfactual Futures from Clojure
         futures_text = "No counterfactuals available."
         if self.clj_bridge._available:
@@ -140,7 +140,7 @@ class LLMDecisionEngine:
                 "players": {agent_id: {"resources": state.get("economic", 50)}},
                 "board": {},
                 "history": [],
-                "metadata": {}
+                "metadata": {},
             }
             try:
                 timelines = self.clj_bridge.branch_timelines(clj_state, possible_actions)

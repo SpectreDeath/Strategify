@@ -88,9 +88,7 @@ class HawkDoveGame:
             return (RESOURCE_VALUE, 0)
         elif my_strategy == "dove" and opponent_strategy == "hawk":
             return (0, RESOURCE_VALUE)
-        elif my_strategy == "dove" and opponent_strategy == "dove":
-            return (RESOURCE_VALUE // 2, RESOURCE_VALUE // 2)
-        elif my_strategy == "bourgeois" and opponent_strategy == "bourgeois":
+        elif my_strategy == "dove" and opponent_strategy == "dove" or my_strategy == "bourgeois" and opponent_strategy == "bourgeois":
             return (RESOURCE_VALUE // 2, RESOURCE_VALUE // 2)
         elif my_strategy == "free_loader" and opponent_strategy == "dove":
             return (RESOURCE_VALUE, 0)

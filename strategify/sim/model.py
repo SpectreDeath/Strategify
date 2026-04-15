@@ -27,13 +27,13 @@ from strategify.config.scenarios import (
     load_scenario,
     scenario_to_configs,
 )
-from strategify.geo.loader import AdjacencyBuilder, GeoJSONLoader
-from strategify.logic.bridge import StrategicBridge
 from strategify.config.settings import (
     RANDOM_SEED,
     REAL_WORLD_GEOJSON,
     get_region_color,
 )
+from strategify.geo.loader import AdjacencyBuilder, GeoJSONLoader
+from strategify.logic.bridge import StrategicBridge
 from strategify.reasoning.diplomacy import DiplomacyGraph
 from strategify.sim.conflict import ConflictEngine
 from strategify.sim.environment import EnvironmentalManager
@@ -632,10 +632,6 @@ class GeopolModel(Model):
             self.add_actor(insurgent)
             self.non_state_actors.append(insurgent)
             logger.info("Spawned Insurgent group in region 'bravo'.")
-
-    def get_agent_by_region(self, region_id: str) -> Any | None:
-        """Helper to get agent object by region_id."""
-        return self._agent_registry.get(region_id)
 
     def add_actor(self, agent: Any) -> None:
         """Add an agent to the model, schedule, and registry."""

@@ -115,8 +115,6 @@ class PrologEngine:
     ) -> DecisionResult:
         """Use Prolog for decision making."""
         # Build Prolog query
-        traits_term = "[" + ",".join(t.value for t in profile.traits) + "]"
-
         query = f"decide(profile(traits,{profile.resources},{profile.tom_level}), {history}, Action)"
 
         try:

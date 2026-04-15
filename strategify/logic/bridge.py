@@ -15,8 +15,8 @@ Usage:
 from __future__ import annotations
 
 import logging
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any, Generator
 
 from strategify.logic.engine import PYSWIP_AVAILABLE
 

@@ -33,27 +33,31 @@ Usage:
     timelines = bridge.branch_timelines(state, ["attack", "display"])
 """
 
-from strategify.logic.engine import PrologEngine
 from strategify.logic.bridge import StrategicBridge, run_strategic_simulation
-from strategify.logic.hawk_dove import (
-    HawkDoveGame,
-    is_safe as hawk_dove_is_safe,
-    is_ess as is_ess,
-    get_payoff,
-)
 from strategify.logic.clj import (
     ClojureBridge,
     run_strategy_simulation,
 )
+from strategify.logic.engine import PrologEngine
+from strategify.logic.hawk_dove import (
+    HawkDoveGame,
+    get_payoff,
+)
+from strategify.logic.hawk_dove import (
+    is_ess as is_ess,
+)
+from strategify.logic.hawk_dove import (
+    is_safe as hawk_dove_is_safe,
+)
 from strategify.logic.types import (
-    Trait,
-    Personality,
-    RiskLevel,
-    PotentialGain,
     AgentProfile,
-    DecisionResult,
     Belief,
+    DecisionResult,
     Payoff,
+    Personality,
+    PotentialGain,
+    RiskLevel,
+    Trait,
 )
 
 __all__ = [
