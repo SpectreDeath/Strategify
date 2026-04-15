@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSimulation } from '../hooks/useSimulation'
 import './Simulation.css'
 
 const scenarios = [
@@ -17,24 +18,27 @@ const scenariosData = {
 
 function Simulation() {
   const [selectedScenario, setSelectedScenario] = useState(null)
-  const [running, setRunning] = useState(false)
-  const [step, setStep] = useState(0)
+  
+  // Use backend simulation hook
+  const { isRunning, gameState, error, start, stop } = useSimulation(1000);
+  const step = gameState ? gameState.step : 0;
 
-  const startSimulation = (scenarioId) => {
+  const startSimulation = async (scenarioId) => {
     setSelectedScenario(scenarioId)
-    setRunning(true)
-    setStep(0)
+    await start(scenarioId);
   }
 
-  const stopSimulation = () => {
-    setRunning(false)
+  const stopSimulation = async () => {
+    await stop();
+    setSelectedScenario(null);
   }
 
   return (
     <div className="simulation">
       <header className="page-header">
-        <h1>Simulation Control</h1>
-        <p className="subtitle">Run agent-based geopolitical simulations</p>
+        <h1>Simulation Control (FastAPI)</h1>
+        <p className="subtitle">Run agent-based geopolitical simulations via backend</p>
+        {error && <p style={{color: '#ff4444'}}>Error: {error}</p>}
       </header>
 
       <div className="scenario-grid">
@@ -46,7 +50,7 @@ function Simulation() {
               <span>Agents: {scenariosData[s.id].agents}</span>
               <span>Steps: {scenariosData[s.id].steps}</span>
             </div>
-            {selectedScenario === s.id ? (
+            {selectedScenario === s.id && isRunning ? (
               <div className="sim-controls">
                 <div className="sim-progress">
                   <div className="progress-bar">
@@ -57,7 +61,13 @@ function Simulation() {
                 <button className="btn btn-stop" onClick={stopSimulation}>Stop</button>
               </div>
             ) : (
-              <button className="btn btn-start" onClick={() => startSimulation(s.id)}>Start</button>
+              <button 
+                className="btn btn-start" 
+                onClick={() => startSimulation(s.id)}
+                disabled={isRunning}
+              >
+                {isRunning ? 'Busy...' : 'Start'}
+              </button>
             )}
           </div>
         ))}

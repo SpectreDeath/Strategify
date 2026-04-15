@@ -1,44 +1,39 @@
 import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
+import { useSimulation } from '../hooks/useSimulation'
 import './Dashboard.css'
 
-const sampleRiskData = [
-  { month: 'Jan', UKR: 75, RUS: 82, CHN: 45 },
-  { month: 'Feb', UKR: 72, RUS: 85, CHN: 48 },
-  { month: 'Mar', UKR: 78, RUS: 88, CHN: 52 },
-  { month: 'Apr', UKR: 82, RUS: 91, CHN: 55 },
-]
-
-const sampleEscalation = [
-  { region: 'Ukraine', risk: 82, trend: '↑' },
-  { region: 'Russia', risk: 91, trend: '↑' },
-  { region: 'China', risk: 55, trend: '→' },
-  { region: 'Iran', risk: 68, trend: '↑' },
-  { region: 'North Korea', risk: 72, trend: '→' },
-]
-
 function Dashboard() {
-  const [loading, setLoading] = useState(true)
+  const { isRunning, gameState, error, fetchState } = useSimulation(2000); // Auto-refresh every 2s
 
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 500)
-    return () => clearTimeout(timer)
-  }, [])
+  // Compute live escalation data from game state if available
+  const agents = gameState?.agents || [];
+  const liveEscalation = agents.map(a => ({
+    region: a.region_id,
+    risk: Math.round((a.military_capability + (1 - a.stability)) * 50), // rough proxy
+    trend: a.posture === 'Escalate' || a.posture === 'Invade' ? '↑' : a.posture === 'Observe' || a.posture === 'Deescalate' ? '↓' : '→',
+    color: a.color
+  })).sort((a,b) => b.risk - a.risk).slice(0, 5); // top 5
 
-  if (loading) {
-    return <div className="loading">Loading dashboard...</div>
+  const displayData = liveEscalation.length > 0 ? liveEscalation : [
+    { region: 'Waiting for Simulation...', risk: 0, trend: '→' }
+  ];
+
+  if (!gameState) {
+    return <div className="loading">Waiting for Backend Simulation...</div>
   }
+
 
   return (
     <div className="dashboard">
       <header className="dashboard-header">
         <h1>Early Warning Dashboard</h1>
-        <p className="subtitle">Real-time geopolitical risk assessment</p>
+        <p className="subtitle">Real-time geopolitical risk assessment (Step: {gameState.step})</p>
       </header>
 
       <div className="risk-cards">
-        {sampleEscalation.map(item => (
-          <div key={item.region} className="risk-card">
+        {displayData.map(item => (
+          <div key={item.region} className="risk-card" style={{borderTop: `4px solid ${item.color || '#e94560'}`}}>
             <h3>{item.region}</h3>
             <div className="risk-score">{item.risk}%</div>
             <div className={`risk-trend ${item.trend === '↑' ? 'up' : item.trend === '↓' ? 'down' : 'neutral'}`}>
@@ -50,24 +45,20 @@ function Dashboard() {
 
       <div className="charts">
         <div className="chart-container">
-          <h2>Risk Trends</h2>
+          <h2>Global Tension Trend</h2>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={sampleRiskData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-              <XAxis dataKey="month" stroke="#888" />
-              <YAxis stroke="#888" />
-              <Tooltip contentStyle={{ background: '#1a1a2e', border: 'none' }} />
-              <Line type="monotone" dataKey="UKR" stroke="#e94560" strokeWidth={2} />
-              <Line type="monotone" dataKey="RUS" stroke="#533483" strokeWidth={2} />
-              <Line type="monotone" dataKey="CHN" stroke="#0f3460" strokeWidth={2} />
-            </LineChart>
+            {/* Live trend graph placeholder - we will need to store history in state to build the LineChart over time */}
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', flexDirection: 'column'}}>
+               <h3 style={{fontSize: '3rem', color: '#e94560'}}>{(gameState.global_tension * 100).toFixed(1)}%</h3>
+               <p>Current Global Tension</p>
+            </div>
           </ResponsiveContainer>
         </div>
 
         <div className="chart-container">
           <h2>Current Risk Levels</h2>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={sampleEscalation}>
+            <BarChart data={displayData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#333" />
               <XAxis dataKey="region" stroke="#888" />
               <YAxis stroke="#888" />
