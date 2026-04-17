@@ -116,7 +116,7 @@ def predict_adversary_response(
             return "Escalate" if military > 0.6 else "Deescalate"
         else:
             return "Deescalate" if military < 0.4 else "Escalate"
-    else:  # RATIONAL
+    elif adversary_type == AdversaryType.RATIONAL:
         if my_action == "Escalate":
             return "Escalate" if military > 0.5 or current_posture == "Escalate" else "Deescalate"
         else:

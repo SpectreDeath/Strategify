@@ -12,9 +12,16 @@ from typing import Any
 from shapely.geometry import base as shp_base
 
 from strategify.agents.base import BaseActorAgent
-from strategify.agents.military import MilitaryComponent
+from strategify.agents.military import MilitaryComponent, UnitType
 
 logger = logging.getLogger(__name__)
+
+# Constants for budget and influence thresholds
+BUDGET_THRESHOLD = 0.5
+MAX_UNITS_FROM_BUDGET = 3
+INFLUENCE_THRESHOLD_HIGH = 0.6
+INFLUENCE_THRESHOLD_MEDIUM = 0.4
+INFLUENCE_THRESHOLD_LOW = 0.3
 
 
 class NonStateActor(BaseActorAgent):
@@ -51,18 +58,17 @@ class NonStateActor(BaseActorAgent):
     def decide(self) -> dict:
         """Sample an asymmetric action."""
         # Phase 13: Self-equip if budget allows
-        if self.budget > 0.5 and len(self.military.units) < 3:
-            from strategify.agents.military import UnitType
+        if self.budget > BUDGET_THRESHOLD and len(self.military.units) < MAX_UNITS_FROM_BUDGET:
             self.military.add_unit(UnitType.Infantry)
-            self.budget -= 0.5
+            self.budget -= BUDGET_THRESHOLD
             logger.info("NSA %s: Equipped new insurgent unit from budget.", self.unique_id)
 
         # Simple heuristic: if military power present, consider HitAndRun
-        if self.military.units and self.influence > 0.4:
+        if self.military.units and self.influence > INFLUENCE_THRESHOLD_MEDIUM:
             action = "HitAndRun"
-        elif self.influence > 0.6:
+        elif self.influence > INFLUENCE_THRESHOLD_HIGH:
             action = "Sabotage"
-        elif self.influence > 0.3:
+        elif self.influence > INFLUENCE_THRESHOLD_LOW:
             action = "Subvert"
         else:
             action = "Infiltrate"
@@ -99,6 +105,6 @@ class NonStateActor(BaseActorAgent):
         self.observe()
         # Step military component (logistics, missions)
         self.military.step()
-        
+
         action = self.decide()
         self._apply(action)

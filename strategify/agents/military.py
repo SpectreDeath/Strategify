@@ -17,6 +17,9 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+# Distance threshold for "close enough" in movement calculations
+CLOSE_ENOUGH_DISTANCE = 1000.0
+
 
 class UnitType(Enum):
     """Types of military units with different attributes."""
@@ -125,17 +128,20 @@ class Unit:
             return
 
         dist = self.location.distance(target)
-        if dist <= 1000.0:  # Close enough
+        if dist <= CLOSE_ENOUGH_DISTANCE:  # Close enough
             if self.mission == "Withdraw":
                 self.mission = "Patrol"
             return
-        
+
     def _execute_hit_and_run_logic(self) -> None:
         """Find a neighbor region and set it as target for escape."""
         try:
             # Find current region ID
             current_rid = "unknown"
+
+            # Import here to avoid circular imports at module load time
             from strategify.agents.state_actor import StateActorAgent
+
             if isinstance(self.owner, StateActorAgent):
                 current_rid = self.owner.region_id
             else:
@@ -144,11 +150,11 @@ class Unit:
                     if isinstance(agent, StateActorAgent) and agent.geometry.intersects(self.location):
                         current_rid = agent.region_id
                         break
-                
+
                 # Fallback if spatial lookup fails but target_region is set
                 if current_rid == "unknown" and hasattr(self.owner, "target_region"):
-                    current_rid = getattr(self.owner, "target_region")
-            
+                    current_rid = self.owner.target_region
+
             # Use pre-calculated adjacency
             neighbor_rids = self.owner.model.adjacency.get(current_rid, [])
             if neighbor_rids:
@@ -160,8 +166,8 @@ class Unit:
                         self.owner.target_region = target_rid
                 else:
                     logger.error("DEBUG: Neighbor %s not found in registry.", target_rid)
-        except Exception as e:
-            logger.error("Error in HitAndRun move: %s", e)
+        except Exception:
+            logger.exception("Error in HitAndRun move")
             pass
 
     def __repr__(self) -> str:

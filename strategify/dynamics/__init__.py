@@ -147,7 +147,7 @@ class FactionalPolitics:
                     faction.power = max(0.1, faction.power - magnitude)
                 elif faction.faction_type == FactionType.SECURITY:
                     faction.power = min(0.9, faction.power + magnitude)
-            else:
+            elif event_type == "diplomacy_success":
                 if faction.faction_type == FactionType.DIPLOMATIC:
                     faction.power = min(0.9, faction.power + magnitude)
 

@@ -299,8 +299,8 @@ class PrologEngine:
             self._prolog.assertz(f"risk_level({risk_level})")
             self._prolog.assertz(f"potential_gain({potential_gain})")
             logger.debug(f"Context set: risk={risk_level}, gain={potential_gain}")
-        except Exception as e:
-            logger.error(f"Failed to set context: {e}")
+        except Exception:
+            logger.exception("Failed to set context")
 
     def decide_personality(
         self,

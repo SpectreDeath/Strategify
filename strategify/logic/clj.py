@@ -110,9 +110,9 @@ class ClojureBridge:
                 logger.error(f"Clojure error: {result.stderr}")
 
         except subprocess.TimeoutExpired:
-            logger.error(f"Clojure execution timed out after {self.timeout}s")
-        except Exception as e:
-            logger.error(f"Clojure execution failed: {e}")
+            logger.exception("Clojure execution timed out")
+        except Exception:
+            logger.exception("Clojure execution failed")
 
         return None
 

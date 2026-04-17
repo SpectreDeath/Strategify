@@ -166,7 +166,7 @@ def compute_optimal_action(
             expected_impact = 0.2
             risk_level = "low"
 
-    else:  # influence
+    elif position.get("objective") == "influence":
         if position["economic"] < 0.5:
             action = "economic_expand"
             rationale = "increase_economic_influence"

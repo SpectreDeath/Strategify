@@ -15,6 +15,10 @@
 :- use_module(library(apply)).
 :- use_module(library(random)).
 
+% Suppress singleton variable and discontiguous predicate warnings
+:- style_check(-singleton).
+:- style_check(-discontiguous).
+
 % ---------------------------------------------------------------------------
 % SECTION 1: TRAIT DEFINITIONS
 % ---------------------------------------------------------------------------

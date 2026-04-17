@@ -67,8 +67,8 @@ class StrategicBridge:
             self._prolog.consult(str(self.prolog_file))
             self._initialized = True
             logger.info(f"Strategic bridge initialized: {self.prolog_file}")
-        except Exception as e:
-            logger.error(f"Failed to initialize bridge: {e}")
+        except Exception:
+            logger.exception("Failed to initialize bridge")
 
     def set_context(
         self,
@@ -98,8 +98,8 @@ class StrategicBridge:
             self._prolog.assertz(f"risk_level({risk_level})")
             self._prolog.assertz(f"potential_gain({potential_gain})")
             logger.debug(f"Context set: risk={risk_level}, gain={potential_gain}")
-        except Exception as e:
-            logger.error(f"Failed to set context: {e}")
+        except Exception:
+            logger.exception("Failed to set context")
 
     def _clear_context(self) -> None:
         """Clear previous world state assertions."""
@@ -135,8 +135,8 @@ class StrategicBridge:
             if verified:
                 self._prolog.assertz(f"source_verified({fact})")
             logger.debug(f"Fact asserted: {fact} (verified={verified})")
-        except Exception as e:
-            logger.error(f"Failed to assert fact: {e}")
+        except Exception:
+            logger.exception("Failed to assert fact")
 
     def decide(
         self,
@@ -162,8 +162,8 @@ class StrategicBridge:
             query = f"decide({personality}, _Profile, Action)"
             for result in self._prolog.query(query):
                 yield {"agent": personality, "action": result.get("Action", "unknown")}
-        except Exception as e:
-            logger.error(f"Decision query failed: {e}")
+        except Exception:
+            logger.exception("Decision query failed")
 
     def knows(self, fact: str) -> bool:
         """Check if agent knows a fact (requires verification).
@@ -231,8 +231,8 @@ class StrategicBridge:
             result = list(self._prolog.query(f"expected_value({profile}, Value)"))
             if result:
                 return float(result[0].get("Value", 0))
-        except Exception as e:
-            logger.error(f"Expected value failed: {e}")
+        except Exception:
+            logger.exception("Expected value failed")
         return None
 
     def fitness(
@@ -264,8 +264,8 @@ class StrategicBridge:
             result = list(self._prolog.query(f"fitness({my_trait}, [{opponent_trait}], {rounds}, Fitness)"))
             if result:
                 return float(result[0].get("Fitness", 0))
-        except Exception as e:
-            logger.error(f"Fitness calculation failed: {e}")
+        except Exception:
+            logger.exception("Fitness calculation failed")
         return None
 
 
