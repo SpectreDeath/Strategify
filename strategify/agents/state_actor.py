@@ -13,6 +13,8 @@ from shapely.geometry import base as shp_base
 
 from strategify.agents.base import BaseActorAgent
 from strategify.agents.factions import get_default_factions
+from strategify.agents.economic_analyst import EconomicForecaster
+from strategify.agents.intelligence import IntelligenceComponent
 from strategify.agents.military import MilitaryComponent
 from strategify.config.settings import (
     CONTAGION_WEIGHT,
@@ -60,12 +62,18 @@ class StateActorAgent(BaseActorAgent):
             self.region_id = "unknown"
         self.role: str = "row"
         self.personality: str = "Neutral"
-        self.capabilities: dict = {"military": 0.5, "economic": 0.5}
+        self.capabilities: dict = {"military": 0.5, "economic": 0.5, "intelligence": 0.3}
         self.last_opponent_action: str | None = None
         self._diplomacy_strategy: DiplomacyStrategy | None = None
 
         # Military capabilities
         self.military = MilitaryComponent(self)
+
+        # Intelligence capabilities
+        self.intelligence = IntelligenceComponent(self)
+
+        # Economic capabilities
+        self.economic = EconomicForecaster(self)
 
         # Phase 7: Domestic Politics
         self.factions = get_default_factions()
@@ -74,9 +82,13 @@ class StateActorAgent(BaseActorAgent):
         self.active_games: list[str] = ["escalation"]
         if self.capabilities.get("military", 0.5) > 0.7:
             self.active_games.append("cyber")
+        if self.capabilities.get("intelligence", 0.3) > 0.5:
+            self.active_games.append("intelligence")
+        if self.capabilities.get("economic", 0.5) > 0.6:
+            self.active_games.append("economic_intel")
 
         # Phase 14: Governance seats
-        self.un_seat_type: str = "Non-Permanent" # Permanent or Non-Permanent
+        self.un_seat_type: str = "Non-Permanent"  # Permanent or Non-Permanent
 
     # ------------------------------------------------------------------
     # Decision-making
@@ -93,6 +105,7 @@ class StateActorAgent(BaseActorAgent):
 
         # Phase 13: Dynamic Hybrid Game participation
         from strategify.agents.non_state import NonStateActor
+
         nsas_nearby = any(isinstance(a, NonStateActor) for a in self.model.schedule.agents)
         if nsas_nearby and "hybrid" not in self.active_games:
             self.active_games.append("hybrid")
@@ -273,7 +286,7 @@ class StateActorAgent(BaseActorAgent):
 
         if self.personality == "Pacifist":
             return "Aye"
-        
+
         if self.personality == "Aggressor":
             if self.region_id in resolution.target_regions:
                 return "No"
@@ -282,7 +295,7 @@ class StateActorAgent(BaseActorAgent):
         # Default rational behavior: support stability
         if self.model.governance and self.model.governance.global_tension > 0.5:
             return "Aye"
-        
+
         return "Aye"
 
     def _evaluate_games(self, rival_id: int | None) -> dict[str, float]:
@@ -384,7 +397,7 @@ class StateActorAgent(BaseActorAgent):
                 # Move halfway between us
                 target_loc = Point(
                     (self.geometry.centroid.x + target_agent.geometry.centroid.x) / 2,
-                    (self.geometry.centroid.y + target_agent.geometry.centroid.y) / 2
+                    (self.geometry.centroid.y + target_agent.geometry.centroid.y) / 2,
                 )
             for u in self.military.units:
                 u.mission = "Patrol"
@@ -406,31 +419,40 @@ class StateActorAgent(BaseActorAgent):
         elif self.posture == "FundProxy":
             # Find an NSA in a rival's region or current region
             from strategify.agents.non_state import NonStateActor
+
             target_nsa = None
-            rival_rids = {a.region_id for a in self.model.schedule.agents 
-                         if self.model.relations.get_relation(self.unique_id, a.unique_id) < 0}
-            
+            rival_rids = {
+                a.region_id
+                for a in self.model.schedule.agents
+                if self.model.relations.get_relation(self.unique_id, a.unique_id) < 0
+            }
+
             for agent in self.model.schedule.agents:
                 if isinstance(agent, NonStateActor):
                     if agent.target_region in rival_rids or agent.target_region == self.region_id:
                         target_nsa = agent
                         break
-            
+
             if target_nsa:
                 funding_amount = 0.5
                 self.capabilities["economic"] = max(0.0, self.capabilities.get("economic", 0.5) - 0.1)
                 target_nsa.budget += funding_amount
-                logger.info("Agent %s: Funded proxy NSA %s with %.2f.", self.region_id, target_nsa.unique_id, funding_amount)
+                logger.info(
+                    "Agent %s: Funded proxy NSA %s with %.2f.", self.region_id, target_nsa.unique_id, funding_amount
+                )
 
                 # Attribution Check (Phase 13)
                 if self.model.random.random() < 0.15:
-                    logger.warning("Agent %s: Proxy funding of %s was ATTRIBUTED!", self.region_id, target_nsa.unique_id)
+                    logger.warning(
+                        "Agent %s: Proxy funding of %s was ATTRIBUTED!", self.region_id, target_nsa.unique_id
+                    )
                     # Blowback: reduce relations with everyone
                     for other in self.model.schedule.agents:
                         if other.unique_id != self.unique_id:
                             self.model.relations.set_relation(
-                                self.unique_id, other.unique_id,
-                                self.model.relations.get_relation(self.unique_id, other.unique_id) - 0.2
+                                self.unique_id,
+                                other.unique_id,
+                                self.model.relations.get_relation(self.unique_id, other.unique_id) - 0.2,
                             )
 
         # Phase 8: Cyber Warfare effects

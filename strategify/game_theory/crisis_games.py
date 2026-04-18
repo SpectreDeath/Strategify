@@ -163,6 +163,36 @@ def disinformation_game() -> NormalFormGame:
     return NormalFormGame(A, B)
 
 
+def intelligence_game() -> NormalFormGame:
+    """Intelligence collection vs counter-intelligence game.
+
+    Actions: ["CollectIntel", "CounterIntel"]
+
+    Payoff intuition:
+      Both Counter     -> protection, no collection (3, 3)
+      Collect/Counter  -> successful collection vs detection (5, 1) or (1, 5)
+      Both Collect    -> mutual collection, low risk (-1, -1)
+    """
+    A = np.array([[-1, 5], [1, 3]], dtype=float)
+    B = np.array([[-1, 1], [5, 3]], dtype=float)
+    return NormalFormGame(A, B)
+
+
+def economic_intel_game() -> NormalFormGame:
+    """Economic intelligence vs economic defense game.
+
+    Actions: ["NegotiateTrade", "ImposeTariffs"]
+
+    Payoff intuition:
+      Both Negotiate   -> trade expansion, mutual gain (4, 4)
+      One Tariffs     -> economic advantage vs retaliation (5, 1) or (1, 5)
+      Both Tariffs   -> trade war (-2, -2)
+    """
+    A = np.array([[-2, 5], [1, 4]], dtype=float)
+    B = np.array([[-2, 1], [5, 4]], dtype=float)
+    return NormalFormGame(A, B)
+
+
 # ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
@@ -178,6 +208,8 @@ GAME_REGISTRY: dict[str, Callable[[], NormalFormGame]] = {
     "hybrid": hybrid_game,
     "governance": governance_game,
     "disinformation": disinformation_game,
+    "intelligence": intelligence_game,
+    "economic_intel": economic_intel_game,
 }
 
 GAME_ACTIONS: dict[str, list[str]] = {
@@ -191,6 +223,8 @@ GAME_ACTIONS: dict[str, list[str]] = {
     "hybrid": ["FundProxy", "CounterInsurgency"],
     "governance": ["Comply", "Defy"],
     "disinformation": ["SpreadFakeNews", "Censor"],
+    "intelligence": ["CollectIntel", "CounterIntel"],
+    "economic_intel": ["NegotiateTrade", "ImposeTariffs"],
 }
 
 
