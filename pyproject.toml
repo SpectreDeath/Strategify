@@ -69,7 +69,7 @@ dev = [
 ]
 logic = [
     "pyswip>=0.2",
-    "memtext>=0.5.0",
+    "memtext>=0.6.0",
 ]
 docs = [
     "mkdocs>=1.5",
