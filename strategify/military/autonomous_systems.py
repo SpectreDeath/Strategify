@@ -234,6 +234,12 @@ class AutonomousSystem:
         if distance_to_target > self.sensor_range:
             return {"detections": [], "coverage": 0.1}
 
+        # Integrate terrain concealment factor from SpatialReasoningEngine (Phase C)
+        from strategify.reasoning.spatial import SpatialReasoningEngine
+
+        terrain = SpatialReasoningEngine.get_terrain_features(region_agent, model)
+        concealment_penalty = getattr(terrain, "concealment", 0.0) * 0.2
+
         detections: list[dict] = []
 
         for agent in model.schedule.agents:
@@ -242,12 +248,16 @@ class AutonomousSystem:
 
             for unit in agent.military.units:
                 if unit.location.distance(self.location) < self.sensor_range:
+                    confidence = max(
+                        0.1,
+                        0.8 - (distance_to_target / self.sensor_range) * 0.3 - concealment_penalty,
+                    )
                     detection = {
                         "type": "military_unit",
                         "unit_id": unit.unit_id,
                         "unit_type": unit.unit_type.value,
                         "location": (unit.location.x, unit.location.y),
-                        "confidence": 0.8 - (distance_to_target / self.sensor_range) * 0.3,
+                        "confidence": confidence,
                     }
                     detections.append(detection)
 

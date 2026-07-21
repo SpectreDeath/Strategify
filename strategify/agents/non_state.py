@@ -63,6 +63,11 @@ class NonStateActor(BaseActorAgent):
             self.budget -= BUDGET_THRESHOLD
             logger.info("NSA %s: Equipped new insurgent unit from budget.", self.unique_id)
 
+        # Phase C: Seek sanctuary if current target region has heavy state security presence
+        target_agent = self.model.get_agent_by_region(self.target_region)
+        if target_agent and getattr(target_agent, "posture", "") in ("Invade", "Deploy", "Escalate"):
+            self.seek_sanctuary()
+
         # Simple heuristic: if military power present, consider HitAndRun
         if self.military.units and self.influence > INFLUENCE_THRESHOLD_MEDIUM:
             action = "HitAndRun"
@@ -74,6 +79,34 @@ class NonStateActor(BaseActorAgent):
             action = "Infiltrate"
 
         return {"action": action}
+
+    def seek_sanctuary(self) -> bool:
+        """Relocate operating region to neighboring area with lower state security presence."""
+        if not hasattr(self.model, "adjacency"):
+            return False
+
+        neighbors = self.model.adjacency.get(self.target_region, [])
+        if not neighbors:
+            return False
+
+        # Find neighbor with lowest state military capabilities
+        best_sanctuary = min(
+            neighbors,
+            key=lambda rid: getattr(self.model.get_agent_by_region(rid), "capabilities", {}).get("military", 1.0)
+            if self.model.get_agent_by_region(rid)
+            else 1.0,
+        )
+
+        if best_sanctuary != self.target_region:
+            logger.info(
+                "NSA %s seeking sanctuary: relocating from %s to %s",
+                self.unique_id,
+                self.target_region,
+                best_sanctuary,
+            )
+            self.target_region = best_sanctuary
+            return True
+        return False
 
     def _apply(self, action: dict) -> None:
         """Apply asymmetric effects."""

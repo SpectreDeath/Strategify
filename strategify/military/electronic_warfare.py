@@ -255,14 +255,20 @@ class ElectronicWarfareSystem:
         self.active_effects = [e for e in self.active_effects if e.status != OperationStatus.SUCCESS]
 
 
-class EMSpectrumManager:
-    """Manage electromagnetic spectrum allocation and monitoring.
+def calculate_path_loss(distance_km: float, frequency_mhz: float) -> float:
+    """Calculate Free-Space Path Loss (FSPL) in dB.
 
-    Attributes
-    ----------
-    owner_id : str
-        Agent that owns this manager.
+    FSPL (dB) = 20*log10(d_km) + 20*log10(f_MHz) + 32.44
     """
+    import math
+
+    d = max(0.001, distance_km)
+    f = max(1.0, frequency_mhz)
+    return 20.0 * math.log10(d) + 20.0 * math.log10(f) + 32.44
+
+
+class EMSpectrumManager:
+    """Manage electromagnetic spectrum allocation and monitoring."""
 
     def __init__(self, owner_id: str) -> None:
         self.owner_id = owner_id
@@ -276,22 +282,7 @@ class EMSpectrumManager:
         frequency: float,
         bandwidth: float,
     ) -> dict[str, Any]:
-        """Allocate a frequency band to a system.
-
-        Parameters
-        ----------
-        system : str
-            System requiring frequency.
-        frequency : float
-            Requested frequency in MHz.
-        bandwidth : float
-            Required bandwidth in MHz.
-
-        Returns
-        -------
-        dict
-            Allocation result.
-        """
+        """Allocate a frequency band to a system."""
         if system not in self.allocated_frequencies:
             self.allocated_frequencies[system] = []
 
@@ -341,8 +332,9 @@ class EMSpectrumManager:
         source_id: str,
         frequency: float,
         signal_strength: float,
+        distance_km: float = 1.0,
     ) -> dict[str, Any]:
-        """Detect and classify an electromagnetic signal.
+        """Detect and classify an electromagnetic signal with path loss attenuation.
 
         Parameters
         ----------
@@ -352,18 +344,23 @@ class EMSpectrumManager:
             Signal frequency in MHz.
         signal_strength : float
             Signal strength [0.0, 1.0].
+        distance_km : float
+            Distance to source in km.
 
         Returns
         -------
         dict
             Signal classification.
         """
-        signal_type = self._classify_signal(frequency, signal_strength)
+        path_loss_db = calculate_path_loss(distance_km, frequency)
+        attenuated_strength = max(0.01, min(1.0, signal_strength / (1.0 + path_loss_db / 100.0)))
+        signal_type = self._classify_signal(frequency, attenuated_strength)
 
         signal = {
             "source_id": source_id,
             "frequency": frequency,
-            "strength": signal_strength,
+            "strength": attenuated_strength,
+            "path_loss_db": path_loss_db,
             "type": signal_type,
             "classification": self._determine_classification(signal_type),
         }

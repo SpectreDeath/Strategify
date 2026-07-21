@@ -338,6 +338,12 @@ class GeopolModel(Model):
         )
         self.influence_map = None
 
+        # Prolog & Treaty Compliance reasoning engines (Phase B)
+        self.prolog_bridge = StrategicBridge()
+        from strategify.reasoning.treaty_compliance import TreatyComplianceChecker
+
+        self.treaty_checker = TreatyComplianceChecker()
+
     def _load_organizations(self, scenario_data: dict) -> None:
         """Load organization actors from scenario data if present."""
         orgs = scenario_data.get("organizations", [])
@@ -430,6 +436,9 @@ class GeopolModel(Model):
 
         # Step conflict engine (Phase 6)
         self.conflict_engine.step()
+
+        # Phase B: Resolve matrix games (escalation, trade, sanctions) using Nash equilibria
+        self._resolve_crisis_game_equilibria()
 
         # Step environmental manager (Phase 9)
         self.env_manager.step()
@@ -662,6 +671,30 @@ class GeopolModel(Model):
         rid = getattr(agent, "region_id", None)
         if rid in self._agent_registry:
             del self._agent_registry[rid]
+
+    def _resolve_crisis_game_equilibria(self) -> None:
+        """Resolve matrix games (escalation, trade, sanctions) between state actors using Nash equilibria."""
+        import numpy as np
+        from strategify.agents.state_actor import StateActorAgent
+        from strategify.game_theory.crisis_games import escalation_game
+
+        state_agents = [a for a in self.schedule.agents if isinstance(a, StateActorAgent)]
+        if len(state_agents) < 2:
+            return
+
+        for i in range(len(state_agents)):
+            for j in range(i + 1, len(state_agents)):
+                a1 = state_agents[i]
+                a2 = state_agents[j]
+
+                if a1.posture in ("Invade", "Escalate", "Deploy") or a2.posture in ("Invade", "Escalate", "Deploy"):
+                    game = escalation_game()
+                    eq1, eq2 = game.select_equilibrium()
+                    if eq1 is not None and eq2 is not None:
+                        p1_choice = np.argmax(eq1) if hasattr(eq1, "__len__") else int(eq1)
+                        p2_choice = np.argmax(eq2) if hasattr(eq2, "__len__") else int(eq2)
+                        if p1_choice == 0 and p2_choice == 0:
+                            self.global_tension = min(1.0, self.global_tension + 0.05)
 
     # ---------------------------------------------------------------------------
     # Phase 16: Prolog Epistemology Integration
