@@ -90,6 +90,17 @@ class StateActorAgent(BaseActorAgent):
         # Phase 14: Governance seats
         self.un_seat_type: str = "Non-Permanent"  # Permanent or Non-Permanent
 
+        # Complex Reasoning & Strategic Engines
+        from strategify.reasoning.campaigns import CampaignPlanner
+        from strategify.reasoning.deception import DeceptionEngine
+        from strategify.reasoning.negotiation import DiplomaticNegotiator
+        from strategify.reasoning.planner import StrategicPlanner
+
+        self.planner = StrategicPlanner(self)
+        self.campaign_planner = CampaignPlanner(self)
+        self.deception_engine = DeceptionEngine(self)
+        self.negotiator = DiplomaticNegotiator(self)
+
     # ------------------------------------------------------------------
     # Decision-making
     # ------------------------------------------------------------------
@@ -218,6 +229,10 @@ class StateActorAgent(BaseActorAgent):
         sigma_row, sigma_col = dynamic_game.select_equilibrium()
         strategy = sigma_row if self.role == "row" else sigma_col
         chosen = dynamic_game.sample_action(strategy, actions)
+
+        # Multi-Horizon Lookahead Planner Refinement
+        if hasattr(self, "planner") and self.planner is not None:
+            chosen = self.planner.select_best_action(actions)
 
         # 8b. Optional LLM override
         llm_engine = getattr(self.model, "llm_engine", None)

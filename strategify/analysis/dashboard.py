@@ -333,6 +333,7 @@ class MonteCarloEngine:
             for step in range(n_steps):
                 override_fn(model, step)
                 model.step()
+                override_fn(model, step)
                 snapshot = {}
                 for agent in model.schedule.agents:
                     rid = getattr(agent, "region_id", str(agent.unique_id))
