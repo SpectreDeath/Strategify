@@ -15,12 +15,19 @@ Usage:
 from __future__ import annotations
 
 import logging
+import os
+import sys
 from collections.abc import Generator
 from pathlib import Path
 
 from strategify.logic.engine import PYSWIP_AVAILABLE
 
 logger = logging.getLogger(__name__)
+
+_SWIPL_PATH = r"C:\Program Files\swipl\bin"
+if _SWIPL_PATH not in os.environ.get("PATH", ""):
+    os.environ["PATH"] = _SWIPL_PATH + os.pathsep + os.environ.get("PATH", "")
+    sys.path.insert(0, _SWIPL_PATH)
 
 try:
     from pyswip import Prolog

@@ -1,0 +1,62 @@
+.belief-graph {
+  background: #1e293b;
+  border-radius: 8px;
+  padding: 16px;
+  color: #e2e8f0;
+}
+
+.belief-graph h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.belief-graph svg {
+  display: block;
+  margin: 0 auto;
+  background: #0f172a;
+  border-radius: 4px;
+}
+
+.belief-graph-loading,
+.belief-graph-error,
+.belief-graph-empty {
+  text-align: center;
+  padding: 24px;
+  color: #94a3b8;
+}
+
+.belief-graph-error {
+  color: #ef4444;
+}
+
+.belief-graph-empty small {
+  display: block;
+  margin-top: 8px;
+  color: #64748b;
+}
+
+.belief-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-item .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot.agent { background: #3b82f6; }
+.dot.belief { background: #f59e0b; }
+.dot.knowledge { background: #22c55e; }

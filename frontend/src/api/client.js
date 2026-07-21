@@ -15,4 +15,9 @@ export const simulationApi = {
   getState: () => api.get('/simulation/state'),
 };
 
+export const xaiApi = {
+  getAgentBeliefs: (agentId) => api.get(`/agents/${agentId}/beliefs`),
+  getMCTSBranches: (agentId) => api.get(`/agents/${agentId}/mcts-branches`),
+};
+
 export default api;

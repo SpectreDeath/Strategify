@@ -27,6 +27,7 @@ class UnitType(Enum):
     Infantry = "Infantry"
     Armor = "Armor"
     Air = "Air"
+    Drone = "Drone"
 
 
 class Unit:
@@ -81,6 +82,7 @@ class Unit:
             UnitType.Infantry: 50_000.0,  # 50km
             UnitType.Armor: 150_000.0,  # 150km
             UnitType.Air: 500_000.0,  # 500km
+            UnitType.Drone: 200_000.0,  # 200km
         }
         return ranges[self.unit_type]
 
@@ -90,6 +92,7 @@ class Unit:
             UnitType.Infantry: 1.0,
             UnitType.Armor: 2.5,
             UnitType.Air: 5.0,
+            UnitType.Drone: 0.8,
         }
         return multipliers[self.unit_type]
 

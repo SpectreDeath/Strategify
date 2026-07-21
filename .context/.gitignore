@@ -1,2 +1,3 @@
 # Memtext context
-.context/
+*
+!.gitignore

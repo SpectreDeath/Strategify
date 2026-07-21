@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import subprocess
 from pathlib import Path
 
@@ -27,6 +28,13 @@ logger = logging.getLogger(__name__)
 
 # Try to find Clojure project
 CLOJURE_PROJECT_DIR = Path(__file__).parent.parent.parent / "strategify-clj"
+
+_LEIN_PATH = Path(__file__).parent.parent.parent / "lein.bat"
+if _LEIN_PATH.exists():
+    LEIN_CMD = str(_LEIN_PATH)
+    os.environ["PATH"] = str(_LEIN_PATH.parent) + os.pathsep + os.environ.get("PATH", "")
+else:
+    LEIN_CMD = "lein"
 
 
 class ClojureBridge:
@@ -59,9 +67,9 @@ class ClojureBridge:
         """Check if Leiningen is available."""
         try:
             result = subprocess.run(
-                ["lein", "version"],
+                [LEIN_CMD, "version"],
                 capture_output=True,
-                timeout=5,
+                timeout=10,
             )
             return result.returncode == 0
         except (FileNotFoundError, subprocess.TimeoutExpired):
@@ -87,7 +95,7 @@ class ClojureBridge:
             logger.warning("Leiningen not available")
             return None
 
-        cmd = ["lein", "exec", "-"]
+        cmd = [LEIN_CMD, "-"]
 
         try:
             result = subprocess.run(

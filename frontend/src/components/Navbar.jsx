@@ -6,6 +6,7 @@ const navItems = [
   { path: '/simulation', label: 'Simulation' },
   { path: '/map', label: 'Map' },
   { path: '/analysis', label: 'Analysis' },
+  { path: '/xai', label: 'XAI' },
 ]
 
 function Navbar() {

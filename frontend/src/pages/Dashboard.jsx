@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 import { useSimulation } from '../hooks/useSimulation'
 import './Dashboard.css'
 
 function Dashboard() {
-  const { isRunning, gameState, error, fetchState } = useSimulation(2000); // Auto-refresh every 2s
+  const { gameState } = useSimulation(2000); // Auto-refresh every 2s
 
   // Compute live escalation data from game state if available
   const agents = gameState?.agents || [];

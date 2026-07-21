@@ -3,6 +3,7 @@ import Dashboard from './pages/Dashboard'
 import Simulation from './pages/Simulation'
 import Map from './pages/Map'
 import Analysis from './pages/Analysis'
+import XAI from './pages/XAI'
 import Navbar from './components/Navbar'
 import './App.css'
 
@@ -17,6 +18,7 @@ function App() {
             <Route path="/simulation" element={<Simulation />} />
             <Route path="/map" element={<Map />} />
             <Route path="/analysis" element={<Analysis />} />
+            <Route path="/xai" element={<XAI />} />
           </Routes>
         </main>
       </div>
