@@ -195,6 +195,14 @@ class StateActorAgent(BaseActorAgent):
                     # Economic pain
                     governance_bias -= 2.0
 
+        # 6d. Adversary doctrine bias (if adversary doctrine defined)
+        adversary_bias = 0.0
+        if hasattr(self, "adversary_doctrine") and self.adversary_doctrine is not None:
+            from strategify.reasoning.adversary import apply_adversary_doctrine
+
+            biases = apply_adversary_doctrine(self, self.adversary_doctrine, military_power, 1.0)
+            adversary_bias = (biases.get("escalate", 0.5) - biases.get("deescalate", 0.5)) * 2.0
+
         # 7. Aggregate all signals
         adjustment = (
             (net_inf * INFLUENCE_WEIGHT)
@@ -206,6 +214,7 @@ class StateActorAgent(BaseActorAgent):
             + coalition_bias
             + military_bias
             + governance_bias
+            + adversary_bias
             - (escalation_pressure * 2.0)
             + (resource_pressure * 1.5)
             + game_scores.get("escalation_bias", 0.0)
