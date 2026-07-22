@@ -1,6 +1,7 @@
 """Visualization tools: maps, networks, status, reports, and export."""
 
 from strategify.viz.dashboard import create_early_warning_dashboard
+from strategify.viz.epidemic_plots import EpidemicPlotter
 from strategify.viz.export import (
     export_all,
     export_animation,
@@ -40,4 +41,5 @@ __all__ = [
     "export_report_pdf",
     "export_timeline",
     "create_early_warning_dashboard",
+    "EpidemicPlotter",
 ]

@@ -1,5 +1,7 @@
-"""Reinforcement learning: environment, training, and evaluation."""
+"""Reinforcement learning: environment, training, evaluation, and epidemiology RL benchmarks."""
 
+from strategify.rl.benchmark import BenchmarkComparisonResult, RLControlBenchmark
+from strategify.rl.epidemic_env import EpidemicEnv
 from strategify.rl.environment import GeopolEnv
 from strategify.rl.evaluation import (
     compare_strategies,
@@ -19,14 +21,17 @@ from strategify.rl.training import (
 
 __all__ = [
     "GeopolEnv",
+    "EpidemicEnv",
+    "RLControlBenchmark",
+    "BenchmarkComparisonResult",
+    "train",
+    "train_episode",
     "SimplePolicy",
     "RandomPolicy",
-    "DeescalatePolicy",
-    "EscalatePolicy",
     "HeuristicPolicy",
+    "EscalatePolicy",
+    "DeescalatePolicy",
     "QLearningPolicy",
-    "train_episode",
-    "train",
     "evaluate_policies",
     "compare_strategies",
     "summarize_comparison",

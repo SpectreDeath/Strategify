@@ -148,3 +148,11 @@ Pipeline Integration: Connect the CDCSodaApiAdapter outputs directly to the Surv
 MCP Tool Binding: Wrap these three adapters into SME/Em-Cubed Model Context Protocol (MCP) bridges to enable external agent execution during interactive chat sessions.
 
 Cache & Rate Limiting Layer: Add local SQLite caching or asynchronous rate-limiting throttlers to comply with federal API guidelines (e.g., maintaining max 1 request/sec for NIH RePORTER V2).
+---
+#### 14:53
+
+Next Steps for the FrameworkWith the Gymnasium environment and Forward-Backward Sweep solver live, here are three high-value directions
+
+1. Benchmark PPO vs. Pontryagin Baseline: Train a baseline PPO (Proximal Policy Optimization) RL agent inside EpidemicEnv and benchmark its learned control trajectory against the theoretical optimal path $u^*(t)$ calculated by OptimalControlSolver.
+2. Expose EpidemicEnv via MCP Bridge: Add MCP tool bindings for running episode rollouts or training steps directly through external agent prompts.
+3. Interactive Visualization Layer: Create D3 or Matplotlib plotting scripts/widgets to render spatial node infection heatmaps and strategy trajectories over time.
