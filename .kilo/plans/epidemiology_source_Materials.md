@@ -137,3 +137,14 @@ The NIH ecosystem provides extensive REST APIs through the **National Center for
 | **NIH RePORTER V2** | NIH | Federal research grants, principal investigators, publications | REST / JSON (POST payload queries) |
 | **RxNav / RxNorm** | NIH/NLM | Standardized drug vocabularies, clinical tables | REST / JSON |
 | **OpenFDA** | FDA | Adverse events, drug/device labels, enforcement reports | REST / JSON |
+---
+12:54
+---
+Suggested Next Steps for the Workspace
+Now that your OSINT data adapters and mathematical epidemiology solvers are wired and committed (70a7a52), here are three potential focus areas:
+
+Pipeline Integration: Connect the CDCSodaApiAdapter outputs directly to the SurveillanceParameterFitter so raw SoQL query streams feed directly into the scipy.optimize.curve_fit ODE parameter estimation engine.
+
+MCP Tool Binding: Wrap these three adapters into SME/Em-Cubed Model Context Protocol (MCP) bridges to enable external agent execution during interactive chat sessions.
+
+Cache & Rate Limiting Layer: Add local SQLite caching or asynchronous rate-limiting throttlers to comply with federal API guidelines (e.g., maintaining max 1 request/sec for NIH RePORTER V2).

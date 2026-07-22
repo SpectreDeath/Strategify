@@ -24,6 +24,8 @@ from strategify.osint.features import (
 )
 from strategify.osint.nih_reporter_adapter import NIHGrantProject, NIHReporterApiAdapter
 from strategify.osint.pipeline import FeaturePipeline
+from strategify.osint.pipeline_integration import PipelineFitOutcome, SoQLToFitterPipeline
+from strategify.osint.rate_limiter import FederalApiCacheThrottle
 from strategify.osint.rxnorm_adapter import RxNormApiAdapter, RxNormConcept
 from strategify.osint.sources import (
     compute_event_features,
@@ -74,6 +76,9 @@ __all__ = [
     "NIHGrantProject",
     "RxNormApiAdapter",
     "RxNormConcept",
+    "FederalApiCacheThrottle",
+    "SoQLToFitterPipeline",
+    "PipelineFitOutcome",
     # Cache
     "SQLiteCache",
     # Pipeline
