@@ -101,6 +101,12 @@ class StateActorAgent(BaseActorAgent):
         self.deception_engine = DeceptionEngine(self)
         self.negotiator = DiplomaticNegotiator(self)
 
+        # Epidemiology & Biosecurity Engine
+        from strategify.epidemiology import BioDefenseComponent, SEIRHEngine
+
+        self.seir_engine = SEIRHEngine(population=1_000_000, initial_infected=10)
+        self.biodefense = BioDefenseComponent(self)
+
     # ------------------------------------------------------------------
     # Decision-making
     # ------------------------------------------------------------------
