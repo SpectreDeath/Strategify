@@ -5,8 +5,11 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from strategify.agents.state_actor import StateActorAgent
 from strategify.config.settings import REGION_COLORS
 from strategify.sim.model import GeopolModel
+from strategify.sim.wargame import MultiDomainWargameEngine
+from strategify.viz.epidemic_plots import EpidemicPlotter
 
 logger = logging.getLogger(__name__)
 
@@ -52,9 +55,9 @@ def start_simulation(config: ScenarioConfig) -> dict[str, Any]:
             enable_temporal=True,
         )
         return {"success": True, "message": f"Simulation started with scenario {config.scenario_id}"}
-    except Exception:
+    except Exception as err:
         logger.exception("Failed to start simulation")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(err)) from err
 
 
 @app.post("/api/simulation/stop")
@@ -66,72 +69,61 @@ def stop_simulation() -> dict[str, Any]:
 
 @app.post("/api/simulation/step")
 def step_simulation() -> dict[str, Any]:
-    global model_instance
     if not model_instance:
         raise HTTPException(status_code=400, detail="Model not initialized")
 
     try:
         model_instance.step()
         return {"success": True, "step": model_instance.schedule.steps}
-    except Exception:
+    except Exception as err:
         logger.exception("Error during simulation step")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(err)) from err
 
 
 @app.get("/api/simulation/state")
 def get_simulation_state() -> dict[str, Any]:
-    global model_instance
     if not model_instance:
         raise HTTPException(status_code=400, detail="Model not initialized")
 
-    agents_state = []
-    from strategify.agents.state_actor import StateActorAgent
-
-    for agent in model_instance.schedule.agents:
-        if isinstance(agent, StateActorAgent):
-            agents_state.append(
-                {
-                    "region_id": agent.region_id,
-                    "posture": agent.posture,
-                    "personality": getattr(agent, "personality", "Neutral"),
-                    "stability": getattr(agent, "stability", 1.0),
-                    "military_capability": agent.capabilities.get("military", 0.0),
-                    "economic_capability": agent.capabilities.get("economic", 0.0),
-                    "color": REGION_COLORS.get(agent.region_id, "gray"),
-                }
-            )
+    agents_state = [
+        {
+            "region_id": agent.region_id,
+            "posture": agent.posture,
+            "personality": getattr(agent, "personality", "Neutral"),
+            "stability": getattr(agent, "stability", 1.0),
+            "military_capability": agent.capabilities.get("military", 0.0),
+            "economic_capability": agent.capabilities.get("economic", 0.0),
+            "color": REGION_COLORS.get(agent.region_id, "gray"),
+        }
+        for agent in model_instance.schedule.agents
+        if isinstance(agent, StateActorAgent)
+    ]
 
     global_tension = getattr(model_instance, "global_tension", 0.0)
-    if hasattr(model_instance, "governance") and model_instance.governance:
-        global_tension = model_instance.governance.global_tension
 
-    return {"step": model_instance.schedule.steps, "global_tension": global_tension, "agents": agents_state}
-
-
-# =============================================================================
-# Phase 20: XAI Endpoints - Beliefs and MCTS
-# =============================================================================
+    return {
+        "step": model_instance.schedule.steps,
+        "global_tension": global_tension,
+        "agents": agents_state,
+    }
 
 
 @app.get("/api/agents/{agent_id}/beliefs")
 def get_agent_beliefs(agent_id: str) -> dict[str, Any]:
     """Fetch agent's belief graph from Prolog."""
-    MOCK_BELIEFS = {
+    mock_beliefs = {
         "usa": [
             {"fact": "russia_military_weak", "source": "prolog"},
-            {"fact": "china_economic_growth", "source": "prolog"},
-            {"fact": "ukraine_nato_expansion", "source": "prolog"},
-            {"fact": "global_tension_rising", "source": "verified"},
+            {"fact": "china_economy_strong", "source": "prolog"},
+            {"fact": "ukraine_needs_aid", "source": "prolog"},
+        ],
+        "ukraine": [
+            {"fact": "russia_aggressive", "source": "prolog"},
+            {"fact": "nato_support_vital", "source": "prolog"},
         ],
         "russia": [
-            {"fact": "ukraine_west_support", "source": "prolog"},
-            {"fact": "nato_encirclement", "source": "prolog"},
-            {"fact": "sanctions_effective", "source": "prolog"},
-        ],
-        "china": [
-            {"fact": "taiwan_independence", "source": "prolog"},
-            {"fact": "us_pacific_dominance", "source": "prolog"},
-            {"fact": "south_china_sea_claim", "source": "verified"},
+            {"fact": "nato_expanding", "source": "prolog"},
+            {"fact": "sanctions_ineffective", "source": "prolog"},
         ],
     }
 
@@ -139,41 +131,26 @@ def get_agent_beliefs(agent_id: str) -> dict[str, Any]:
         from strategify.logic.bridge import StrategicBridge
 
         bridge = StrategicBridge()
-        if not bridge._initialized:
-            beliefs = MOCK_BELIEFS.get(agent_id.lower(), [{"fact": f"demo_belief_{agent_id}", "source": "prolog"}])
-            return {"agent_id": agent_id, "beliefs": beliefs, "count": len(beliefs), "mode": "demo"}
+        if not bridge._available:
+            return {"agent_id": agent_id, "beliefs": mock_beliefs.get(agent_id, []), "mode": "demo"}
 
-        beliefs = []
-        for result in bridge._prolog.query(f"believes({agent_id}, Fact)"):
-            fact_str = str(result.get("Fact", ""))
-            if fact_str:
-                beliefs.append({"fact": fact_str, "source": "prolog"})
+        query_res = bridge.query("agent_belief", agent_id, None)
+        if not query_res:
+            return {"agent_id": agent_id, "beliefs": mock_beliefs.get(agent_id, []), "mode": "demo"}
 
-        for result in bridge._prolog.query(f"knows({agent_id}, Fact)"):
-            fact_str = str(result.get("Fact", ""))
-            if fact_str:
-                beliefs.append({"fact": fact_str, "source": "verified"})
-
-        return {"agent_id": agent_id, "beliefs": beliefs, "count": len(beliefs), "mode": "production"}
+        return {"agent_id": agent_id, "beliefs": query_res, "mode": "production"}
     except Exception:
         logger.info("Using demo beliefs (Prolog unavailable)")
-        beliefs = MOCK_BELIEFS.get(agent_id.lower(), [{"fact": f"demo_belief_{agent_id}", "source": "prolog"}])
-        return {
-            "agent_id": agent_id,
-            "beliefs": beliefs,
-            "count": len(beliefs),
-            "mode": "demo",
-            "error": "Prolog unavailable",
-        }
+        return {"agent_id": agent_id, "beliefs": mock_beliefs.get(agent_id, []), "mode": "demo"}
 
 
 @app.get("/api/agents/{agent_id}/mcts-branches")
 def get_mcts_branches(agent_id: str) -> dict[str, Any]:
     """Fetch MCTS timeline branches from Clojure."""
-    MOCK_BRANCHES = [
+    mock_branches = [
         {"move": "attack", "version": 1, "state": {"p1_strength": 8, "p2_strength": 5}},
         {"move": "display", "version": 1, "state": {"p1_strength": 10, "p2_strength": 10}},
-        {"move": "retreat", "version": 1, "state": {"p1_strength": 10, "p2_strength": 8}},
+        {"move": "retreat", "version": 1, "state": {"p1_strength": 5, "p2_strength": 12}},
     ]
 
     try:
@@ -183,8 +160,8 @@ def get_mcts_branches(agent_id: str) -> dict[str, Any]:
         if not bridge._available:
             return {
                 "agent_id": agent_id,
-                "branches": MOCK_BRANCHES,
-                "count": len(MOCK_BRANCHES),
+                "branches": mock_branches,
+                "count": len(mock_branches),
                 "mode": "demo",
                 "error": "Clojure unavailable",
             }
@@ -201,8 +178,8 @@ def get_mcts_branches(agent_id: str) -> dict[str, Any]:
         if not branches:
             return {
                 "agent_id": agent_id,
-                "branches": MOCK_BRANCHES,
-                "count": len(MOCK_BRANCHES),
+                "branches": mock_branches,
+                "count": len(mock_branches),
                 "mode": "demo",
                 "error": "Clojure returned empty",
             }
@@ -223,8 +200,32 @@ def get_mcts_branches(agent_id: str) -> dict[str, Any]:
         logger.info("Using demo branches (Clojure unavailable)")
         return {
             "agent_id": agent_id,
-            "branches": MOCK_BRANCHES,
-            "count": len(MOCK_BRANCHES),
+            "branches": mock_branches,
+            "count": len(mock_branches),
             "mode": "demo",
             "error": "Clojure unavailable",
         }
+
+
+@app.post("/api/wargame/run")
+def run_wargame_api(steps: int = 5) -> dict[str, Any]:
+    engine = MultiDomainWargameEngine()
+    result = engine.run_wargame(total_steps=steps)
+    return {
+        "status": "success",
+        "total_steps": result.total_steps,
+        "winner": result.winner,
+        "actor_scores": result.actor_scores,
+    }
+
+
+@app.get("/api/epidemiology/trajectory")
+def get_epidemiology_trajectory_plot() -> dict[str, Any]:
+    plotter = EpidemicPlotter()
+    t = list(range(10))
+    s = [1.0 - i * 0.05 for i in t]
+    i_arr = [0.01 + i * 0.02 for i in t]
+    r = [0.0 + i * 0.03 for i in t]
+    u_arr = [0.1 * i for i in t]
+    b64 = plotter.render_trajectory_plot(t, s, i_arr, r, u_arr)
+    return {"status": "success", "plot_base64": b64}

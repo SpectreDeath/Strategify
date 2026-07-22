@@ -159,7 +159,7 @@ class TradeNetwork:
         The parent GeopolModel.
     """
 
-    def __init__(self, model: GeopolModel) -> None:
+    def __init__(self, model: GeopolModel | None = None) -> None:
         self.model = model
         # trade_flows[(id_a, id_b)] = volume (legacy dict, synced with graph)
         self.trade_flows: dict[tuple[int, int], float] = {}

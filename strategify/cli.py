@@ -119,9 +119,12 @@ def main(args: list[str] | None = None) -> Any:
     vector_parser.add_argument("scenario", nargs="?", default="Ukraine", help="Scenario name")
     vector_parser.add_argument("output", nargs="?", default="vector_map.html", help="Output path")
 
+    wargame_parser = subparsers.add_parser("wargame", help="Run multi-domain wargame scenario")
+    wargame_parser.add_argument("steps", nargs="?", type=int, default=5, help="Number of steps")
+
     parsed = parser.parse_args(args)
 
-    scen = "default" if parsed.scenario in ("Ukraine", "default") else parsed.scenario
+    scen = "default" if getattr(parsed, "scenario", "Ukraine") in ("Ukraine", "default") else getattr(parsed, "scenario", "default")
 
     if parsed.command == "run":
         model = GeopolModel(scenario=scen)
@@ -135,6 +138,13 @@ def main(args: list[str] | None = None) -> Any:
         model.step()
         out = create_vector_map_html(model, parsed.output)
         print(f"Generated vector map HTML: {out}")
+    elif parsed.command == "wargame":
+        from strategify.sim.wargame import MultiDomainWargameEngine
+        engine = MultiDomainWargameEngine()
+        print(f"Running Multi-Domain Wargame for {parsed.steps} steps...")
+        result = engine.run_wargame(total_steps=parsed.steps)
+        print(f"Wargame Finished! Winner: {result.winner}")
+        print(f"Final Scores: {result.actor_scores}")
     else:
         # Default to REPL if no command specified or 'repl'
         repl = InteractiveREPL(scenario_name=scen)
