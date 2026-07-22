@@ -10,6 +10,12 @@ from strategify.osint.adapters import (
     WorldBankAdapter,
 )
 from strategify.osint.cache import SQLiteCache
+from strategify.osint.epidemiology_adapter import (
+    EpidemiologyDataAdapter,
+    GDELTEpidemicFilter,
+    OWIDDataAdapter,
+    WHOApiAdapter,
+)
 from strategify.osint.features import (
     analyze_sentiment,
     analyze_texts_sentiment,
@@ -43,6 +49,10 @@ __all__ = [
     "ReliefWebAdapter",
     "CrisisMonitorAdapter",
     "WikipediaEventAdapter",
+    "EpidemiologyDataAdapter",
+    "WHOApiAdapter",
+    "OWIDDataAdapter",
+    "GDELTEpidemicFilter",
     # Cache
     "SQLiteCache",
     # Pipeline
