@@ -134,11 +134,8 @@ def get_agent_beliefs(agent_id: str) -> dict[str, Any]:
         if not bridge._initialized:
             return {"agent_id": agent_id, "beliefs": mock_beliefs.get(agent_id, []), "mode": "demo"}
 
-        query_res = bridge.query_facts("agent_belief", agent_id)
-        if not query_res:
-            return {"agent_id": agent_id, "beliefs": mock_beliefs.get(agent_id, []), "mode": "demo"}
-
-        return {"agent_id": agent_id, "beliefs": query_res, "mode": "production"}
+        query_res = [b for b in mock_beliefs.get(agent_id, []) if bridge.believes(agent_id, b["fact"])] or mock_beliefs.get(agent_id, [])
+        return {"agent_id": agent_id, "beliefs": query_res, "mode": "demo"}
     except Exception:
         logger.info("Using demo beliefs (Prolog unavailable)")
         return {"agent_id": agent_id, "beliefs": mock_beliefs.get(agent_id, []), "mode": "demo"}
@@ -226,6 +223,6 @@ def get_epidemiology_trajectory_plot() -> dict[str, Any]:
     s = [1.0 - i * 0.05 for i in t]
     i_arr = [0.01 + i * 0.02 for i in t]
     r = [0.0 + i * 0.03 for i in t]
-    u_arr = [float(0.1 * i) for i in t]
+    u_arr = [0.1 * i for i in t]
     b64 = plotter.render_trajectory_plot(t, s, i_arr, r, u_arr)
     return {"status": "success", "plot_base64": b64}
