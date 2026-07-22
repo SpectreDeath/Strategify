@@ -29,6 +29,13 @@ from strategify.osint.sources import (
     fetch_gdelt_for_regions,
     fetch_rss_feed,
 )
+from strategify.osint.surveillance_adapters import (
+    CDCCfaAdapter,
+    CDCNNDSSAdapter,
+    CDCWonderAdapter,
+    HealthDataGovAdapter,
+    NextstrainGenomicAdapter,
+)
 
 __all__ = [
     # Features
@@ -53,6 +60,11 @@ __all__ = [
     "WHOApiAdapter",
     "OWIDDataAdapter",
     "GDELTEpidemicFilter",
+    "CDCWonderAdapter",
+    "CDCNNDSSAdapter",
+    "CDCCfaAdapter",
+    "HealthDataGovAdapter",
+    "NextstrainGenomicAdapter",
     # Cache
     "SQLiteCache",
     # Pipeline

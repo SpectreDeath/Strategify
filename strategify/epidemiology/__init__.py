@@ -2,6 +2,7 @@
 
 from strategify.epidemiology.countermeasures import BioDefenseComponent, BiodefenseStatus
 from strategify.epidemiology.math_engine import NextGenMatrixOperator, NextGenResult
+from strategify.epidemiology.parameter_fitting import FitResult, SurveillanceParameterFitter
 from strategify.epidemiology.public_goods import PublicGoodsGame, PublicGoodsResult
 from strategify.epidemiology.replicator import ReplicatorDynamicsODE, ReplicatorSolution
 from strategify.epidemiology.seir import PathogenVariant, SEIRHEngine
@@ -21,4 +22,6 @@ __all__ = [
     "ReplicatorSolution",
     "PublicGoodsGame",
     "PublicGoodsResult",
+    "SurveillanceParameterFitter",
+    "FitResult",
 ]
