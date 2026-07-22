@@ -64,3 +64,76 @@ When feeding these datasets to a simulation framework or coding agent, standard 
 | **Transmission Rate ($\beta$)** | Effective contact/transmission rate per unit time. | Estimated by fitting ODE solver trajectories (`scipy.integrate.solve_ivp`) to weekly NNDSS incidence time-series via nonlinear least squares or Maximum Likelihood. |
 | **Effective Reproduction Number ($R_t$)** | Time-varying mean number of secondary infections per infected case. | Calculated from daily/weekly case series using renewal equation models (e.g., the `EpiNow2` methodology used by CDC CFA). |
 | **Population Denominators ($N, S_0$)** | Total population and initial susceptible pool size. | Ingested directly from CDC WONDER / U.S. Census Bureau population counts. |
+
+### update 11:20
+Both the **CDC** and the **NIH** maintain robust, open-access public APIs and developer portals. Combined with OpenFDA, they form the core ecosystem for federal health, surveillance, grant, and biomedical data.
+
+Here is a breakdown of the primary developer APIs available across both agencies:
+
+---
+
+## 1. Centers for Disease Control and Prevention (CDC)
+
+The CDC hosts its open data primarily through **Socrata-backed data portals** and specialized REST endpoints.
+
+### 🏛️ CDC Socrata Open Data API (SODA)
+
+* **What it provides:** Direct RESTful programmatic querying over tens of thousands of CDC datasets (including NNDSS surveillance counts, state-level vaccination coverage, mortality stats, and PLACES community-level health estimates).
+* **Endpoint:** `data.cdc.gov/resource/{dataset_identifier}.json`
+* **Features:** Supports **SoQL** (Socrata Query Language), allowing SQL-like filtering, aggregations, `$where` clauses, and pagination in JSON/CSV formats without requiring complex authentications for public tiers.
+
+### 📍 CDC PLACES API
+
+* **What it provides:** Model-based population health estimates down to the county, census tract, and ZIP Code Tabulation Area (ZCTA) levels across all US states.
+* **Use case:** Ingesting local baseline health indicators and chronic disease burdens to configure location-specific demographic models.
+
+### 📚 CDC Content Services / Media API
+
+* **What it provides:** Programmatic access to CDC’s structured public health guidance, articles, topic lists, and media assets in JSON/XML.
+* **Endpoint:** `tools.cdc.gov/api/v2/resources/media`
+
+### 🏢 NIOCCS Industry & Occupation Coding API
+
+* **What it provides:** Machine learning web API that translates unstructured industry and occupation narrative text into standardized NAICS and SOC codes in real time.
+* **Endpoint:** `wwwn.cdc.gov/nioccs/IOCode`
+
+---
+
+## 2. National Institutes of Health (NIH) & NCBI
+
+The NIH ecosystem provides extensive REST APIs through the **National Center for Biotechnology Information (NCBI)**, the **National Library of Medicine (NLM)**, and **NIH Extramural Research Databases**.
+
+### 🔬 NCBI Entrez Programming Utilities (E-Utilities)
+
+* **What it provides:** The gold standard API for accessing all 38+ NCBI biomedical databases, including **PubMed** (literature citations), **PMC** (PubMed Central full-text articles), **SRA** (Sequence Read Archive), and **GenBank** (nucleotide sequences).
+* **Key Endpoints:**
+* `esearch.fcgi`: Text searching across database fields.
+* `efetch.fcgi`: Retrieving full records or structured XML/JSON payloads.
+* `elink.fcgi`: Discovering hyper-linked relationships between citations and genomic records.
+
+
+* **Base URL:** `eutils.ncbi.nlm.nih.gov/entrez/eutils/`
+
+### 💰 NIH RePORTER API (V2)
+
+* **What it provides:** Programmatic access to all NIH-funded extramural research projects, principal investigators, grant funding allocations, indirect costs, study sections, and resulting publications.
+* **Use case:** Tracking scientific research funding trends, active grant portfolios, and institutional award metrics.
+* **Endpoint:** `api.reporter.nih.gov/v2/projects/search` (POST JSON payloads)
+
+### 💊 NLM RxNorm & Clinical Tables APIs
+
+* **What it provides:** Normalized concepts for clinical drugs (RxNorm), disease classifications, and clinical vocabularies (SNOMED CT, LOINC, ICD-10).
+* **Base URL:** `rxnav.nlm.nih.gov/REST/`
+* **Use case:** Standardizing drug names, ingredient mappings, and clinical observation fields across software interfaces.
+
+---
+
+## 3. Comparative Summary for Developer Pipelines
+
+| Portal / API | Agency | Core Data Domain | Best Format / Protocol |
+| --- | --- | --- | --- |
+| **SODA (`data.cdc.gov`)** | CDC | Disease surveillance, mortality, public health metrics | REST / JSON (via SoQL) |
+| **E-Utilities** | NIH/NCBI | PubMed literature, PMC articles, genomic metadata | REST / XML & JSON |
+| **NIH RePORTER V2** | NIH | Federal research grants, principal investigators, publications | REST / JSON (POST payload queries) |
+| **RxNav / RxNorm** | NIH/NLM | Standardized drug vocabularies, clinical tables | REST / JSON |
+| **OpenFDA** | FDA | Adverse events, drug/device labels, enforcement reports | REST / JSON |

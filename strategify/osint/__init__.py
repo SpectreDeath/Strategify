@@ -10,6 +10,7 @@ from strategify.osint.adapters import (
     WorldBankAdapter,
 )
 from strategify.osint.cache import SQLiteCache
+from strategify.osint.cdc_soda_adapter import CDCSodaApiAdapter, SoQLQuery
 from strategify.osint.epidemiology_adapter import (
     EpidemiologyDataAdapter,
     GDELTEpidemicFilter,
@@ -21,7 +22,9 @@ from strategify.osint.features import (
     analyze_texts_sentiment,
     compute_region_features,
 )
+from strategify.osint.nih_reporter_adapter import NIHGrantProject, NIHReporterApiAdapter
 from strategify.osint.pipeline import FeaturePipeline
+from strategify.osint.rxnorm_adapter import RxNormApiAdapter, RxNormConcept
 from strategify.osint.sources import (
     compute_event_features,
     events_to_texts,
@@ -65,6 +68,12 @@ __all__ = [
     "CDCCfaAdapter",
     "HealthDataGovAdapter",
     "NextstrainGenomicAdapter",
+    "CDCSodaApiAdapter",
+    "SoQLQuery",
+    "NIHReporterApiAdapter",
+    "NIHGrantProject",
+    "RxNormApiAdapter",
+    "RxNormConcept",
     # Cache
     "SQLiteCache",
     # Pipeline
