@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from strategify.agents.state_actor import StateActorAgent
 from strategify.config.settings import REGION_COLORS
+from strategify.reasoning.swarm import StrategifySwarm
 from strategify.sim.model import GeopolModel
 from strategify.sim.wargame import MultiDomainWargameEngine
 from strategify.viz.epidemic_plots import EpidemicPlotter
@@ -226,3 +227,18 @@ def get_epidemiology_trajectory_plot() -> dict[str, Any]:
     u_arr = [0.1 * i for i in t]
     b64 = plotter.render_trajectory_plot(t, s, i_arr, r, u_arr)
     return {"status": "success", "plot_base64": b64}
+
+
+@app.post("/api/swarm/deliberate")
+def run_swarm_deliberation_api(actor_id: str = "BlueLand") -> dict[str, Any]:
+    engine = MultiDomainWargameEngine()
+    swarm = StrategifySwarm(actor_id=actor_id)
+    res = swarm.deliberate_step(engine)
+    return {
+        "status": "success",
+        "step": res.step,
+        "actor_id": res.actor_id,
+        "consensus_score": res.consensus_score,
+        "consensus_action_vector": res.consensus_action_vector,
+        "proposals": [p.__dict__ for p in res.proposals],
+    }

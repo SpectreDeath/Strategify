@@ -4,15 +4,20 @@ Usage:
   python -m strategify.cli run <scenario_name> [n_steps]
   python -m strategify.cli repl [scenario_name]
   python -m strategify.cli vector-map <scenario_name> [output_path]
+  python -m strategify.cli wargame [steps]
+  python -m strategify.cli swarm [steps]
 """
 
 from __future__ import annotations
 
 import argparse
 import logging
+from pathlib import Path
 from typing import Any
 
+from strategify.reasoning.swarm import StrategifySwarm
 from strategify.sim.model import GeopolModel
+from strategify.sim.wargame import MultiDomainWargameEngine
 from strategify.viz.vector_map import create_vector_map_html
 
 logger = logging.getLogger(__name__)
@@ -48,18 +53,19 @@ class InteractiveREPL:
         if not target:
             print(f"Error: Region '{region_id}' not found.")
             return
-        target.posture = posture
-        print(f"Issued override: Set [{region_id}] posture -> '{posture}'")
 
-    def export_vector_map(self, output_path: str = "vector_map.html") -> None:
-        """Export WebGL vector map."""
-        out = create_vector_map_html(self.model, output_path)
+        print(f"Overriding region '{region_id}' posture: {target.posture} -> {posture}")
+        target.posture = posture
+
+    def export_map(self, output_path: str = "vector_map.html") -> None:
+        """Export current state as vector map HTML."""
+        out = Path(create_vector_map_html(self.model, output_path))
         print(f"Exported interactive vector map to: {out.resolve()}")
 
     def start_repl(self) -> None:
         """Start interactive command loop."""
         print("=== Strategify Interactive REPL ===")
-        print("Type 'help' for commands or 'exit' to quit.\n")
+        print("Commands: step [n], status, override <region> <posture>, map [out.html], exit")
         self.print_status()
 
         while True:
@@ -71,31 +77,25 @@ class InteractiveREPL:
                 parts = line.split()
                 cmd = parts[0].lower()
 
-                if cmd in ("exit", "quit", "q"):
+                if cmd in ("exit", "quit"):
                     print("Exiting REPL.")
                     break
-                elif cmd == "help":
-                    print("Available Commands:")
-                    print("  step [n]             - Step simulation N times (default: 1)")
-                    print("  status               - Display current agent postures & info")
-                    print("  override <rid> <act> - Force posture (e.g. override UKR Escalate)")
-                    print("  vector-map [path]    - Export interactive HTML vector map")
-                    print("  exit / quit          - Exit REPL")
-                elif cmd == "step":
-                    n = int(parts[1]) if len(parts) > 1 else 1
-                    self.run_steps(n)
                 elif cmd == "status":
                     self.print_status()
+                elif cmd == "step":
+                    steps = int(parts[1]) if len(parts) > 1 else 1
+                    self.run_steps(steps)
                 elif cmd == "override":
                     if len(parts) < 3:
                         print("Usage: override <region_id> <posture>")
                     else:
                         self.issue_override(parts[1], parts[2])
-                elif cmd in ("vector-map", "vectormap"):
-                    out = parts[1] if len(parts) > 1 else "vector_map.html"
-                    self.export_vector_map(out)
+                elif cmd == "map":
+                    out_path = parts[1] if len(parts) > 1 else "vector_map.html"
+                    self.export_map(out_path)
                 else:
-                    print(f"Unknown command: '{cmd}'. Type 'help' for available commands.")
+                    print(f"Unknown command: '{cmd}'. Commands: step [n], status, override, map, exit")
+
             except KeyboardInterrupt:
                 print("\nKeyboardInterrupt. Exiting.")
                 break
@@ -122,6 +122,9 @@ def main(args: list[str] | None = None) -> Any:
     wargame_parser = subparsers.add_parser("wargame", help="Run multi-domain wargame scenario")
     wargame_parser.add_argument("steps", nargs="?", type=int, default=5, help="Number of steps")
 
+    swarm_parser = subparsers.add_parser("swarm", help="Run autonomous LLM agent swarm wargame")
+    swarm_parser.add_argument("steps", nargs="?", type=int, default=3, help="Number of steps")
+
     parsed = parser.parse_args(args)
 
     scen = "default" if getattr(parsed, "scenario", "Ukraine") in ("Ukraine", "default") else getattr(parsed, "scenario", "default")
@@ -139,12 +142,21 @@ def main(args: list[str] | None = None) -> Any:
         out = create_vector_map_html(model, parsed.output)
         print(f"Generated vector map HTML: {out}")
     elif parsed.command == "wargame":
-        from strategify.sim.wargame import MultiDomainWargameEngine
         engine = MultiDomainWargameEngine()
         print(f"Running Multi-Domain Wargame for {parsed.steps} steps...")
         result = engine.run_wargame(total_steps=parsed.steps)
         print(f"Wargame Finished! Winner: {result.winner}")
         print(f"Final Scores: {result.actor_scores}")
+    elif parsed.command == "swarm":
+        engine = MultiDomainWargameEngine()
+        swarm = StrategifySwarm()
+        print(f"Starting Autonomous LLM Swarm Deliberation for {parsed.steps} steps...")
+        for step_i in range(1, parsed.steps + 1):
+            res = swarm.deliberate_step(engine)
+            print(f"--- Step {step_i} Consensus Score: {res.consensus_score:.2f} ---")
+            for prop in res.proposals:
+                print(f"  [{prop.persona_name} - {prop.domain}]: {prop.recommended_action}")
+        print("Swarm deliberation completed successfully.")
     else:
         # Default to REPL if no command specified or 'repl'
         repl = InteractiveREPL(scenario_name=scen)

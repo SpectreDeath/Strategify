@@ -11,6 +11,7 @@ from strategify.reasoning.llm import LLMDecisionEngine, LLMStrategyCache
 from strategify.reasoning.multiscale import MultiScaleModel, Scale
 from strategify.reasoning.propaganda import Narrative, PropagandaEngine
 from strategify.reasoning.strategies import PERSONALITY_STRATEGIES, DiplomacyStrategy
+from strategify.reasoning.swarm import AgentProposal, StrategifySwarm, SwarmAgentPersona, SwarmDeliberationResult
 from strategify.reasoning.temporal import SEASON_MODIFIERS, Season, TemporalDynamics
 from strategify.reasoning.treaty_compliance import (
     ComplianceReport,
