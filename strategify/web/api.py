@@ -131,10 +131,10 @@ def get_agent_beliefs(agent_id: str) -> dict[str, Any]:
         from strategify.logic.bridge import StrategicBridge
 
         bridge = StrategicBridge()
-        if not bridge._available:
+        if not bridge._initialized:
             return {"agent_id": agent_id, "beliefs": mock_beliefs.get(agent_id, []), "mode": "demo"}
 
-        query_res = bridge.query("agent_belief", agent_id, None)
+        query_res = bridge.query_facts("agent_belief", agent_id)
         if not query_res:
             return {"agent_id": agent_id, "beliefs": mock_beliefs.get(agent_id, []), "mode": "demo"}
 
@@ -222,10 +222,10 @@ def run_wargame_api(steps: int = 5) -> dict[str, Any]:
 @app.get("/api/epidemiology/trajectory")
 def get_epidemiology_trajectory_plot() -> dict[str, Any]:
     plotter = EpidemicPlotter()
-    t = list(range(10))
+    t = [float(i) for i in range(10)]
     s = [1.0 - i * 0.05 for i in t]
     i_arr = [0.01 + i * 0.02 for i in t]
     r = [0.0 + i * 0.03 for i in t]
-    u_arr = [0.1 * i for i in t]
+    u_arr = [float(0.1 * i) for i in t]
     b64 = plotter.render_trajectory_plot(t, s, i_arr, r, u_arr)
     return {"status": "success", "plot_base64": b64}
