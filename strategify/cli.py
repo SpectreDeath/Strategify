@@ -10,6 +10,7 @@ Usage:
   python -m strategify.cli live-feed [steps]
   python -m strategify.cli report [output_path]
   python -m strategify.cli resilience [target_node_id]
+  python -m strategify.cli uq [samples]
 """
 
 from __future__ import annotations
@@ -25,6 +26,7 @@ from strategify.rl.training_deep import DeepRLTrainer
 from strategify.sim.counterfactual import CounterfactualSimulator
 from strategify.sim.infrastructure import CyberPhysicalResilienceEngine
 from strategify.sim.model import GeopolModel
+from strategify.sim.uncertainty import UncertaintyQuantificationEngine
 from strategify.sim.wargame import MultiDomainWargameEngine
 from strategify.viz.vector_map import create_vector_map_html
 from strategify.viz.war_room_reporter import StrategifyWarRoomReporter
@@ -148,6 +150,9 @@ def main(args: list[str] | None = None) -> Any:
     resilience_parser = subparsers.add_parser("resilience", help="Simulate cyber-physical infrastructure cascades")
     resilience_parser.add_argument("target", nargs="?", default="PWR_01", help="Target node ID")
 
+    uq_parser = subparsers.add_parser("uq", help="Run Monte Carlo Uncertainty Quantification & Sensitivity Analysis")
+    uq_parser.add_argument("samples", nargs="?", type=int, default=10, help="Number of Monte Carlo samples")
+
     parsed = parser.parse_args(args)
 
     scen = "default" if getattr(parsed, "scenario", "Ukraine") in ("Ukraine", "default") else getattr(parsed, "scenario", "default")
@@ -217,6 +222,13 @@ def main(args: list[str] | None = None) -> Any:
         print(f"Cascade Failure Index: {res.cascade_failure_index:.2%}")
         print(f"Collapsed Nodes: {res.collapsed_nodes_count} / {res.total_nodes}")
         print(f"Estimated MTTR: {res.mean_time_to_recovery_days:.1f} days")
+    elif parsed.command == "uq":
+        uq_engine = UncertaintyQuantificationEngine()
+        uq_res = uq_engine.run_monte_carlo(num_samples=parsed.samples)
+        print(f"--- Monte Carlo Uncertainty Quantification Results (N={uq_res.num_samples}) ---")
+        print(f"Readiness Quantiles (P5, P50, P95): {uq_res.readiness_quantiles}")
+        print(f"Infection Quantiles (P5, P50, P95): {uq_res.infections_quantiles}")
+        print(f"Parameter Sensitivity Rankings: {uq_res.sensitivity_indices}")
     else:
         # Default to REPL if no command specified or 'repl'
         repl = InteractiveREPL(scenario_name=scen)

@@ -12,6 +12,7 @@ from strategify.reasoning.swarm import StrategifySwarm
 from strategify.sim.counterfactual import CounterfactualSimulator
 from strategify.sim.infrastructure import CyberPhysicalResilienceEngine
 from strategify.sim.model import GeopolModel
+from strategify.sim.uncertainty import UncertaintyQuantificationEngine
 from strategify.sim.wargame import MultiDomainWargameEngine
 from strategify.viz.epidemic_plots import EpidemicPlotter
 from strategify.viz.war_room_reporter import StrategifyWarRoomReporter
@@ -320,4 +321,24 @@ def run_resilience_simulation_api(
         "systemic_bottleneck_nodes": result.systemic_bottleneck_nodes,
         "mean_time_to_recovery_days": result.mean_time_to_recovery_days,
         "nodes_state": result.nodes_state,
+    }
+
+
+@app.post("/api/uq/simulate")
+def run_uncertainty_quantification_api(
+    actor_id: str = "BlueLand",
+    num_samples: int = 10,
+    steps: int = 3,
+) -> dict[str, Any]:
+    engine = UncertaintyQuantificationEngine(actor_id=actor_id)
+    res = engine.run_monte_carlo(num_samples=num_samples, steps=steps)
+    return {
+        "status": "success",
+        "actor_id": actor_id,
+        "num_samples": res.num_samples,
+        "steps": res.steps,
+        "readiness_quantiles": res.readiness_quantiles,
+        "infections_quantiles": res.infections_quantiles,
+        "gdp_growth_quantiles": res.gdp_growth_quantiles,
+        "sensitivity_indices": res.sensitivity_indices,
     }
