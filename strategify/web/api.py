@@ -13,6 +13,7 @@ from strategify.sim.counterfactual import CounterfactualSimulator
 from strategify.sim.model import GeopolModel
 from strategify.sim.wargame import MultiDomainWargameEngine
 from strategify.viz.epidemic_plots import EpidemicPlotter
+from strategify.viz.war_room_reporter import StrategifyWarRoomReporter
 
 logger = logging.getLogger(__name__)
 
@@ -273,4 +274,24 @@ def run_counterfactual_simulation_api(steps: int = 5, actor_id: str = "BlueLand"
         "actor_id": actor_id,
         "steps": steps,
         "branches": {b_key: b_res.__dict__ for b_key, b_res in branches.items()},
+    }
+
+
+@app.post("/api/report/generate")
+def generate_war_room_report_api(actor_id: str = "BlueLand", steps: int = 3) -> dict[str, Any]:
+    reporter = StrategifyWarRoomReporter(actor_id=actor_id)
+    payload = reporter.generate_report(steps=steps)
+    return {
+        "status": "success",
+        "title": payload.title,
+        "actor_id": payload.actor_id,
+        "threat_level": payload.threat_level,
+        "readiness_score": payload.readiness_score,
+        "infection_cases": payload.infection_cases,
+        "gdp_growth_pct": payload.gdp_growth_pct,
+        "diplomatic_tension": payload.diplomatic_tension,
+        "swarm_consensus_score": payload.swarm_consensus_score,
+        "swarm_proposals": payload.swarm_proposals,
+        "counterfactual_branches": payload.counterfactual_branches,
+        "html_content": payload.html_content,
     }

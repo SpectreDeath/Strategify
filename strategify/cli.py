@@ -8,6 +8,7 @@ Usage:
   python -m strategify.cli swarm [steps] [--provider PROVIDER] [--model MODEL]
   python -m strategify.cli train-rl [episodes]
   python -m strategify.cli live-feed [steps]
+  python -m strategify.cli report [output_path]
 """
 
 from __future__ import annotations
@@ -24,6 +25,7 @@ from strategify.sim.counterfactual import CounterfactualSimulator
 from strategify.sim.model import GeopolModel
 from strategify.sim.wargame import MultiDomainWargameEngine
 from strategify.viz.vector_map import create_vector_map_html
+from strategify.viz.war_room_reporter import StrategifyWarRoomReporter
 
 logger = logging.getLogger(__name__)
 
@@ -138,6 +140,9 @@ def main(args: list[str] | None = None) -> Any:
     live_feed_parser = subparsers.add_parser("live-feed", help="Monitor live OSINT feeds & counterfactual branches")
     live_feed_parser.add_argument("steps", nargs="?", type=int, default=3, help="Simulation steps per branch")
 
+    report_parser = subparsers.add_parser("report", help="Generate executive war-room briefing report HTML")
+    report_parser.add_argument("output", nargs="?", default="war_room_brief.html", help="Output HTML file path")
+
     parsed = parser.parse_args(args)
 
     scen = "default" if getattr(parsed, "scenario", "Ukraine") in ("Ukraine", "default") else getattr(parsed, "scenario", "default")
@@ -196,6 +201,10 @@ def main(args: list[str] | None = None) -> Any:
                 f"Infections={b_res.final_infections:.1f}, GDP={b_res.final_gdp_growth:.2%}, Divergence={b_res.divergence_score:.2f}"
             )
         print("Live OSINT feed & counterfactual simulation finished.")
+    elif parsed.command == "report":
+        reporter = StrategifyWarRoomReporter()
+        out_file = reporter.export_html(output_path=parsed.output)
+        print(f"Executive War-Room Briefing HTML exported to: {out_file}")
     else:
         # Default to REPL if no command specified or 'repl'
         repl = InteractiveREPL(scenario_name=scen)

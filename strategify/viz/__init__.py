@@ -20,6 +20,7 @@ from strategify.viz.reports import generate_report
 from strategify.viz.status import ActorStatusElement
 from strategify.viz.timeline import export_timeline
 from strategify.viz.vector_map import VectorMapBuilder, create_vector_map_html
+from strategify.viz.war_room_reporter import ExecutiveReportPayload, StrategifyWarRoomReporter
 
 __all__ = [
     "create_map",
@@ -42,4 +43,6 @@ __all__ = [
     "export_timeline",
     "create_early_warning_dashboard",
     "EpidemicPlotter",
+    "StrategifyWarRoomReporter",
+    "ExecutiveReportPayload",
 ]
