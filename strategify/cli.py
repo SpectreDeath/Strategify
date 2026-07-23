@@ -9,6 +9,7 @@ Usage:
   python -m strategify.cli train-rl [episodes]
   python -m strategify.cli live-feed [steps]
   python -m strategify.cli report [output_path]
+  python -m strategify.cli resilience [target_node_id]
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ from strategify.osint.live_feed import StrategifyLiveFeed
 from strategify.reasoning.swarm import StrategifySwarm
 from strategify.rl.training_deep import DeepRLTrainer
 from strategify.sim.counterfactual import CounterfactualSimulator
+from strategify.sim.infrastructure import CyberPhysicalResilienceEngine
 from strategify.sim.model import GeopolModel
 from strategify.sim.wargame import MultiDomainWargameEngine
 from strategify.viz.vector_map import create_vector_map_html
@@ -143,6 +145,9 @@ def main(args: list[str] | None = None) -> Any:
     report_parser = subparsers.add_parser("report", help="Generate executive war-room briefing report HTML")
     report_parser.add_argument("output", nargs="?", default="war_room_brief.html", help="Output HTML file path")
 
+    resilience_parser = subparsers.add_parser("resilience", help="Simulate cyber-physical infrastructure cascades")
+    resilience_parser.add_argument("target", nargs="?", default="PWR_01", help="Target node ID")
+
     parsed = parser.parse_args(args)
 
     scen = "default" if getattr(parsed, "scenario", "Ukraine") in ("Ukraine", "default") else getattr(parsed, "scenario", "default")
@@ -205,6 +210,13 @@ def main(args: list[str] | None = None) -> Any:
         reporter = StrategifyWarRoomReporter()
         out_file = reporter.export_html(output_path=parsed.output)
         print(f"Executive War-Room Briefing HTML exported to: {out_file}")
+    elif parsed.command == "resilience":
+        engine = CyberPhysicalResilienceEngine()
+        res = engine.inject_disruption(target_node_id=parsed.target)
+        print(f"--- Cyber-Physical Infrastructure Cascade Stress Test (Target: {parsed.target}) ---")
+        print(f"Cascade Failure Index: {res.cascade_failure_index:.2%}")
+        print(f"Collapsed Nodes: {res.collapsed_nodes_count} / {res.total_nodes}")
+        print(f"Estimated MTTR: {res.mean_time_to_recovery_days:.1f} days")
     else:
         # Default to REPL if no command specified or 'repl'
         repl = InteractiveREPL(scenario_name=scen)

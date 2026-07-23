@@ -10,6 +10,7 @@ from strategify.config.settings import REGION_COLORS
 from strategify.osint.live_feed import StrategifyLiveFeed
 from strategify.reasoning.swarm import StrategifySwarm
 from strategify.sim.counterfactual import CounterfactualSimulator
+from strategify.sim.infrastructure import CyberPhysicalResilienceEngine
 from strategify.sim.model import GeopolModel
 from strategify.sim.wargame import MultiDomainWargameEngine
 from strategify.viz.epidemic_plots import EpidemicPlotter
@@ -294,4 +295,29 @@ def generate_war_room_report_api(actor_id: str = "BlueLand", steps: int = 3) -> 
         "swarm_proposals": payload.swarm_proposals,
         "counterfactual_branches": payload.counterfactual_branches,
         "html_content": payload.html_content,
+    }
+
+
+@app.post("/api/resilience/simulate")
+def run_resilience_simulation_api(
+    target_node_id: str = "PWR_01",
+    cyber_exploit_severity: float = 0.5,
+    workforce_absenteeism_pct: float = 0.2,
+) -> dict[str, Any]:
+    engine = CyberPhysicalResilienceEngine()
+    result = engine.inject_disruption(
+        target_node_id=target_node_id,
+        cyber_exploit_severity=cyber_exploit_severity,
+        workforce_absenteeism_pct=workforce_absenteeism_pct,
+    )
+    return {
+        "status": "success",
+        "target_node_id": target_node_id,
+        "total_nodes": result.total_nodes,
+        "collapsed_nodes_count": result.collapsed_nodes_count,
+        "degraded_nodes_count": result.degraded_nodes_count,
+        "cascade_failure_index": result.cascade_failure_index,
+        "systemic_bottleneck_nodes": result.systemic_bottleneck_nodes,
+        "mean_time_to_recovery_days": result.mean_time_to_recovery_days,
+        "nodes_state": result.nodes_state,
     }
