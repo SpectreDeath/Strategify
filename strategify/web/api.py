@@ -7,7 +7,9 @@ from pydantic import BaseModel
 
 from strategify.agents.state_actor import StateActorAgent
 from strategify.config.settings import REGION_COLORS
+from strategify.osint.live_feed import StrategifyLiveFeed
 from strategify.reasoning.swarm import StrategifySwarm
+from strategify.sim.counterfactual import CounterfactualSimulator
 from strategify.sim.model import GeopolModel
 from strategify.sim.wargame import MultiDomainWargameEngine
 from strategify.viz.epidemic_plots import EpidemicPlotter
@@ -241,4 +243,34 @@ def run_swarm_deliberation_api(actor_id: str = "BlueLand") -> dict[str, Any]:
         "consensus_score": res.consensus_score,
         "consensus_action_vector": res.consensus_action_vector,
         "proposals": [p.__dict__ for p in res.proposals],
+    }
+
+
+@app.get("/api/osint/live-feed")
+def get_osint_live_feed_api() -> dict[str, Any]:
+    feed = StrategifyLiveFeed()
+    events = feed.fetch_live_events()
+    return {
+        "status": "success",
+        "count": len(events),
+        "events": [evt.__dict__ for evt in events],
+    }
+
+
+@app.post("/api/counterfactual/simulate")
+def run_counterfactual_simulation_api(steps: int = 5, actor_id: str = "BlueLand") -> dict[str, Any]:
+    feed = StrategifyLiveFeed()
+    events = feed.fetch_live_events()
+
+    engine = MultiDomainWargameEngine()
+    snap = feed.calibrate_snapshot(engine.get_state_snapshot(), events, actor_id=actor_id)
+
+    sim = CounterfactualSimulator(actor_id=actor_id)
+    branches = sim.simulate_branches(snap, steps=steps)
+
+    return {
+        "status": "success",
+        "actor_id": actor_id,
+        "steps": steps,
+        "branches": {b_key: b_res.__dict__ for b_key, b_res in branches.items()},
     }

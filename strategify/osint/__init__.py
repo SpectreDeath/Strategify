@@ -42,6 +42,8 @@ from strategify.osint.surveillance_adapters import (
     NextstrainGenomicAdapter,
 )
 
+from strategify.osint.live_feed import OSINTEvent, StrategifyLiveFeed
+
 __all__ = [
     # Features
     "analyze_sentiment",
@@ -79,6 +81,8 @@ __all__ = [
     "FederalApiCacheThrottle",
     "SoQLToFitterPipeline",
     "PipelineFitOutcome",
+    "StrategifyLiveFeed",
+    "OSINTEvent",
     # Cache
     "SQLiteCache",
     # Pipeline

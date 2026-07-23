@@ -7,6 +7,7 @@ Usage:
   python -m strategify.cli wargame [steps]
   python -m strategify.cli swarm [steps] [--provider PROVIDER] [--model MODEL]
   python -m strategify.cli train-rl [episodes]
+  python -m strategify.cli live-feed [steps]
 """
 
 from __future__ import annotations
@@ -16,8 +17,10 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from strategify.osint.live_feed import StrategifyLiveFeed
 from strategify.reasoning.swarm import StrategifySwarm
 from strategify.rl.training_deep import DeepRLTrainer
+from strategify.sim.counterfactual import CounterfactualSimulator
 from strategify.sim.model import GeopolModel
 from strategify.sim.wargame import MultiDomainWargameEngine
 from strategify.viz.vector_map import create_vector_map_html
@@ -132,6 +135,9 @@ def main(args: list[str] | None = None) -> Any:
     train_parser = subparsers.add_parser("train-rl", help="Train Deep RL agent policy in EpidemicEnv")
     train_parser.add_argument("episodes", nargs="?", type=int, default=10, help="Number of training episodes")
 
+    live_feed_parser = subparsers.add_parser("live-feed", help="Monitor live OSINT feeds & counterfactual branches")
+    live_feed_parser.add_argument("steps", nargs="?", type=int, default=3, help="Simulation steps per branch")
+
     parsed = parser.parse_args(args)
 
     scen = "default" if getattr(parsed, "scenario", "Ukraine") in ("Ukraine", "default") else getattr(parsed, "scenario", "default")
@@ -170,6 +176,26 @@ def main(args: list[str] | None = None) -> Any:
         res = trainer.train(episodes=parsed.episodes)
         print(f"Training Finished! Mean Reward: {res.mean_reward:.2f}")
         print(f"Optimal Control Cost Benchmark: {res.optimal_control_cost_benchmark:.2f}")
+    elif parsed.command == "live-feed":
+        feed = StrategifyLiveFeed()
+        events = feed.fetch_live_events()
+        print(f"Ingested {len(events)} Live OSINT Events:")
+        for evt in events:
+            print(f"  [{evt.domain}] {evt.headline} (Severity: {evt.severity:.2f})")
+
+        engine = MultiDomainWargameEngine()
+        snap = feed.calibrate_snapshot(engine.get_state_snapshot(), events)
+
+        sim = CounterfactualSimulator()
+        branches = sim.simulate_branches(snap, steps=parsed.steps)
+
+        print("\n--- Parallel Counterfactual Crisis Simulation Results ---")
+        for b_name, b_res in branches.items():
+            print(
+                f"  Branch [{b_name.upper()}]: Readiness={b_res.final_readiness:.1f}, "
+                f"Infections={b_res.final_infections:.1f}, GDP={b_res.final_gdp_growth:.2%}, Divergence={b_res.divergence_score:.2f}"
+            )
+        print("Live OSINT feed & counterfactual simulation finished.")
     else:
         # Default to REPL if no command specified or 'repl'
         repl = InteractiveREPL(scenario_name=scen)

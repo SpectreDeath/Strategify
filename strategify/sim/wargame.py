@@ -132,6 +132,22 @@ class MultiDomainWargameEngine:
         logger.info("MultiDomainWargameEngine executed Step %d across %d actors", self.step_count, len(self.actors))
         return snapshot
 
+    def get_state_snapshot(self) -> DomainStateSnapshot:
+        """Return current state snapshot or compute initial snapshot if history is empty."""
+        if self.history:
+            return self.history[-1]
+
+        # Initial baseline snapshot
+        return DomainStateSnapshot(
+            step=self.step_count,
+            military_readiness=dict.fromkeys(self.actors, 100.0),
+            spectrum_control_pct=dict.fromkeys(self.actors, 50.0),
+            cyber_deception_index=0.5,
+            gdp_growth_rate=dict.fromkeys(self.actors, 0.02),
+            diplomatic_tensions=0.3,
+            epidemic_infections=dict.fromkeys(self.actors, 10.0),
+        )
+
     def run_wargame(self, total_steps: int = 10) -> WargameRunResult:
         """Run multi-domain simulation for a fixed number of steps.
 
