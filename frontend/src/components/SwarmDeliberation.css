@@ -1,5 +1,6 @@
 .swarm-deliberation-container {
   background: rgba(15, 23, 42, 0.85);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
@@ -64,6 +65,7 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
+}
 
 .metric-label {
   color: #94a3b8;
@@ -124,6 +126,7 @@
 .persona-name {
   font-weight: 700;
   font-size: 1rem;
+}
 
 .domain-badge {
   font-size: 0.75rem;
@@ -132,6 +135,7 @@
   color: white;
   width: fit-content;
   margin-top: 4px;
+}
 
 .action-label,
 .reasoning-label {
@@ -139,17 +143,20 @@
   color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
 
 .action-text {
   margin: 4px 0 0 0;
   font-weight: 600;
   color: #e2e8f0;
+}
 
 .reasoning-text {
   margin: 4px 0 0 0;
   font-size: 0.85rem;
   color: #cbd5e1;
   line-height: 1.4;
+}
 
 .proposal-confidence {
   display: flex;
@@ -157,6 +164,7 @@
   gap: 8px;
   font-size: 0.8rem;
   color: #94a3b8;
+}
 
 .confidence-track {
   flex: 1;
@@ -164,26 +172,32 @@
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
+}
 
 .confidence-fill {
   height: 100%;
   background: #38bdf8;
+}
 
 .confidence-num {
   font-weight: 600;
   color: #38bdf8;
+}
 
 .vector-summary {
   background: rgba(15, 23, 42, 0.9);
   padding: 16px;
   border-radius: 8px;
   border-left: 4px solid #38bdf8;
+}
 
 .vector-summary h4 {
   margin: 0 0 8px 0;
   color: #94a3b8;
+}
 
 .vector-summary pre {
   margin: 0;
   font-family: monospace;
   color: #a7f3d0;
+}
