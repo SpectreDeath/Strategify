@@ -109,7 +109,7 @@ class MultiDomainWargameEngine:
         for actor in self.actors:
             eng = self.epidemic_engines[actor]
             eng.step(dt_days=1.0, npi_effectiveness=0.3, vaccination_rate=0.1)
-            infections[actor] = float(eng.infectious)
+            infections[actor] = eng.infectious
 
             # Cross-domain compound effect: Infections degrade military readiness
             readiness = max(0.0, 100.0 - (eng.infectious / eng.population) * 200.0)
@@ -122,9 +122,9 @@ class MultiDomainWargameEngine:
             step=self.step_count,
             military_readiness=military_readiness,
             spectrum_control_pct=spectrum_ctrl,
-            cyber_deception_index=float(deception_signal.credibility),
+            cyber_deception_index=deception_signal.credibility,
             gdp_growth_rate=gdp_rates,
-            diplomatic_tensions=float(offer.territorial_concession),
+            diplomatic_tensions=offer.territorial_concession,
             epidemic_infections=infections,
         )
         self.history.append(snapshot)
