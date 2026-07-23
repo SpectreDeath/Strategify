@@ -20,4 +20,16 @@ export const xaiApi = {
   getMCTSBranches: (agentId) => api.get(`/agents/${agentId}/mcts-branches`),
 };
 
+export const wargameApi = {
+  runWargame: (steps = 5) => api.post(`/wargame/run?steps=${steps}`),
+};
+
+export const swarmApi = {
+  deliberate: (actorId = 'BlueLand') => api.post(`/swarm/deliberate?actor_id=${actorId}`),
+};
+
+export const epidemiologyApi = {
+  getTrajectoryPlot: () => api.get('/epidemiology/trajectory'),
+};
+
 export default api;

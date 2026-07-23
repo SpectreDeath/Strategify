@@ -18,12 +18,15 @@ from strategify.rl.training import (
     train,
     train_episode,
 )
+from strategify.rl.training_deep import DeepRLTrainer, PolicyNetwork
 
 __all__ = [
     "GeopolEnv",
     "EpidemicEnv",
     "RLControlBenchmark",
     "BenchmarkComparisonResult",
+    "DeepRLTrainer",
+    "PolicyNetwork",
     "train",
     "train_episode",
     "SimplePolicy",

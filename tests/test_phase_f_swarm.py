@@ -29,7 +29,7 @@ def test_cli_swarm_command(capsys):
     main(["swarm", "2"])
     captured = capsys.readouterr()
 
-    assert "Starting Autonomous LLM Swarm Deliberation for 2 steps..." in captured.out
+    assert "Starting Autonomous LLM Swarm Deliberation for 2 steps" in captured.out
     assert "Consensus Score:" in captured.out
     assert "Swarm deliberation completed successfully." in captured.out
 

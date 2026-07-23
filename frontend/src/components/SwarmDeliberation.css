@@ -1,0 +1,189 @@
+.swarm-deliberation-container {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  color: #f8fafc;
+  margin-top: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+}
+
+.swarm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.swarm-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.swarm-title-group h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #38bdf8;
+}
+
+.actor-badge {
+  background: #0284c7;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.run-deliberation-btn {
+  background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.run-deliberation-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+}
+
+.consensus-card {
+  background: rgba(30, 41, 59, 0.7);
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.consensus-metric {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+.metric-label {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.metric-value {
+  color: #34d399;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.consensus-bar-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.consensus-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  transition: width 0.4s ease;
+}
+
+.personas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.persona-card {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.persona-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.persona-icon {
+  font-size: 1.8rem;
+}
+
+.persona-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.persona-name {
+  font-weight: 700;
+  font-size: 1rem;
+
+.domain-badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: white;
+  width: fit-content;
+  margin-top: 4px;
+
+.action-label,
+.reasoning-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+.action-text {
+  margin: 4px 0 0 0;
+  font-weight: 600;
+  color: #e2e8f0;
+
+.reasoning-text {
+  margin: 4px 0 0 0;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+
+.proposal-confidence {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+
+.confidence-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+
+.confidence-fill {
+  height: 100%;
+  background: #38bdf8;
+
+.confidence-num {
+  font-weight: 600;
+  color: #38bdf8;
+
+.vector-summary {
+  background: rgba(15, 23, 42, 0.9);
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #38bdf8;
+
+.vector-summary h4 {
+  margin: 0 0 8px 0;
+  color: #94a3b8;
+
+.vector-summary pre {
+  margin: 0;
+  font-family: monospace;
+  color: #a7f3d0;

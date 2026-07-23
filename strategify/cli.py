@@ -5,7 +5,8 @@ Usage:
   python -m strategify.cli repl [scenario_name]
   python -m strategify.cli vector-map <scenario_name> [output_path]
   python -m strategify.cli wargame [steps]
-  python -m strategify.cli swarm [steps]
+  python -m strategify.cli swarm [steps] [--provider PROVIDER] [--model MODEL]
+  python -m strategify.cli train-rl [episodes]
 """
 
 from __future__ import annotations
@@ -16,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from strategify.reasoning.swarm import StrategifySwarm
+from strategify.rl.training_deep import DeepRLTrainer
 from strategify.sim.model import GeopolModel
 from strategify.sim.wargame import MultiDomainWargameEngine
 from strategify.viz.vector_map import create_vector_map_html
@@ -124,6 +126,11 @@ def main(args: list[str] | None = None) -> Any:
 
     swarm_parser = subparsers.add_parser("swarm", help="Run autonomous LLM agent swarm wargame")
     swarm_parser.add_argument("steps", nargs="?", type=int, default=3, help="Number of steps")
+    swarm_parser.add_argument("--provider", default="mock", help="LLM Provider (mock, ollama, openai, anthropic)")
+    swarm_parser.add_argument("--model", default=None, help="LLM Model Name")
+
+    train_parser = subparsers.add_parser("train-rl", help="Train Deep RL agent policy in EpidemicEnv")
+    train_parser.add_argument("episodes", nargs="?", type=int, default=10, help="Number of training episodes")
 
     parsed = parser.parse_args(args)
 
@@ -149,14 +156,20 @@ def main(args: list[str] | None = None) -> Any:
         print(f"Final Scores: {result.actor_scores}")
     elif parsed.command == "swarm":
         engine = MultiDomainWargameEngine()
-        swarm = StrategifySwarm()
-        print(f"Starting Autonomous LLM Swarm Deliberation for {parsed.steps} steps...")
+        swarm = StrategifySwarm(provider=parsed.provider, model=parsed.model)
+        print(f"Starting Autonomous LLM Swarm Deliberation for {parsed.steps} steps (Provider: {parsed.provider})...")
         for step_i in range(1, parsed.steps + 1):
             res = swarm.deliberate_step(engine)
             print(f"--- Step {step_i} Consensus Score: {res.consensus_score:.2f} ---")
             for prop in res.proposals:
                 print(f"  [{prop.persona_name} - {prop.domain}]: {prop.recommended_action}")
         print("Swarm deliberation completed successfully.")
+    elif parsed.command == "train-rl":
+        trainer = DeepRLTrainer()
+        print(f"Training Deep RL Policy Agent for {parsed.episodes} episodes in EpidemicEnv...")
+        res = trainer.train(episodes=parsed.episodes)
+        print(f"Training Finished! Mean Reward: {res.mean_reward:.2f}")
+        print(f"Optimal Control Cost Benchmark: {res.optimal_control_cost_benchmark:.2f}")
     else:
         # Default to REPL if no command specified or 'repl'
         repl = InteractiveREPL(scenario_name=scen)

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { simulationApi } from '../api/client'
 import BeliefGraph from '../components/BeliefGraph'
 import MCTSBrowser from '../components/MCTSBrowser'
+import SwarmDeliberation from '../components/SwarmDeliberation'
 import './XAI.css'
 
 export default function XAI() {
@@ -27,8 +28,8 @@ export default function XAI() {
   return (
     <div className="xai-page">
       <header className="page-header">
-        <h1>Explainable AI (XAI)</h1>
-        <p className="subtitle">Visualize agent decision-making and counterfactual branches</p>
+        <h1>Explainable AI (XAI) & Autonomous Swarm</h1>
+        <p className="subtitle">Visualize agent decision-making, counterfactual branches, and LLM Swarm deliberations</p>
       </header>
 
       <div className="agent-selector">
@@ -74,13 +75,14 @@ export default function XAI() {
         </div>
       </div>
 
+      <SwarmDeliberation actorId={selectedAgent || 'BlueLand'} />
+
       <div className="xai-info">
         <h3>About XAI Visualization</h3>
         <ul>
           <li><strong>Belief Graph:</strong> Shows what the agent knows vs believes using Prolog epistemology</li>
           <li><strong>MCTS Branches:</strong> Displays counterfactual timelines from Clojure strategy synthesizer</li>
-          <li><strong>Green edges:</strong> Verified knowledge (facts)</li>
-          <li><strong>Orange edges:</strong> Unverified beliefs</li>
+          <li><strong>Swarm Deliberation:</strong> Real-time persona deliberations across Defense, Epidemiology, Finance, and Diplomacy</li>
         </ul>
       </div>
     </div>
