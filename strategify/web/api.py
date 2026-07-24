@@ -14,6 +14,7 @@ from strategify.sim.infrastructure import CyberPhysicalResilienceEngine
 from strategify.sim.model import GeopolModel
 from strategify.sim.uncertainty import UncertaintyQuantificationEngine
 from strategify.sim.wargame import MultiDomainWargameEngine
+from strategify.theory.nash_solver import NashEquilibriumSolver
 from strategify.viz.epidemic_plots import EpidemicPlotter
 from strategify.viz.war_room_reporter import StrategifyWarRoomReporter
 
@@ -341,4 +342,23 @@ def run_uncertainty_quantification_api(
         "infections_quantiles": res.infections_quantiles,
         "gdp_growth_quantiles": res.gdp_growth_quantiles,
         "sensitivity_indices": res.sensitivity_indices,
+    }
+
+
+@app.post("/api/nash/solve")
+def solve_nash_equilibrium_api(actor_a: str = "BlueLand", actor_b: str = "RedNation") -> dict[str, Any]:
+    solver = NashEquilibriumSolver(actor_a=actor_a, actor_b=actor_b)
+    outcome = solver.solve()
+    return {
+        "status": "success",
+        "actor_a": actor_a,
+        "actor_b": actor_b,
+        "has_pure_equilibrium": outcome.has_pure_equilibrium,
+        "pure_equilibria": outcome.pure_equilibria,
+        "mixed_probabilities_a": outcome.mixed_probabilities_a,
+        "mixed_probabilities_b": outcome.mixed_probabilities_b,
+        "expected_payoff_a": outcome.expected_payoff_a,
+        "expected_payoff_b": outcome.expected_payoff_b,
+        "pareto_efficiency_score": outcome.pareto_efficiency_score,
+        "bargaining_agreement": outcome.bargaining_agreement,
     }

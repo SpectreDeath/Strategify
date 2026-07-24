@@ -608,3 +608,21 @@ class TheoryRegistry:
 
 # Default registry
 DEFAULT_REGISTRY = TheoryRegistry()
+
+from strategify.theory.nash_solver import EquilibriumOutcome, NashEquilibriumSolver, PayoffMatrix
+
+__all__ = [
+    "TheoryRegistry",
+    "TheoryResult",
+    "RealpolitikTheory",
+    "DemocraticPeaceTheory",
+    "PowerTransitionTheory",
+    "OffensiveRealismTheory",
+    "DefensiveRealismTheory",
+    "LiberalInstitutionalismTheory",
+    "ConstructivismTheory",
+    "DEFAULT_REGISTRY",
+    "NashEquilibriumSolver",
+    "PayoffMatrix",
+    "EquilibriumOutcome",
+]

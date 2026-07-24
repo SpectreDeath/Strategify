@@ -11,6 +11,7 @@ Usage:
   python -m strategify.cli report [output_path]
   python -m strategify.cli resilience [target_node_id]
   python -m strategify.cli uq [samples]
+  python -m strategify.cli nash
 """
 
 from __future__ import annotations
@@ -28,6 +29,7 @@ from strategify.sim.infrastructure import CyberPhysicalResilienceEngine
 from strategify.sim.model import GeopolModel
 from strategify.sim.uncertainty import UncertaintyQuantificationEngine
 from strategify.sim.wargame import MultiDomainWargameEngine
+from strategify.theory.nash_solver import NashEquilibriumSolver
 from strategify.viz.vector_map import create_vector_map_html
 from strategify.viz.war_room_reporter import StrategifyWarRoomReporter
 
@@ -153,6 +155,8 @@ def main(args: list[str] | None = None) -> Any:
     uq_parser = subparsers.add_parser("uq", help="Run Monte Carlo Uncertainty Quantification & Sensitivity Analysis")
     uq_parser.add_argument("samples", nargs="?", type=int, default=10, help="Number of Monte Carlo samples")
 
+    subparsers.add_parser("nash", help="Solve Multi-Agent Nash Equilibrium & Bargaining agreement")
+
     parsed = parser.parse_args(args)
 
     scen = "default" if getattr(parsed, "scenario", "Ukraine") in ("Ukraine", "default") else getattr(parsed, "scenario", "default")
@@ -229,6 +233,14 @@ def main(args: list[str] | None = None) -> Any:
         print(f"Readiness Quantiles (P5, P50, P95): {uq_res.readiness_quantiles}")
         print(f"Infection Quantiles (P5, P50, P95): {uq_res.infections_quantiles}")
         print(f"Parameter Sensitivity Rankings: {uq_res.sensitivity_indices}")
+    elif parsed.command == "nash":
+        nash_solver = NashEquilibriumSolver()
+        outcome = nash_solver.solve()
+        print("--- Game-Theoretic Nash Equilibrium Analysis ---")
+        print(f"Pure Strategy Equilibrium Found: {outcome.has_pure_equilibrium} -> {outcome.pure_equilibria}")
+        print(f"Player A ({nash_solver.actor_a}) Mixed Probabilities: {outcome.mixed_probabilities_a}")
+        print(f"Player B ({nash_solver.actor_b}) Mixed Probabilities: {outcome.mixed_probabilities_b}")
+        print(f"Bargaining Agreement Solution: {outcome.bargaining_agreement}")
     else:
         # Default to REPL if no command specified or 'repl'
         repl = InteractiveREPL(scenario_name=scen)
