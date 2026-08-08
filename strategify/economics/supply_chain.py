@@ -73,7 +73,7 @@ class SupplyChainEngine:
         results: dict[str, ChokepointAssessment] = {}
 
         for node, c_score in centrality.items():
-            connected_edges = self.graph.in_edges(node, data=True) | self.graph.out_edges(node, data=True)
+            connected_edges = list(self.graph.in_edges(node, data=True)) + list(self.graph.out_edges(node, data=True))
             commodities = list({d.get("commodity", "general") for _, _, d in connected_edges})
 
             # Vulnerability calculation based on centrality and node degree

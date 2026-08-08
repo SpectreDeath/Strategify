@@ -25,6 +25,10 @@ except ImportError:
         def generate_attestation(proposition: str, state_triples: list, relevant_predicates: list) -> Any:
             class DummyCommitment:
                 proof_id = "proof_demo_zkp_12345"
+                proposition_hash = "hash_demo_12345"
+                merkle_state_root = "0xdeadbeef"
+                is_satisfied = True
+                signature = "pqc_dilithium_sig"
 
             return DummyCommitment()
 

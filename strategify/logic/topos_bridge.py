@@ -12,20 +12,22 @@ try:
     from em_cubed.ontology.topos import SubobjectClassifier, TruthValue
 except ImportError:
 
-    class TruthValue:  # type: ignore
-        def __init__(self, value: str, satisfied: bool):
+    class ModalTypeDummy:
+        def __init__(self, value: str = "Necessary") -> None:
             self.value = value
-            self.satisfied = satisfied
+
+    class TruthValue:  # type: ignore
+        def __init__(self, confidence: float = 0.9) -> None:
+            self.confidence = confidence
+            self.modal_type = ModalTypeDummy("Necessary")
+
+        def is_satisfied(self) -> bool:
+            return True
 
     class SubobjectClassifier:  # type: ignore
         @staticmethod
-        def classify_truth(confidence_score: float) -> Any:
-            class DummyTruth:
-                modal_type = "Necessary"
-                is_satisfied = True
-                truth_degree = confidence_score
-
-            return DummyTruth()
+        def evaluate_confidence(confidence_score: float) -> Any:
+            return TruthValue(confidence=confidence_score)
 
 
 logger = logging.getLogger(__name__)

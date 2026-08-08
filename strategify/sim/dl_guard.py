@@ -15,8 +15,12 @@ except ImportError:
 
     class ConceptInductionEngine:  # type: ignore
         @staticmethod
-        def evaluate_subsumption(concept_c: str, concept_d: str) -> bool:
-            return True
+        def induce_concept(subclass_name: str, positive_samples: list) -> Any:
+            class DummyExpr:
+                def to_dl_syntax(self) -> str:
+                    return "PermissibleAction ⊑ ValidMove"
+
+            return DummyExpr()
 
 
 logger = logging.getLogger(__name__)

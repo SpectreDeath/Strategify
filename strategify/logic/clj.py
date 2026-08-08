@@ -22,6 +22,7 @@ import json
 import logging
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ logger = logging.getLogger(__name__)
 CLOJURE_PROJECT_DIR = Path(__file__).parent.parent.parent / "strategify-clj"
 
 _LEIN_PATH = Path(__file__).parent.parent.parent / "lein.bat"
-if _LEIN_PATH.exists():
+if sys.platform == "win32" and _LEIN_PATH.exists():
     LEIN_CMD = str(_LEIN_PATH)
     os.environ["PATH"] = str(_LEIN_PATH.parent) + os.pathsep + os.environ.get("PATH", "")
 else:
