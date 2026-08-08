@@ -11,6 +11,7 @@ from typing import Any
 try:
     from em_cubed.ontology.topos import SubobjectClassifier, TruthValue
 except ImportError:
+
     class TruthValue:  # type: ignore
         def __init__(self, value: str, satisfied: bool):
             self.value = value
@@ -23,10 +24,11 @@ except ImportError:
                 modal_type = "Necessary"
                 is_satisfied = True
                 truth_degree = confidence_score
+
             return DummyTruth()
 
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
 
 
 class ToposDecisionBridge:
