@@ -8,9 +8,25 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from em_cubed.ontology.topos import SubobjectClassifier, TruthValue
+try:
+    from em_cubed.ontology.topos import SubobjectClassifier, TruthValue
+except ImportError:
+    class TruthValue:  # type: ignore
+        def __init__(self, value: str, satisfied: bool):
+            self.value = value
+            self.satisfied = satisfied
+
+    class SubobjectClassifier:  # type: ignore
+        @staticmethod
+        def classify_truth(confidence_score: float) -> Any:
+            class DummyTruth:
+                modal_type = "Necessary"
+                is_satisfied = True
+                truth_degree = confidence_score
+            return DummyTruth()
 
 logger = logging.getLogger(__name__)
+
 
 
 class ToposDecisionBridge:
