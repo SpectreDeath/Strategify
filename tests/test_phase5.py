@@ -103,10 +103,7 @@ class TestRLTraining:
     def test_train_multiple_episodes(self, model):
         from strategify.rl.training import RandomPolicy, train
 
-        policies = {
-            a: RandomPolicy()
-            for a in ["agent_alpha", "agent_bravo", "agent_charlie", "agent_delta"]
-        }
+        policies = {a: RandomPolicy() for a in ["agent_alpha", "agent_bravo", "agent_charlie", "agent_delta"]}
         history = train(_make_env, policies, n_episodes=3, n_steps=2, log_interval=10)
         assert len(history) == 3
 

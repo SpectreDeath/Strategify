@@ -36,30 +36,30 @@ class StrategifyLiveFeed:
         """Poll OSINT sources for recent events."""
         # Simulated live OSINT ingestion feed
         events = [
-          OSINTEvent(
-              event_id="EVT-101",
-              source="CDC-SODA",
-              headline="CDC Reports Novel Variant Outbreak in Sub-Region 4",
-              domain="Epidemiology",
-              severity=0.75,
-              parameter_adjustments={"infections_delta": 45.0, "rt_delta": 0.35},
-          ),
-          OSINTEvent(
-              event_id="EVT-102",
-              source="EW-Monitor",
-              headline="GPS Spoofing & Spectrum Interference Detected in Maritime Corridor",
-              domain="Defense",
-              severity=0.60,
-              parameter_adjustments={"readiness_delta": -12.5},
-          ),
-          OSINTEvent(
-              event_id="EVT-103",
-              source="GlobalTrade-Feed",
-              headline="Emergency Trade Embargo Announced on Strategic Semiconductors",
-              domain="Finance",
-              severity=0.50,
-              parameter_adjustments={"gdp_growth_delta": -0.015},
-          ),
+            OSINTEvent(
+                event_id="EVT-101",
+                source="CDC-SODA",
+                headline="CDC Reports Novel Variant Outbreak in Sub-Region 4",
+                domain="Epidemiology",
+                severity=0.75,
+                parameter_adjustments={"infections_delta": 45.0, "rt_delta": 0.35},
+            ),
+            OSINTEvent(
+                event_id="EVT-102",
+                source="EW-Monitor",
+                headline="GPS Spoofing & Spectrum Interference Detected in Maritime Corridor",
+                domain="Defense",
+                severity=0.60,
+                parameter_adjustments={"readiness_delta": -12.5},
+            ),
+            OSINTEvent(
+                event_id="EVT-103",
+                source="GlobalTrade-Feed",
+                headline="Emergency Trade Embargo Announced on Strategic Semiconductors",
+                domain="Finance",
+                severity=0.50,
+                parameter_adjustments={"gdp_growth_delta": -0.015},
+            ),
         ]
         self.event_history.extend(events)
         logger.info("Ingested %d new OSINT events.", len(events))

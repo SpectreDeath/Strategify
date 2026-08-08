@@ -201,9 +201,7 @@ class TestMultiActorPayoffComputer:
 
 class TestPairResult:
     def test_repr(self):
-        r = PairResult(
-            1, 2, "Escalate", "Deescalate", 5.0, 1.0, np.array([1.0, 0.0]), np.array([0.0, 1.0])
-        )
+        r = PairResult(1, 2, "Escalate", "Deescalate", 5.0, 1.0, np.array([1.0, 0.0]), np.array([0.0, 1.0]))
         text = repr(r)
         assert "1-2" in text
         assert "Escalate" in text

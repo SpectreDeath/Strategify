@@ -1,8 +1,8 @@
 """Run Middle East current day scenario with real Middle East regions."""
 
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
@@ -10,11 +10,11 @@ sys.path.insert(0, str(project_root))
 from strategify import GeopolModel
 from strategify.config import MIDDLE_EAST_PRESET
 from strategify.viz import (
-    create_map,
     create_diplomacy_network,
+    create_map,
+    export_chart_png,
     export_gexf,
     export_timeline,
-    export_chart_png,
 )
 
 
@@ -43,9 +43,7 @@ def run_simulation():
 
         if step % 10 == 0:
             escalate_count = sum(
-                1
-                for a in model.schedule.agents
-                if getattr(a, "posture", None) and "Escalate" in str(a.posture)
+                1 for a in model.schedule.agents if getattr(a, "posture", None) and "Escalate" in str(a.posture)
             )
             print(f"  Step {step}: {escalate_count} escalated")
 
@@ -93,9 +91,7 @@ def analyze_results(model):
         else:
             posture_str = str(posture) if posture else "Unknown"
         caps = getattr(agent, "capabilities", {})
-        print(
-            f"  {rid:4}: {posture_str:10} | Mil: {caps.get('military', 0):.2f} | Eco: {caps.get('economic', 0):.2f}"
-        )
+        print(f"  {rid:4}: {posture_str:10} | Mil: {caps.get('military', 0):.2f} | Eco: {caps.get('economic', 0):.2f}")
 
     print("\nDiplomatic Relations:")
     agents = list(model.schedule.agents)

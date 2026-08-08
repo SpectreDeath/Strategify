@@ -1,6 +1,5 @@
 """Tests for plugin system — discovery, registration, and retrieval."""
 
-
 from strategify.plugins import (
     _agent_plugins,
     _analysis_plugins,

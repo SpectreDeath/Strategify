@@ -14,9 +14,11 @@ import numpy as np
 try:
     import gymnasium as gym
     from gymnasium import spaces
+
     GYM_AVAILABLE = True
 except ImportError:
     GYM_AVAILABLE = False
+
     # Fallback minimal Gym spaces for testing environments without gymnasium installed
     class DummySpace:
         def __init__(self, shape: tuple[int, ...], low: float = 0.0, high: float = 1.0) -> None:
@@ -28,8 +30,10 @@ except ImportError:
         Box = DummySpace
 
     spaces = DummySpaces()
+
     class DummyEnv:
         pass
+
     gym = type("gym", (), {"Env": DummyEnv})()
 
 from strategify.epidemiology.countermeasures import BioDefenseComponent
@@ -77,7 +81,9 @@ class EpidemicEnv(gym.Env):
 
         self.reset()
 
-    def reset(self, seed: int | None = None, options: dict[str, Any] | None = None) -> tuple[np.ndarray, dict[str, Any]]:
+    def reset(
+        self, seed: int | None = None, options: dict[str, Any] | None = None
+    ) -> tuple[np.ndarray, dict[str, Any]]:
         """Reset environment to initial state."""
         self.current_step = 0
         self.seir_engine = SEIRHEngine(population=self.population, initial_infected=20)
@@ -170,7 +176,7 @@ class EpidemicEnv(gym.Env):
         beta = self.seir_engine.variant.r0 / max(self.seir_engine.variant.infectious_period, 0.1)
         sigma = 1.0 / max(self.seir_engine.variant.incubation_period, 0.1)
         gamma = 1.0 / max(self.seir_engine.variant.infectious_period, 0.1)
-        
+
         lqr = LQRBaseline(beta, sigma, gamma)
         e_frac = self.seir_engine.exposed / self.population
         i_frac = self.seir_engine.infectious / self.population

@@ -164,9 +164,7 @@ def create_model_with_real_data(
                     # Adjust capabilities based on tension
                     tension = feats.get("tension_score", 0)
                     if tension > 0.5:
-                        agent.capabilities["military"] = min(
-                            1.0, agent.capabilities.get("military", 0.5) + 0.15
-                        )
+                        agent.capabilities["military"] = min(1.0, agent.capabilities.get("military", 0.5) + 0.15)
                     if tension > 0.7:
                         agent.posture = "Escalate"
 

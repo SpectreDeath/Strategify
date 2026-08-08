@@ -116,7 +116,7 @@ class RLControlBenchmark:
 
         # Evaluate RL cost functional J_RL
         dt = t_horizon / max(1, len(u_rl) - 1)
-        j_rl = float(np.sum(dt * (10.0 * pont_res.infected + 0.5 * 1.0 * (u_rl ** 2))))
+        j_rl = float(np.sum(dt * (10.0 * pont_res.infected + 0.5 * 1.0 * (u_rl**2))))
         j_opt = pont_res.objective_cost_j
 
         gap_pct = float(max(0.0, ((j_rl - j_opt) / max(1e-4, j_opt)) * 100.0))

@@ -76,10 +76,13 @@ class GovernanceEngine:
             if isinstance(agent, StateActorAgent):
                 # Scale: Infiltrate (0.1) -> Escalate/Invade (0.8-1.0)
                 score = 0.0
-                if agent.posture == "Escalate": score = 0.8
-                elif agent.posture == "Infiltrate": score = 0.2
-                elif agent.posture == "Invade": score = 1.0
-                
+                if agent.posture == "Escalate":
+                    score = 0.8
+                elif agent.posture == "Infiltrate":
+                    score = 0.2
+                elif agent.posture == "Invade":
+                    score = 1.0
+
                 total_escalation += score
                 n_actors += 1
 
@@ -96,6 +99,7 @@ class GovernanceEngine:
         # Find actors in actual conflict (Escalators or Invaders)
         conflict_regions = []
         from strategify.agents.state_actor import StateActorAgent
+
         for agent in self.model.schedule.agents:
             if isinstance(agent, StateActorAgent) and agent.posture in ["Escalate", "Invade"]:
                 conflict_regions.append(agent.region_id)
@@ -108,22 +112,24 @@ class GovernanceEngine:
         resolution = Resolution(
             resolution_type=ResolutionType.CEASEFIRE,
             target_regions=[target_rid],
-            proposer_id=-1, # Secretary General
+            proposer_id=-1,  # Secretary General
         )
 
         self.hold_vote(resolution)
 
     def hold_vote(self, resolution: Resolution) -> bool:
         """Conduct a vote among all StateActorAgents."""
-        logger.info("Governance: Voting on %s for regions %s", 
-                    resolution.resolution_type.value, resolution.target_regions)
+        logger.info(
+            "Governance: Voting on %s for regions %s", resolution.resolution_type.value, resolution.target_regions
+        )
 
         from strategify.agents.state_actor import StateActorAgent
+
         agents = [a for a in self.model.schedule.agents if isinstance(a, StateActorAgent)]
 
         for agent in agents:
             vote = agent.vote(resolution)
-            
+
             if vote == "Aye":
                 resolution.votes_for.append(agent.unique_id)
             elif vote == "No":
@@ -139,12 +145,14 @@ class GovernanceEngine:
             resolution.is_active = True
             resolution.step_passed = self.model.schedule.steps
             self.active_resolutions.append(resolution)
-            logger.info("Governance: Resolution PASSED (%d vs %d).", 
-                        len(resolution.votes_for), len(resolution.votes_against))
+            logger.info(
+                "Governance: Resolution PASSED (%d vs %d).", len(resolution.votes_for), len(resolution.votes_against)
+            )
             return True
 
-        logger.info("Governance: Resolution FAILED (%d vs %d).", 
-                    len(resolution.votes_for), len(resolution.votes_against))
+        logger.info(
+            "Governance: Resolution FAILED (%d vs %d).", len(resolution.votes_for), len(resolution.votes_against)
+        )
         return False
 
     def get_resolutions_for_region(self, region_id: str) -> list[Resolution]:

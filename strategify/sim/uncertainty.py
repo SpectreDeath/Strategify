@@ -80,7 +80,9 @@ class UncertaintyQuantificationEngine:
             sample_noise = random.gauss(0, 0.05)
             last_snap = w_res.history[-1] if w_res.history else engine.get_state_snapshot()
 
-            readiness_val = max(0.0, min(100.0, last_snap.military_readiness.get(self.actor_id, 100.0) + sample_noise * 5.0))
+            readiness_val = max(
+                0.0, min(100.0, last_snap.military_readiness.get(self.actor_id, 100.0) + sample_noise * 5.0)
+            )
             infections_val = max(0.0, last_snap.epidemic_infections.get(self.actor_id, 0.0) + sample_noise * 10.0)
             gdp_val = last_snap.gdp_growth_rate.get(self.actor_id, 0.02) + sample_noise * 0.002
 

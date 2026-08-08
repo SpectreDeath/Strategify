@@ -12,8 +12,8 @@ from typing import Any
 from shapely.geometry import base as shp_base
 
 from strategify.agents.base import BaseActorAgent
-from strategify.agents.factions import get_default_factions
 from strategify.agents.economic_analyst import EconomicForecaster
+from strategify.agents.factions import get_default_factions
 from strategify.agents.intelligence import IntelligenceComponent
 from strategify.agents.military import MilitaryComponent
 from strategify.config.settings import (

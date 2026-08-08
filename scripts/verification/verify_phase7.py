@@ -10,6 +10,7 @@ from strategify.sim.model import GeopolModel
 # Configure logging to see stability warnings
 logging.basicConfig(level=logging.WARNING)
 
+
 def test_stability_fluctuation():
     print("--- Testing Political Stability ---")
     model = GeopolModel(enable_economics=False, enable_escalation_ladder=True)
@@ -33,6 +34,7 @@ def test_stability_fluctuation():
     assert alpha.stability < initial_stability
     print("Stability drop verified.")
 
+
 def test_stability_reform():
     print("\n--- Testing Domestic Reform Trigger ---")
     model = GeopolModel(enable_economics=False, enable_escalation_ladder=True)
@@ -42,12 +44,13 @@ def test_stability_reform():
     # Support = 0.0
     for i in range(20):
         alpha._update_stability("InvalidAction")
-        if alpha.stability == 0.5: # Reform reset value
+        if alpha.stability == 0.5:  # Reform reset value
             print(f"Reform triggered at step {i}!")
             break
 
-    assert alpha.stability >= 0.4 # Should have reset to 0.5
+    assert alpha.stability >= 0.4  # Should have reset to 0.5
     print("Reform trigger verified.")
+
 
 if __name__ == "__main__":
     try:
@@ -57,4 +60,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\nPhase 7 Verification FAILED: {e}")
         import traceback
+
         traceback.print_exc()

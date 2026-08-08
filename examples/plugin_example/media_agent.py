@@ -41,12 +41,7 @@ class MediaActor:
 
         # Amplify narratives that match our bias
         for narrative in self.model.propaganda.narratives:
-            if (
-                narrative.is_disinformation
-                and self.bias < 0
-                or not narrative.is_disinformation
-                and self.bias > 0
-            ):
+            if narrative.is_disinformation and self.bias < 0 or not narrative.is_disinformation and self.bias > 0:
                 narrative.potency *= 1.0 + self.reach * 0.1
 
 

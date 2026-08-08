@@ -126,7 +126,9 @@ class EpidemiologyDataAdapter:
         self.owid_adapter = OWIDDataAdapter()
         self.gdelt_filter = GDELTEpidemicFilter()
 
-    def get_country_epidemic_profile(self, country_code: str, raw_events: list[dict] | None = None) -> CountryEpidemicMetrics:
+    def get_country_epidemic_profile(
+        self, country_code: str, raw_events: list[dict] | None = None
+    ) -> CountryEpidemicMetrics:
         """Get unified public epidemiology profile for a country.
 
         Parameters

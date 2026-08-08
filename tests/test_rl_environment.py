@@ -3,7 +3,6 @@
 Tests PettingZoo AEC environment wrapping GeopolModel.
 """
 
-
 import numpy as np
 import pytest
 

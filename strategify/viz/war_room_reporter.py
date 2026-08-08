@@ -226,7 +226,7 @@ class StrategifyWarRoomReporter:
                 </tr>
             </thead>
             <tbody>
-                {"".join(f'<tr><td><strong>{b.branch_name}</strong></td><td>{b.description}</td><td>{b.final_readiness:.1f}%</td><td>{b.final_infections:.1f}</td><td>{b.final_gdp_growth * 100:.2f}%</td><td>{b.divergence_score:.2f}</td></tr>' for b in branches.values())}
+                {"".join(f"<tr><td><strong>{b.branch_name}</strong></td><td>{b.description}</td><td>{b.final_readiness:.1f}%</td><td>{b.final_infections:.1f}</td><td>{b.final_gdp_growth * 100:.2f}%</td><td>{b.divergence_score:.2f}</td></tr>" for b in branches.values())}
             </tbody>
         </table>
     </div>

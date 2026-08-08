@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
@@ -180,12 +180,12 @@ env = GeopolEnv(n_steps=10)
 def run_tournament(n_episodes=5):
     print(f"--- Running Phase 10 RL Tournament ({n_episodes} Episodes) ---")
 
-    total_rewards = {a: 0.0 for a in archetypes}
-    final_stabilities = {a: 0.0 for a in archetypes}
+    total_rewards = dict.fromkeys(archetypes, 0.0)
+    final_stabilities = dict.fromkeys(archetypes, 0.0)
 
     for _ in range(n_episodes):
         env.reset()
-        episode_reward = {a: 0.0 for a in env.agents}
+        episode_reward = dict.fromkeys(env.agents, 0.0)
 
         for agent in env.agent_iter():
             observation, reward, termination, truncation, info = env.last()

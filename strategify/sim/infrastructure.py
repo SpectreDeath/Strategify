@@ -54,7 +54,9 @@ class CyberPhysicalResilienceEngine:
             "FAB_01": InfrastructureNode("FAB_01", "Semiconductor Fab A", "Semiconductor", dependencies=["PWR_01"]),
             "MED_01": InfrastructureNode("MED_01", "Pharma Vaccine Lab", "Pharma", dependencies=["PWR_01", "FAB_01"]),
             "SAT_01": InfrastructureNode("SAT_01", "Satellite Ground HQ", "Satellite", dependencies=["PWR_01"]),
-            "TRN_01": InfrastructureNode("TRN_01", "Logistics Supply Hub", "Transport", dependencies=["PWR_01", "FAB_01"]),
+            "TRN_01": InfrastructureNode(
+                "TRN_01", "Logistics Supply Hub", "Transport", dependencies=["PWR_01", "FAB_01"]
+            ),
         }
 
     def inject_disruption(

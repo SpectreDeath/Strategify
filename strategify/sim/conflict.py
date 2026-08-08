@@ -97,6 +97,7 @@ class ConflictEngine:
 
         # Phase 13: Asymmetric Surprise Bonus
         from strategify.agents.non_state import NonStateActor
+
         if isinstance(u1.owner, NonStateActor) and u1.owner.posture in ["Infiltrate", "HitAndRun"]:
             p1 *= 1.5  # Ambush bonus
         if isinstance(u2.owner, NonStateActor) and u2.owner.posture in ["Infiltrate", "HitAndRun"]:
@@ -106,10 +107,11 @@ class ConflictEngine:
         suppression_modifier = 1.0
         total_pk_strength = 0.0
         from strategify.agents.state_actor import StateActorAgent
+
         for agent in self.model.schedule.agents:
             if isinstance(agent, StateActorAgent):
                 total_pk_strength += agent.military.get_peacekeeping_strength(region_id)
-        
+
         # Max 80% reduction in damage from peacekeeping
         suppression = min(0.8, total_pk_strength / 4.0)
         suppression_modifier = 1.0 - suppression
@@ -119,10 +121,11 @@ class ConflictEngine:
         if hasattr(self.model, "clj_bridge") and self.model.clj_bridge and self.model.clj_bridge._available:
             payload = {
                 "p1-strength": p1 * suppression_modifier,
-                "p2-strength": p2 * suppression_modifier, # Pass suppressed strengths
-                "terrain-modifier": modifier
+                "p2-strength": p2 * suppression_modifier,  # Pass suppressed strengths
+                "terrain-modifier": modifier,
             }
             import json
+
             code = f"""
             (require '[strategify.core :as s])
             (s/resolve-combat '{json.dumps(payload)})
@@ -164,14 +167,15 @@ class ConflictEngine:
                 # Suppression also reduces collateral damage
                 total_pk_strength = 0.0
                 from strategify.agents.state_actor import StateActorAgent
+
                 for a in self.model.schedule.agents:
                     if isinstance(a, StateActorAgent):
                         total_pk_strength += a.military.get_peacekeeping_strength(region_id)
-                
+
                 # Collateral suppression: max 90% reduction
                 col_suppression = min(0.9, total_pk_strength / 3.0)
                 loss_factor = 0.001 * (1.0 - col_suppression)
-                
+
                 pop = self.model.population_model.get_population(agent.unique_id)
                 self.model.population_model.set_population(agent.unique_id, pop * (1.0 - loss_factor))
 

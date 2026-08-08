@@ -45,7 +45,7 @@ class InfluenceMap:
         """Calculate influence and contagion with shared-boundary weighting."""
         region_ids = {getattr(a, "region_id", "unknown") for a in self.model.schedule.agents}
         self.influence_data = {rid: {} for rid in region_ids}
-        self.contagion_data = {rid: 0.0 for rid in region_ids}
+        self.contagion_data = dict.fromkeys(region_ids, 0.0)
 
         # 1. Influence from military strength and unit presence
         for agent in self.model.schedule.agents:
@@ -56,7 +56,7 @@ class InfluenceMap:
 
             # Physical unit presence (projects most power where units actually are)
             # We calculate this per region later to avoid O(N^2) here
-            
+
             distances = self._calculate_distances(origin)
 
             for rid, dist in distances.items():

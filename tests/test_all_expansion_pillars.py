@@ -6,13 +6,11 @@
 """
 
 import numpy as np
-from fastapi.testclient import TestClient
 
 from strategify.cli import main
 from strategify.reasoning.swarm import LLMSwarmClient, StrategifySwarm
 from strategify.rl.training_deep import DeepRLTrainer, PolicyNetwork
 from strategify.sim.wargame import MultiDomainWargameEngine
-from strategify.web.api import app
 
 
 def test_deep_rl_policy_network():

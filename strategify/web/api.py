@@ -142,7 +142,9 @@ def get_agent_beliefs(agent_id: str) -> dict[str, Any]:
         if not bridge._initialized:
             return {"agent_id": agent_id, "beliefs": mock_beliefs.get(agent_id, []), "mode": "demo"}
 
-        query_res = [b for b in mock_beliefs.get(agent_id, []) if bridge.believes(agent_id, b["fact"])] or mock_beliefs.get(agent_id, [])
+        query_res = [
+            b for b in mock_beliefs.get(agent_id, []) if bridge.believes(agent_id, b["fact"])
+        ] or mock_beliefs.get(agent_id, [])
         return {"agent_id": agent_id, "beliefs": query_res, "mode": "demo"}
     except Exception:
         logger.info("Using demo beliefs (Prolog unavailable)")
@@ -427,11 +429,12 @@ async def websocket_simulation_endpoint(websocket: WebSocket) -> None:
                 state = get_simulation_state()
                 await websocket.send_json(state)
             else:
-                await websocket.send_json({"status": "connected", "step": model_instance.schedule.steps if model_instance else 0})
+                await websocket.send_json(
+                    {"status": "connected", "step": model_instance.schedule.steps if model_instance else 0}
+                )
     except WebSocketDisconnect:
         connected_websockets.remove(websocket)
     except Exception as err:
         logger.warning(f"WebSocket error: {err}")
         if websocket in connected_websockets:
             connected_websockets.remove(websocket)
-

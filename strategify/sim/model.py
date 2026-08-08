@@ -675,6 +675,7 @@ class GeopolModel(Model):
     def _resolve_crisis_game_equilibria(self) -> None:
         """Resolve matrix games (escalation, trade, sanctions) between state actors using Nash equilibria."""
         import numpy as np
+
         from strategify.agents.state_actor import StateActorAgent
         from strategify.game_theory.crisis_games import escalation_game
 

@@ -119,9 +119,9 @@ class GeopolEnv(AECEnv):
 
         self.agents = [f"agent_{a.region_id}" for a in self.model.schedule.agents if isinstance(a, StateActorAgent)]
         self.possible_agents = self.agents[:]
-        self.rewards = {a: 0.0 for a in self.agents}
-        self.terminations = {a: False for a in self.agents}
-        self.truncations = {a: False for a in self.agents}
+        self.rewards = dict.fromkeys(self.agents, 0.0)
+        self.terminations = dict.fromkeys(self.agents, False)
+        self.truncations = dict.fromkeys(self.agents, False)
         self.infos = {a: {} for a in self.agents}
 
         # Initialize spaces

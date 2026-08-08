@@ -110,13 +110,9 @@ class TestFactionalPolitics:
 
     def test_apply_external_shock_military_defeat(self, aggressor_agent):
         fp = FactionalPolitics(aggressor_agent)
-        initial_diplomatic_power = sum(
-            f.power for f in fp.get_factions() if f.faction_type == FactionType.DIPLOMATIC
-        )
+        initial_diplomatic_power = sum(f.power for f in fp.get_factions() if f.faction_type == FactionType.DIPLOMATIC)
         fp.apply_external_shock("military_defeat", magnitude=0.2)
-        new_diplomatic_power = sum(
-            f.power for f in fp.get_factions() if f.faction_type == FactionType.DIPLOMATIC
-        )
+        new_diplomatic_power = sum(f.power for f in fp.get_factions() if f.faction_type == FactionType.DIPLOMATIC)
         assert new_diplomatic_power > initial_diplomatic_power
 
     def test_get_faction_balance_hawk_dominant(self, aggressor_agent):

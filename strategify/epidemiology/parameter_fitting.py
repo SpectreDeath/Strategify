@@ -88,7 +88,13 @@ class SurveillanceParameterFitter:
         pred = model_func(time_points, est_beta, est_gamma)
         rss = float(np.sum((cases_arr - pred) ** 2))
 
-        logger.info("SurveillanceParameterFitter estimated beta=%.4f, gamma=%.4f (R0=%.2f, RSS=%.2f)", est_beta, est_gamma, est_r0, rss)
+        logger.info(
+            "SurveillanceParameterFitter estimated beta=%.4f, gamma=%.4f (R0=%.2f, RSS=%.2f)",
+            est_beta,
+            est_gamma,
+            est_r0,
+            rss,
+        )
 
         return FitResult(
             estimated_beta=est_beta,
@@ -120,7 +126,7 @@ class SurveillanceParameterFitter:
         rt_series = []
 
         for t in range(1, len(cases)):
-            prev_cases = cases[max(0, t - 3):t]
+            prev_cases = cases[max(0, t - 3) : t]
             mean_prev = np.mean(prev_cases) if len(prev_cases) > 0 else 1.0
             ratio = cases[t] / max(mean_prev, 1.0)
             rt_val = round(float(ratio), 2)

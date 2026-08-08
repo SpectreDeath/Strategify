@@ -81,9 +81,7 @@ def test_model_steps_with_economics(econ_model):
 
 def test_trade_balance_can_be_negative(econ_model):
     """Trade balance is net exports - imports; can be negative."""
-    balances = [
-        econ_model.trade_network.get_trade_balance(a.unique_id) for a in econ_model.schedule.agents
-    ]
+    balances = [econ_model.trade_network.get_trade_balance(a.unique_id) for a in econ_model.schedule.agents]
     # At least one should be negative (or all zero in symmetric case)
     # Just verify they're all floats
     assert all(isinstance(b, float) for b in balances)
@@ -228,10 +226,7 @@ class TestTradeBalance:
     def test_trade_balance_sums_near_zero(self, econ_model):
         """In a closed system, trade balances should roughly cancel."""
         econ_model.step()
-        balances = [
-            econ_model.trade_network.get_trade_balance(a.unique_id)
-            for a in econ_model.schedule.agents
-        ]
+        balances = [econ_model.trade_network.get_trade_balance(a.unique_id) for a in econ_model.schedule.agents]
         assert abs(sum(balances)) < 1e-6
 
 

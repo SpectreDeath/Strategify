@@ -1,6 +1,5 @@
 """Tests for GeoJSON loader, region subsetting, and adjacency builder."""
 
-
 import geopandas as gpd
 import pytest
 from shapely.geometry import Polygon

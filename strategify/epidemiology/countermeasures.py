@@ -53,8 +53,13 @@ class BioDefenseComponent:
         """
         self.status.npi_level = max(0.0, min(1.0, npi_level))
         # GDP drag scales non-linearly with NPI lockdown level
-        self.status.economic_gdp_drag = (self.status.npi_level ** 1.5) * 0.25
-        logger.info("Agent %s set NPI level to %.2f (GDP drag: %.2f)", self.agent.region_id, self.status.npi_level, self.status.economic_gdp_drag)
+        self.status.economic_gdp_drag = (self.status.npi_level**1.5) * 0.25
+        logger.info(
+            "Agent %s set NPI level to %.2f (GDP drag: %.2f)",
+            self.agent.region_id,
+            self.status.npi_level,
+            self.status.economic_gdp_drag,
+        )
         return self.status.economic_gdp_drag
 
     def fund_vaccine_rd(self, budget_allocation: float = 0.1) -> float:

@@ -6,9 +6,10 @@ simulation, providing command oversight similar to military C2 systems.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from collections.abc import Callable
+from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 
 
 class ReviewStatus(Enum):

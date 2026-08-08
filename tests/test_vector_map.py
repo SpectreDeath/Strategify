@@ -1,6 +1,5 @@
 """Tests for Vector Map Engine & GeoJSON/Vector Map generation."""
 
-
 from strategify.sim.model import GeopolModel
 from strategify.viz.vector_map import VectorMapBuilder, create_vector_map_html
 

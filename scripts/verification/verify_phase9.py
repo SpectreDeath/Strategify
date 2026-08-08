@@ -10,6 +10,7 @@ from strategify.sim.model import GeopolModel
 # Configure logging to see climate events
 logging.basicConfig(level=logging.INFO)
 
+
 def test_environmental_init():
     print("--- Testing Environmental Manager Initialization ---")
     model = GeopolModel(enable_economics=False, enable_escalation_ladder=True)
@@ -21,6 +22,7 @@ def test_environmental_init():
     print(f"Regions with resources: {list(grid.keys())}")
     assert "alpha" in grid
     assert grid["alpha"]["Water"] == 1.0
+
 
 def test_resource_pressure_impact():
     print("\n--- Testing Resource Pressure Impact ---")
@@ -45,13 +47,14 @@ def test_resource_pressure_impact():
     assert alpha.stability < initial_stability
     print("Environmental stability hit verified.")
 
+
 def test_climate_event():
     print("\n--- Testing Climate Event Resolution ---")
     model = GeopolModel(enable_economics=False, enable_escalation_ladder=True)
 
     # Force a Drought in alpha
     print("Triggering manual Drought in 'alpha'...")
-    model.env_manager._trigger_climate_event = lambda: None # suppress random events
+    model.env_manager._trigger_climate_event = lambda: None  # suppress random events
 
     # Manually execute the logic
     model.env_manager.resource_grid["alpha"]["Water"] *= 0.5
@@ -60,6 +63,7 @@ def test_climate_event():
     print(f"Pressure after Drought: {pressure:.2f}")
     assert pressure > 0.0
     print("Climate event impact verified.")
+
 
 if __name__ == "__main__":
     try:
@@ -70,4 +74,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\nPhase 9 Verification FAILED: {e}")
         import traceback
+
         traceback.print_exc()

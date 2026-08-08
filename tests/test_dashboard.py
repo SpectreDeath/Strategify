@@ -1,6 +1,5 @@
 """Tests for Phase 5: Decision Dashboard (Monte Carlo, briefings, commander)."""
 
-
 import pytest
 
 from strategify.analysis.dashboard import (

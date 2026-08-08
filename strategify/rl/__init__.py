@@ -1,8 +1,8 @@
 """Reinforcement learning: environment, training, evaluation, and epidemiology RL benchmarks."""
 
 from strategify.rl.benchmark import BenchmarkComparisonResult, RLControlBenchmark
-from strategify.rl.epidemic_env import EpidemicEnv
 from strategify.rl.environment import GeopolEnv
+from strategify.rl.epidemic_env import EpidemicEnv
 from strategify.rl.evaluation import (
     compare_strategies,
     evaluate_policies,

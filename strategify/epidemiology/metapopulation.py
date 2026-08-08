@@ -91,7 +91,7 @@ class MetapopulationODE:
 
         # Replicator dynamics per node: dx_i/dt = x_i * (1 - x_i) * (f_C - f_D)
         payoff_c = -0.2
-        payoff_d = - (i_arr * self.beta_baseline) * 1.0
+        payoff_d = -(i_arr * self.beta_baseline) * 1.0
         dx_dt = x_arr * (1.0 - x_arr) * (payoff_c - payoff_d)
 
         return list(np.concatenate([ds_dt, di_dt, dr_dt, dx_dt]))

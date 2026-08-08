@@ -424,14 +424,14 @@ class MultilateralSummit:
         """
         n = len(participant_ids)
         if n < 2:
-            return {uid: "Deescalate" for uid in participant_ids}
+            return dict.fromkeys(participant_ids, "Deescalate")
 
         if n == 2:
             return self._solve_pair(participant_ids[0], participant_ids[1], base_game)
 
         # N > 2: pairwise dispatch with aggregation
         actions_map = list(GAME_ACTIONS_FALLBACK)
-        vote_scores: dict[int, dict[str, float]] = {uid: {a: 0.0 for a in actions_map} for uid in participant_ids}
+        vote_scores: dict[int, dict[str, float]] = {uid: dict.fromkeys(actions_map, 0.0) for uid in participant_ids}
 
         for uid_a, uid_b in combinations(participant_ids, 2):
             pair_result = self._solve_pair(uid_a, uid_b, base_game)

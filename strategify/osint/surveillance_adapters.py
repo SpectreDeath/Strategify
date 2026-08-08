@@ -68,7 +68,9 @@ class CDCWonderAdapter:
 class CDCNNDSSAdapter:
     """Adapter for CDC NNDSS (National Notifiable Diseases Surveillance System)."""
 
-    def fetch_weekly_incidence(self, region_code: str = "US-CA", disease_name: str = "Respiratory") -> SurveillanceIncidenceSeries:
+    def fetch_weekly_incidence(
+        self, region_code: str = "US-CA", disease_name: str = "Respiratory"
+    ) -> SurveillanceIncidenceSeries:
         """Fetch weekly time-series case incidence curve.
 
         Parameters
@@ -85,7 +87,7 @@ class CDCNNDSSAdapter:
         """
         # Simulated epidemiological curve (wave trajectory)
         weeks = 12
-        cases = [int(100 * (1.3 ** t) * (0.85 ** (t * 0.2))) for t in range(weeks)]
+        cases = [int(100 * (1.3**t) * (0.85 ** (t * 0.2))) for t in range(weeks)]
 
         return SurveillanceIncidenceSeries(
             region_code=region_code,

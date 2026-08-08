@@ -2,9 +2,9 @@
 
 from strategify.agents.base import BaseActorAgent
 from strategify.agents.economic_analyst import (
+    EconomicForecast,
     EconomicForecaster,
     EconomicIndicator,
-    EconomicForecast,
     PolicyImpact,
     PolicyType,
 )

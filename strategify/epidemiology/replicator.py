@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Any
 
 import numpy as np
 from scipy.integrate import solve_ivp
@@ -80,7 +79,7 @@ class ReplicatorDynamicsODE:
         # f_cooperate (C) = -cost_of_mitigation
         # f_defect (D) = - (perceived risk of infection) * cost_of_disease
         payoff_cooperate = -self.cost_of_mitigation
-        payoff_defect = - (i_pop * self.beta_baseline) * self.cost_of_disease
+        payoff_defect = -(i_pop * self.beta_baseline) * self.cost_of_disease
 
         # Replicator dynamics: dx/dt = x * (1 - x) * (f_C - f_D)
         dx_dt = x_coop * (1.0 - x_coop) * (payoff_cooperate - payoff_defect)

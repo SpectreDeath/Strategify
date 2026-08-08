@@ -176,7 +176,7 @@ def train_episode(
         ``{agent_name: total_reward}``
     """
     env.reset()
-    total_rewards: dict[str, float] = {a: 0.0 for a in env.agents}
+    total_rewards: dict[str, float] = dict.fromkeys(env.agents, 0.0)
 
     for _ in range(n_steps * len(env.agents)):
         agent = env.agent_selection

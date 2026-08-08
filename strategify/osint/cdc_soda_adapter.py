@@ -91,5 +91,7 @@ class CDCSodaApiAdapter:
                 "week_ending_date": "2026-07-18",
             },
         ]
-        logger.info("CDCSodaApiAdapter queried dataset %s with params %s (records: %d)", dataset_id, params, len(records))
+        logger.info(
+            "CDCSodaApiAdapter queried dataset %s with params %s (records: %d)", dataset_id, params, len(records)
+        )
         return records[: query_obj.limit]

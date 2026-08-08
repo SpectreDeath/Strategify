@@ -116,7 +116,12 @@ class OptimalControlSolver:
             for k in range(n_steps - 2, -1, -1):
                 beta_eff = self.beta_max * (1.0 - u[k])
                 d_lambda_s = (lambda_s[k + 1] - lambda_i[k + 1]) * beta_eff * i_arr[k]
-                d_lambda_i = -self.cost_disease_cd + (lambda_s[k + 1] - lambda_i[k + 1]) * beta_eff * s[k] + lambda_i[k + 1] * self.gamma - lambda_r[k + 1] * self.gamma
+                d_lambda_i = (
+                    -self.cost_disease_cd
+                    + (lambda_s[k + 1] - lambda_i[k + 1]) * beta_eff * s[k]
+                    + lambda_i[k + 1] * self.gamma
+                    - lambda_r[k + 1] * self.gamma
+                )
 
                 lambda_s[k] = lambda_s[k + 1] - dt * d_lambda_s
                 lambda_i[k] = lambda_i[k + 1] - dt * d_lambda_i
@@ -132,7 +137,7 @@ class OptimalControlSolver:
                 break
 
         # Compute total cost J = sum dt * [ Cd * I + 0.5 * w * u^2 ]
-        j_cost = float(np.sum(dt * (self.cost_disease_cd * i_arr + 0.5 * self.cost_effort_w * (u ** 2))))
+        j_cost = float(np.sum(dt * (self.cost_disease_cd * i_arr + 0.5 * self.cost_effort_w * (u**2))))
 
         return OptimalControlResult(
             t=t,

@@ -75,7 +75,7 @@ class SupplyChainEngine:
         for node, c_score in centrality.items():
             connected_edges = self.graph.in_edges(node, data=True) | self.graph.out_edges(node, data=True)
             commodities = list({d.get("commodity", "general") for _, _, d in connected_edges})
-            
+
             # Vulnerability calculation based on centrality and node degree
             degree = self.graph.degree(node)
             vulnerability = min(1.0, float(c_score) * 1.5 + (0.1 if degree > DEGREE_THRESHOLD else 0.0))

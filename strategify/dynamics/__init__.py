@@ -216,7 +216,7 @@ class IdeologyModel:
         personality: str = "Neutral",
         positions: dict[IdeologyAxis, float] | None = None,
     ) -> None:
-        self.positions = positions or self.PERSONALITY_POSITIONS.get(personality, {axis: 0.5 for axis in IdeologyAxis})
+        self.positions = positions or self.PERSONALITY_POSITIONS.get(personality, dict.fromkeys(IdeologyAxis, 0.5))
 
     def get_position(self, axis: IdeologyAxis | None = None) -> float | dict:
         """Get position on axis/axes."""

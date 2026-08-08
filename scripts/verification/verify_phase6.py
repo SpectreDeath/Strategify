@@ -26,6 +26,7 @@ def test_military_init():
     assert total_units > 0
     print(f"Total units spawned: {total_units}")
 
+
 def test_kinetic_combat():
     print("\n--- Testing Kinetic Combat ---")
     model = GeopolModel(enable_economics=False, enable_escalation_ladder=True)
@@ -55,6 +56,7 @@ def test_kinetic_combat():
     assert r_unit.strength < 1.0
     print("Combat verified: Strength reduced.")
 
+
 if __name__ == "__main__":
     try:
         test_military_init()
@@ -63,4 +65,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\nPhase 6 Verification FAILED: {e}")
         import traceback
+
         traceback.print_exc()

@@ -1,6 +1,7 @@
 """Economics sub-package: econometric modeling and analysis."""
 
 from strategify.economics.econometrics import (
+    ElasticityEstimate,
     FiscalImpact,
     FiscalImpactCalculator,
     RegressionModel,
@@ -9,7 +10,6 @@ from strategify.economics.econometrics import (
     TimeSeriesAnalyzer,
     TimeSeriesResult,
     TradeElasticityEstimator,
-    ElasticityEstimate,
 )
 from strategify.economics.supply_chain import (
     ChokepointAssessment,
@@ -31,4 +31,3 @@ __all__ = [
     "TradeRoute",
     "ChokepointAssessment",
 ]
-

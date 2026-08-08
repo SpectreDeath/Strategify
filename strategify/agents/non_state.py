@@ -92,9 +92,11 @@ class NonStateActor(BaseActorAgent):
         # Find neighbor with lowest state military capabilities
         best_sanctuary = min(
             neighbors,
-            key=lambda rid: getattr(self.model.get_agent_by_region(rid), "capabilities", {}).get("military", 1.0)
-            if self.model.get_agent_by_region(rid)
-            else 1.0,
+            key=lambda rid: (
+                getattr(self.model.get_agent_by_region(rid), "capabilities", {}).get("military", 1.0)
+                if self.model.get_agent_by_region(rid)
+                else 1.0
+            ),
         )
 
         if best_sanctuary != self.target_region:

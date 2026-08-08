@@ -57,7 +57,11 @@ class GeoEpidemicMap:
                 continue
 
             # Infections seeded across borders
-            border_leak = engine.infectious * cross_border_mobility_rate * (1.0 - getattr(agent, "biodefense", None).status.npi_level if hasattr(agent, "biodefense") else 1.0)
+            border_leak = (
+                engine.infectious
+                * cross_border_mobility_rate
+                * (1.0 - getattr(agent, "biodefense", None).status.npi_level if hasattr(agent, "biodefense") else 1.0)
+            )
             seed_per_neighbor = border_leak / max(len(neighbors), 1)
 
             for neighbor_id in neighbors:

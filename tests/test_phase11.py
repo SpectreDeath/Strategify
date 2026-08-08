@@ -1,6 +1,5 @@
 """Tests for Phase 11: Agent registry, military influence, faction normalization, terrain."""
 
-
 from strategify.sim.conflict import ConflictEngine
 from strategify.sim.model import GeopolModel
 

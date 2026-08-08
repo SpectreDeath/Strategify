@@ -1,5 +1,3 @@
-
-
 from strategify.sim.model import GeopolModel
 
 
@@ -21,8 +19,10 @@ def test_crs_projection_in_model():
     print(f"Distance between centroids: {dist}")
     assert dist > 1000  # Definitely not degrees
 
+
 def test_adjacency_builder_with_projection():
     from strategify.geo.loader import AdjacencyBuilder
+
     model = GeopolModel(scenario="default")
     adj = AdjacencyBuilder.build(model.region_gdf)
 
@@ -31,8 +31,10 @@ def test_adjacency_builder_with_projection():
     # For eastern_europe_crisis, alpha (Ukraine) should have neighbors
     assert len(adj["alpha"]) > 0
 
+
 def test_weighted_contagion():
     from strategify.reasoning.influence import InfluenceMap
+
     model = GeopolModel(scenario="default")
 
     # Set Russia (bravo) to Escalate
@@ -58,6 +60,7 @@ def test_weighted_contagion():
     assert c_poland > 0
     # The sum of weights in get_contagion_level is 1.0, so if Russia is the ONLY
     # escalating neighbor, the contagion is (weight_russia / total_neighbor_length).
+
 
 if __name__ == "__main__":
     test_crs_projection_in_model()

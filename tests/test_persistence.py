@@ -104,9 +104,7 @@ def test_restore_state(stepped_model):
 
         # Restore to fresh model
         restore_state(model, state)
-        fresh_agent = next(
-            a for a in model.schedule.agents if a.region_id == stepped_agent.region_id
-        )
+        fresh_agent = next(a for a in model.schedule.agents if a.region_id == stepped_agent.region_id)
         assert fresh_agent.posture == "Escalate"
 
 

@@ -53,11 +53,11 @@ class NashEquilibriumSolver:
         # Payoffs format: [ [ (A_Esc, B_Esc), (A_Esc, B_Deesc) ], [ (A_Deesc, B_Esc), (A_Deesc, B_Deesc) ] ]
         payoffs_a = [
             [-10.0, 15.0],  # Escalate vs (Escalate, Deescalate)
-            [-15.0, 5.0],   # Deescalate vs (Escalate, Deescalate)
+            [-15.0, 5.0],  # Deescalate vs (Escalate, Deescalate)
         ]
         payoffs_b = [
-            [-10.0, -15.0], # vs A_Escalate (B_Escalate, B_Deescalate)
-            [15.0, 5.0],    # vs A_Deescalate (B_Escalate, B_Deescalate)
+            [-10.0, -15.0],  # vs A_Escalate (B_Escalate, B_Deescalate)
+            [15.0, 5.0],  # vs A_Deescalate (B_Escalate, B_Deescalate)
         ]
 
         return PayoffMatrix(
@@ -109,8 +109,18 @@ class NashEquilibriumSolver:
         mix_a = {strat: p_a if idx == 0 else (1.0 - p_a) for idx, strat in enumerate(mat.strategies_a)}
         mix_b = {strat: p_b if idx == 0 else (1.0 - p_b) for idx, strat in enumerate(mat.strategies_b)}
 
-        expected_a = mat.payoffs_a[0][0] * 0.25 + mat.payoffs_a[0][1] * 0.25 + mat.payoffs_a[1][0] * 0.25 + mat.payoffs_a[1][1] * 0.25
-        expected_b = mat.payoffs_b[0][0] * 0.25 + mat.payoffs_b[0][1] * 0.25 + mat.payoffs_b[1][0] * 0.25 + mat.payoffs_b[1][1] * 0.25
+        expected_a = (
+            mat.payoffs_a[0][0] * 0.25
+            + mat.payoffs_a[0][1] * 0.25
+            + mat.payoffs_a[1][0] * 0.25
+            + mat.payoffs_a[1][1] * 0.25
+        )
+        expected_b = (
+            mat.payoffs_b[0][0] * 0.25
+            + mat.payoffs_b[0][1] * 0.25
+            + mat.payoffs_b[1][0] * 0.25
+            + mat.payoffs_b[1][1] * 0.25
+        )
 
         bargaining_point = pure_eq[0] if pure_eq else (mat.strategies_a[1], mat.strategies_b[1])
 

@@ -183,8 +183,7 @@ class TestTemporalModifiers:
             temporal.step()
         # Capabilities should have changed
         any_changed = any(
-            model.schedule.agents[i].capabilities
-            != initial_caps[model.schedule.agents[i].unique_id]
+            model.schedule.agents[i].capabilities != initial_caps[model.schedule.agents[i].unique_id]
             for i in range(len(model.schedule.agents))
         )
         # At some point in 20 steps, modifiers should have had an effect

@@ -159,7 +159,11 @@ def main(args: list[str] | None = None) -> Any:
 
     parsed = parser.parse_args(args)
 
-    scen = "default" if getattr(parsed, "scenario", "Ukraine") in ("Ukraine", "default") else getattr(parsed, "scenario", "default")
+    scen = (
+        "default"
+        if getattr(parsed, "scenario", "Ukraine") in ("Ukraine", "default")
+        else getattr(parsed, "scenario", "default")
+    )
 
     if parsed.command == "run":
         model = GeopolModel(scenario=scen)

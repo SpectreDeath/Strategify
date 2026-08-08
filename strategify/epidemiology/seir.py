@@ -83,7 +83,9 @@ class SEIRHEngine:
         self.rt_history.append(rt)
         return rt
 
-    def step(self, dt_days: float = 1.0, npi_effectiveness: float = 0.0, vaccination_rate: float = 0.0) -> dict[str, float]:
+    def step(
+        self, dt_days: float = 1.0, npi_effectiveness: float = 0.0, vaccination_rate: float = 0.0
+    ) -> dict[str, float]:
         """Advance SEIRH compartment states by dt_days.
 
         Parameters
@@ -112,7 +114,7 @@ class SEIRHEngine:
         dS = -beta * (self.susceptible * self.infectious) / n_pop
         dE = -dS - sigma * self.exposed
         dI = sigma * self.exposed - gamma * self.infectious
-        
+
         dH = gamma * self.infectious * self.variant.hospitalization_rate - 0.2 * self.hospitalized
         dR = gamma * self.infectious * (1.0 - self.variant.hospitalization_rate - self.variant.fatality_rate)
         dD = gamma * self.infectious * self.variant.fatality_rate
@@ -121,19 +123,19 @@ class SEIRHEngine:
         dS2 = -beta / n_pop * (dS * self.infectious + self.susceptible * dI)
         dE2 = -dS2 - sigma * dE
         dI2 = sigma * dE - gamma * dI
-        
+
         dH2 = gamma * dI * self.variant.hospitalization_rate - 0.2 * dH
         dR2 = gamma * dI * (1.0 - self.variant.hospitalization_rate - self.variant.fatality_rate)
         dD2 = gamma * dI * self.variant.fatality_rate
 
         # 2nd-order Taylor expansion updates: Y(t+dt) = Y(t) + Y' * dt + 0.5 * Y'' * dt^2
-        dt2_half = 0.5 * (dt_days ** 2)
-        
+        dt2_half = 0.5 * (dt_days**2)
+
         self.susceptible = max(0.0, self.susceptible + dS * dt_days + dS2 * dt2_half)
         self.exposed = max(0.0, self.exposed + dE * dt_days + dE2 * dt2_half)
         self.infectious = max(0.0, self.infectious + dI * dt_days + dI2 * dt2_half)
         self.hospitalized = max(0.0, self.hospitalized + dH * dt_days + dH2 * dt2_half)
-        
+
         inc_R = dR * dt_days + dR2 * dt2_half
         inc_D = dD * dt_days + dD2 * dt2_half
         self.recovered += max(0.0, inc_R)

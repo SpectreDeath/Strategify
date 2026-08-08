@@ -38,7 +38,12 @@ class DLConflictGuard:
 
         is_allowed = action_name != "full_scale_assault"
 
-        logger.info("DL Conflict Guard evaluated '%s' (%s): %s", action_name, expr.to_dl_syntax(), "ALLOWED" if is_allowed else "DENIED")
+        logger.info(
+            "DL Conflict Guard evaluated '%s' (%s): %s",
+            action_name,
+            expr.to_dl_syntax(),
+            "ALLOWED" if is_allowed else "DENIED",
+        )
 
         return {
             "action_name": action_name,

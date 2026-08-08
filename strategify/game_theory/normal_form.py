@@ -109,8 +109,7 @@ class NormalFormGame:
 
             row_mil = cap_row.get("military", 0.5)
             col_mil = cap_col.get("military", 0.5)
-            if col_mil < 1e-6:
-                col_mil = 1e-6
+            col_mil = max(col_mil, 1e-6)
             ratio = row_mil / col_mil
             row_factor = math.log(1.0 + ratio)
             col_factor = math.log(1.0 + 1.0 / ratio) if ratio > 1e-6 else math.log(1.0 + 1e6)

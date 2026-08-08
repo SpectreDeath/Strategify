@@ -74,4 +74,3 @@ def test_economics_chokepoints_endpoint():
     assert data["status"] == "success"
     assert "chokepoints" in data
     assert "prolog_facts" in data
-

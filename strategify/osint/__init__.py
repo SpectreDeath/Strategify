@@ -22,6 +22,7 @@ from strategify.osint.features import (
     analyze_texts_sentiment,
     compute_region_features,
 )
+from strategify.osint.live_feed import OSINTEvent, StrategifyLiveFeed
 from strategify.osint.nih_reporter_adapter import NIHGrantProject, NIHReporterApiAdapter
 from strategify.osint.pipeline import FeaturePipeline
 from strategify.osint.pipeline_integration import PipelineFitOutcome, SoQLToFitterPipeline
@@ -41,8 +42,6 @@ from strategify.osint.surveillance_adapters import (
     HealthDataGovAdapter,
     NextstrainGenomicAdapter,
 )
-
-from strategify.osint.live_feed import OSINTEvent, StrategifyLiveFeed
 
 __all__ = [
     # Features

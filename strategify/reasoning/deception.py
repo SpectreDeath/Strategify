@@ -109,8 +109,12 @@ class DeceptionEngine:
                 timestamp=time.time(),
             )
             target_agent.intelligence.reports.append(report)
-            logger.info("Agent %s successfully injected deceptive intel into %s", self.agent.region_id, target_agent.region_id)
+            logger.info(
+                "Agent %s successfully injected deceptive intel into %s", self.agent.region_id, target_agent.region_id
+            )
             return True
 
-        logger.info("Agent %s failed deceptive intel injection against %s", self.agent.region_id, target_agent.region_id)
+        logger.info(
+            "Agent %s failed deceptive intel injection against %s", self.agent.region_id, target_agent.region_id
+        )
         return False

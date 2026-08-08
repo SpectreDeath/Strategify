@@ -107,10 +107,8 @@ class EconomicForecast:
     timestamp: float = field(default_factory=time.time)
 
     def __post_init__(self) -> None:
-        if self.confidence > 0.95:
-            self.confidence = 0.95
-        if self.confidence < 0.0:
-            self.confidence = 0.0
+        self.confidence = min(self.confidence, 0.95)
+        self.confidence = max(self.confidence, 0.0)
 
 
 @dataclass
@@ -150,10 +148,8 @@ class PolicyImpact:
     timestamp: float = field(default_factory=time.time)
 
     def __post_init__(self) -> None:
-        if self.confidence > 0.95:
-            self.confidence = 0.95
-        if self.confidence < 0.0:
-            self.confidence = 0.0
+        self.confidence = min(self.confidence, 0.95)
+        self.confidence = max(self.confidence, 0.0)
         if not self.risks:
             self._assess_default_risks()
 

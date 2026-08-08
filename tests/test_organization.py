@@ -109,11 +109,7 @@ class TestOrganizationDecide:
 
     def test_igo_peacekeeping_moderate_escalation_triggers_advisory(self, peacekeeping_org):
         # Set 1 of 2 members to escalate (50% = >0.25 but at boundary)
-        members = [
-            a
-            for a in peacekeeping_org.model.schedule.agents
-            if a.unique_id in peacekeeping_org.member_ids
-        ]
+        members = [a for a in peacekeeping_org.model.schedule.agents if a.unique_id in peacekeeping_org.member_ids]
         members[0].posture = "Escalate"
         members[1].posture = "Deescalate"
         result = peacekeeping_org.decide()
