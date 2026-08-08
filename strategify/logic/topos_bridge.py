@@ -24,6 +24,9 @@ except ImportError:
         def is_satisfied(self) -> bool:
             return True
 
+        def is_boolean(self) -> bool:
+            return True
+
     class SubobjectClassifier:  # type: ignore
         @staticmethod
         def evaluate_confidence(confidence_score: float) -> Any:
@@ -53,7 +56,12 @@ class ToposDecisionBridge:
             Topos Ω evaluation details including modal_type, satisfaction status, and confidence.
         """
         truth_val: TruthValue = SubobjectClassifier.evaluate_confidence(confidence_score)
-        satisfied = truth_val.is_satisfied()
+        if hasattr(truth_val, "is_satisfied"):
+            satisfied = truth_val.is_satisfied()
+        elif hasattr(truth_val, "is_boolean"):
+            satisfied = truth_val.is_boolean()
+        else:
+            satisfied = True
 
         logger.info(
             "Evaluated action '%s' in Topos Ω: ModalType=%s, Confidence=%.2f, Satisfied=%s",
