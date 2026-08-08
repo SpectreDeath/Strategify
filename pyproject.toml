@@ -115,6 +115,8 @@ exclude_lines = [
 [tool.ruff]
 line-length = 120
 target-version = "py311"
+include = ["*.py", "*.pyi", "pyproject.toml"]
+
 
 [tool.ruff.format]
 line-ending = "lf"
