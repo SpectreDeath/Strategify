@@ -3,7 +3,9 @@ import { simulationApi } from '../api/client'
 import BeliefGraph from '../components/BeliefGraph'
 import MCTSBrowser from '../components/MCTSBrowser'
 import SwarmDeliberation from '../components/SwarmDeliberation'
+import AgentLogs from '../components/AgentLogs'
 import './XAI.css'
+
 
 export default function XAI() {
   const [agents, setAgents] = useState([])
@@ -75,7 +77,10 @@ export default function XAI() {
         </div>
       </div>
 
+      <AgentLogs agentId={selectedAgent} />
+
       <SwarmDeliberation actorId={selectedAgent || 'BlueLand'} />
+
 
       <div className="xai-info">
         <h3>About XAI Visualization</h3>

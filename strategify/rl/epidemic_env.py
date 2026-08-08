@@ -34,6 +34,7 @@ except ImportError:
 
 from strategify.epidemiology.countermeasures import BioDefenseComponent
 from strategify.epidemiology.seir import SEIRHEngine
+from strategify.rl.analytical_baselines import LQRBaseline
 
 logger = logging.getLogger(__name__)
 
@@ -163,3 +164,14 @@ class EpidemicEnv(gym.Env):
         }
 
         return obs, reward, terminated, truncated, info
+
+    def get_baseline_action(self) -> float:
+        """Get optimal NPI action from LQR baseline for current state."""
+        beta = self.seir_engine.variant.r0 / max(self.seir_engine.variant.infectious_period, 0.1)
+        sigma = 1.0 / max(self.seir_engine.variant.incubation_period, 0.1)
+        gamma = 1.0 / max(self.seir_engine.variant.infectious_period, 0.1)
+        
+        lqr = LQRBaseline(beta, sigma, gamma)
+        e_frac = self.seir_engine.exposed / self.population
+        i_frac = self.seir_engine.infectious / self.population
+        return lqr.get_action(e_frac, i_frac)

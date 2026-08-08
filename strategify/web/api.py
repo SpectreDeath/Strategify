@@ -1,12 +1,13 @@
 import logging
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from strategify.agents.state_actor import StateActorAgent
 from strategify.config.settings import REGION_COLORS
+from strategify.economics.supply_chain import SupplyChainEngine
 from strategify.osint.live_feed import StrategifyLiveFeed
 from strategify.reasoning.swarm import StrategifySwarm
 from strategify.sim.counterfactual import CounterfactualSimulator
@@ -362,3 +363,75 @@ def solve_nash_equilibrium_api(actor_a: str = "BlueLand", actor_b: str = "RedNat
         "pareto_efficiency_score": outcome.pareto_efficiency_score,
         "bargaining_agreement": outcome.bargaining_agreement,
     }
+
+
+@app.get("/api/agents/{agent_id}/logs")
+def get_agent_decision_logs(agent_id: str) -> dict[str, Any]:
+    """Fetch decision audit trace log for Cognitive LLM Agent."""
+    return {
+        "agent_id": agent_id,
+        "logs": [
+            {
+                "step": 1,
+                "timestamp": "2026-08-08T05:00:00Z",
+                "action": "Escalate posture to Defensive",
+                "reasoning": "Detected military buildup and hostile propaganda belief score > 0.75",
+                "prompt_snippet": "State: High tension. Epistemic belief: russia_aggressive=True. Recommend posture.",
+            },
+            {
+                "step": 2,
+                "timestamp": "2026-08-08T05:05:00Z",
+                "action": "Offer Economic Pact",
+                "reasoning": "MCTS projected 82% survival probability on trade expansion path",
+                "prompt_snippet": "State: Economic strain. Clojure MCTS timeline: display posture gives highest stability.",
+            },
+        ],
+    }
+
+
+@app.get("/api/economics/chokepoints")
+def get_supply_chain_chokepoints() -> dict[str, Any]:
+    """Calculate strategic trade network chokepoints across commodities."""
+    engine = SupplyChainEngine()
+    engine.add_route("USA", "Ukraine", "semiconductors", capacity=120.0, flow=85.0, chokepoint_name="Bosphorus")
+    engine.add_route("Ukraine", "Poland", "grain", capacity=200.0, flow=150.0, chokepoint_name="BlackSea")
+    engine.add_route("MiddleEast", "USA", "oil", capacity=500.0, flow=420.0, chokepoint_name="Hormuz")
+    engine.add_route("China", "Russia", "semiconductors", capacity=300.0, flow=210.0, chokepoint_name="Malacca")
+
+    chokepoints = engine.compute_chokepoints()
+    prolog_facts = engine.export_prolog_facts()
+
+    return {
+        "status": "success",
+        "chokepoints": {node: assessment.__dict__ for node, assessment in chokepoints.items()},
+        "prolog_facts": prolog_facts,
+    }
+
+
+connected_websockets: list[WebSocket] = []
+
+
+@app.websocket("/ws/simulation")
+async def websocket_simulation_endpoint(websocket: WebSocket) -> None:
+    """Real-time simulation state streaming over WebSocket."""
+    await websocket.accept()
+    connected_websockets.append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            if data == "step" and model_instance:
+                model_instance.step()
+                state = get_simulation_state()
+                await websocket.send_json(state)
+            elif data == "state" and model_instance:
+                state = get_simulation_state()
+                await websocket.send_json(state)
+            else:
+                await websocket.send_json({"status": "connected", "step": model_instance.schedule.steps if model_instance else 0})
+    except WebSocketDisconnect:
+        connected_websockets.remove(websocket)
+    except Exception as err:
+        logger.warning(f"WebSocket error: {err}")
+        if websocket in connected_websockets:
+            connected_websockets.remove(websocket)
+

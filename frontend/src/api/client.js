@@ -18,7 +18,13 @@ export const simulationApi = {
 export const xaiApi = {
   getAgentBeliefs: (agentId) => api.get(`/agents/${agentId}/beliefs`),
   getMCTSBranches: (agentId) => api.get(`/agents/${agentId}/mcts-branches`),
+  getAgentLogs: (agentId) => api.get(`/agents/${agentId}/logs`),
 };
+
+export const economicsApi = {
+  getChokepoints: () => api.get('/economics/chokepoints'),
+};
+
 
 export const wargameApi = {
   runWargame: (steps = 5) => api.post(`/wargame/run?steps=${steps}`),

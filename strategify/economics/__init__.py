@@ -11,6 +11,11 @@ from strategify.economics.econometrics import (
     TradeElasticityEstimator,
     ElasticityEstimate,
 )
+from strategify.economics.supply_chain import (
+    ChokepointAssessment,
+    SupplyChainEngine,
+    TradeRoute,
+)
 
 __all__ = [
     "RegressionModel",
@@ -22,4 +27,8 @@ __all__ = [
     "FiscalImpactCalculator",
     "TradeElasticityEstimator",
     "ElasticityEstimate",
+    "SupplyChainEngine",
+    "TradeRoute",
+    "ChokepointAssessment",
 ]
+

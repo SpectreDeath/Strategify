@@ -56,3 +56,22 @@ def test_simulation_lifecycle_endpoints():
     # Stop simulation
     resp_stop = client.post("/api/simulation/stop")
     assert resp_stop.status_code == 200
+
+
+def test_agent_logs_endpoint():
+    response = client.get("/api/agents/usa/logs")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["agent_id"] == "usa"
+    assert "logs" in data
+    assert len(data["logs"]) > 0
+
+
+def test_economics_chokepoints_endpoint():
+    response = client.get("/api/economics/chokepoints")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert "chokepoints" in data
+    assert "prolog_facts" in data
+
