@@ -131,7 +131,14 @@ ignore = [
     "B028", "UP007", "UP035", "UP006", "C408", "C416", "E402", "PLR1722", "C401", "C414",
     "PLW1510", "PLR1714", "PLC0206"
 ]
-exclude = ["strategify/viz/dashboard.py", "strategify/viz/timeline.py"]
+exclude = [
+    "strategify/viz/dashboard.py",
+    "strategify/viz/timeline.py",
+    ".kilo",
+    ".context",
+    ".venv",
+]
+
 
 
 
