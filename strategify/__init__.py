@@ -10,6 +10,7 @@ from strategify.config.scenarios import (
 from strategify.config.settings import DEFAULT_N_STEPS, RANDOM_SEED, REAL_WORLD_GEOJSON
 from strategify.game_theory.crisis_games import escalation_game
 from strategify.game_theory.normal_form import NormalFormGame
+
 try:
     from strategify.sim.model import GeopolModel
 except ImportError:

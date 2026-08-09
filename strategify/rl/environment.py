@@ -7,6 +7,7 @@ can be trained via reinforcement learning.
 from __future__ import annotations
 
 import numpy as np
+
 try:
     from gymnasium import spaces
     from pettingzoo import AECEnv
