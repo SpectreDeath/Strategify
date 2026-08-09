@@ -27,7 +27,8 @@ class NormalFormGame:
             raise ImportError("nashpy is required for NormalFormGame. Install via `pip install nashpy`.")
         self.A = np.asarray(A, dtype=float)
         self.B = np.asarray(B, dtype=float)
-        self.game = nash.Game(self.A, self.B)
+        self._game = nash.Game(self.A, self.B)
+        self.game = self._game
 
     # ------------------------------------------------------------------
     # Core methods
