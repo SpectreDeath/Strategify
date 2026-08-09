@@ -636,11 +636,11 @@ def get_live_map_geojson() -> dict[str, Any]:
 @app.get("/api/economics/chokepoints")
 def get_supply_chain_chokepoints() -> dict[str, Any]:
     """Calculate strategic trade network chokepoints across commodities."""
-    engine = SupplyChainEngine()
-    engine.add_route("USA", "Ukraine", "semiconductors", capacity=120.0, flow=85.0, chokepoint_name="Bosphorus")
-    engine.add_route("Ukraine", "Poland", "grain", capacity=200.0, flow=150.0, chokepoint_name="BlackSea")
-    engine.add_route("MiddleEast", "USA", "oil", capacity=500.0, flow=420.0, chokepoint_name="Hormuz")
-    engine.add_route("China", "Russia", "semiconductors", capacity=300.0, flow=210.0, chokepoint_name="Malacca")
+    if model_instance and getattr(model_instance, "supply_chain", None):
+        engine = model_instance.supply_chain
+    else:
+        engine = SupplyChainEngine()
+        engine.initialize_default_routes()
 
     chokepoints = engine.compute_chokepoints()
     prolog_facts = engine.export_prolog_facts()

@@ -201,7 +201,9 @@ class GeopolModel(Model):
         # Economic model
         self.trade_network = None
         self.population_model = None
+        self.supply_chain = None
         if enable_economics:
+            from strategify.economics.supply_chain import SupplyChainEngine
             from strategify.reasoning.economics import PopulationModel, TradeNetwork
 
             self.trade_network = TradeNetwork(self)
@@ -210,6 +212,10 @@ class GeopolModel(Model):
             self.population_model.initialize()
             # Wire population into trade network for GDP calculation
             self.trade_network.population_model = self.population_model
+
+            # Multi-commodity supply chain engine (Phase 22)
+            self.supply_chain = SupplyChainEngine(model=self)
+            self.supply_chain.initialize_default_routes()
 
         # Escalation ladder
         self.escalation_ladder = None
@@ -413,6 +419,8 @@ class GeopolModel(Model):
             self.trade_network.step()
         if self.population_model is not None:
             self.population_model.step()
+        if self.supply_chain is not None:
+            self.supply_chain.step()
 
         # Step escalation ladder
         if self.escalation_ladder is not None:
