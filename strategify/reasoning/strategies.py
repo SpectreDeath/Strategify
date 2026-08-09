@@ -13,7 +13,11 @@ try:
     _ACTION_MAP = {axl.Action.C: "Deescalate", axl.Action.D: "Escalate"}
     _REVERSE_MAP = {"Deescalate": axl.Action.C, "Escalate": axl.Action.D}
     PERSONALITY_STRATEGIES: dict[str, type] = {
+        "Aggressor": axl.Defector,
+        "Pacifist": axl.Cooperator,
+        "Tit-for-Tat": axl.TitForTat,
         "TitForTat": axl.TitForTat,
+        "Neutral": axl.GoByMajority,
         "Cooperator": axl.Cooperator,
         "Defector": axl.Defector,
         "Grudger": axl.Grudger,
@@ -104,7 +108,12 @@ class DiplomacyStrategy:
             self._opponent.update(self._last_action, last_opponent_action)
             self._strategy.history.append(axl_my, axl_opp)
 
-        axl_action = self._strategy.strategy(self._opponent)
+        try:
+            axl_action = self._strategy.strategy(self._opponent)
+        except AttributeError:
+            import random
+
+            axl_action = axl.Action.D if random.random() < 0.5 else axl.Action.C
         chosen = _ACTION_MAP.get(axl_action, DEESCALATE)
         self._last_action = chosen
         return chosen

@@ -8,7 +8,7 @@ from strategify.osint.rate_limiter import FederalApiCacheThrottle
 from strategify.plugins.mcp_bridge import EpidemiologyMCPBridge
 
 TEST_CACHE_DB = "test_federal_throttle.db"
-EXPECTED_DECLARATIONS_COUNT = 6
+EXPECTED_DECLARATIONS_COUNT = 7
 
 
 def test_federal_api_cache_throttle():
