@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class TradeRoute:
     source: str
@@ -57,7 +58,7 @@ class CommodityLedger:
     commodity: str
     total_supply: float = 0.0
     total_demand: float = 0.0
-    disruption_pct: float = 0.0   # 0-1: fraction of capacity offline from shocks
+    disruption_pct: float = 0.0  # 0-1: fraction of capacity offline from shocks
 
     @property
     def stress(self) -> float:
@@ -71,12 +72,12 @@ class CommodityLedger:
 class ShockEvent:
     """A supply-chain shock: embargo, port closure, or sanctions."""
 
-    shock_type: str          # "embargo" | "port_closure" | "sanctions"
-    source: str              # originating region
-    target: str              # affected region / chokepoint / commodity
-    commodity: str | None    # None = all commodities
-    severity: float          # 0.0–1.0
-    duration_steps: int      # -1 = permanent
+    shock_type: str  # "embargo" | "port_closure" | "sanctions"
+    source: str  # originating region
+    target: str  # affected region / chokepoint / commodity
+    commodity: str | None  # None = all commodities
+    severity: float  # 0.0–1.0
+    duration_steps: int  # -1 = permanent
     step_applied: int = 0
     active: bool = True
 
@@ -86,29 +87,30 @@ DEGREE_THRESHOLD = 2
 # Default commodity topology: list of (source, target, commodity, capacity, flow, chokepoint)
 DEFAULT_ROUTES: list[tuple[str, str, str, float, float, str | None]] = [
     # Oil/gas flows
-    ("RUS", "EUR", "oil",            120.0, 80.0,  "Bosphorus"),
-    ("IRN", "CHN", "oil",            100.0, 70.0,  "Hormuz"),
-    ("SAU", "ASI", "oil",            150.0, 110.0, "Hormuz"),
-    ("USA", "EUR", "oil",             60.0, 40.0,  None),
-    ("RUS", "CHN", "gas",            100.0, 65.0,  None),
-    ("NOR", "EUR", "gas",             80.0, 60.0,  None),
+    ("RUS", "EUR", "oil", 120.0, 80.0, "Bosphorus"),
+    ("IRN", "CHN", "oil", 100.0, 70.0, "Hormuz"),
+    ("SAU", "ASI", "oil", 150.0, 110.0, "Hormuz"),
+    ("USA", "EUR", "oil", 60.0, 40.0, None),
+    ("RUS", "CHN", "gas", 100.0, 65.0, None),
+    ("NOR", "EUR", "gas", 80.0, 60.0, None),
     # Semiconductors
-    ("TWN", "USA", "semiconductors",  90.0, 70.0,  "Malacca"),
-    ("KOR", "USA", "semiconductors",  60.0, 45.0,  "Malacca"),
-    ("CHN", "EUR", "semiconductors",  50.0, 35.0,  "Suez"),
+    ("TWN", "USA", "semiconductors", 90.0, 70.0, "Malacca"),
+    ("KOR", "USA", "semiconductors", 60.0, 45.0, "Malacca"),
+    ("CHN", "EUR", "semiconductors", 50.0, 35.0, "Suez"),
     # Grain
-    ("UKR", "MNA", "grain",           80.0, 55.0,  "Bosphorus"),
-    ("RUS", "MNA", "grain",           70.0, 50.0,  "Bosphorus"),
-    ("USA", "AFR", "grain",           60.0, 40.0,  None),
+    ("UKR", "MNA", "grain", 80.0, 55.0, "Bosphorus"),
+    ("RUS", "MNA", "grain", 70.0, 50.0, "Bosphorus"),
+    ("USA", "AFR", "grain", 60.0, 40.0, None),
     # Rare earths
-    ("CHN", "USA", "rare_earths",     50.0, 38.0,  "Malacca"),
-    ("CHN", "EUR", "rare_earths",     40.0, 30.0,  "Suez"),
+    ("CHN", "USA", "rare_earths", 50.0, 38.0, "Malacca"),
+    ("CHN", "EUR", "rare_earths", 40.0, 30.0, "Suez"),
 ]
 
 
 # ---------------------------------------------------------------------------
 # Main engine
 # ---------------------------------------------------------------------------
+
 
 class SupplyChainEngine:
     """Multi-commodity supply chain vulnerability and strategic chokepoint analyzer.
@@ -215,7 +217,12 @@ class SupplyChainEngine:
         self.shocks.append(shock)
         logger.info(
             "ShockEvent injected: %s by %s on %s (commodity=%s, severity=%.2f, duration=%d)",
-            shock_type, source, target, commodity, severity, duration_steps,
+            shock_type,
+            source,
+            target,
+            commodity,
+            severity,
+            duration_steps,
         )
         return shock
 
@@ -265,10 +272,7 @@ class SupplyChainEngine:
             vulnerability = min(1.0, float(c_score) * 1.5 + (0.1 if degree > DEGREE_THRESHOLD else 0.0))
 
             # Active shocks targeting this node boost the vulnerability
-            shock_boost = sum(
-                s.severity for s in self.shocks
-                if s.active and (s.target == node or s.source == node)
-            )
+            shock_boost = sum(s.severity for s in self.shocks if s.active and (s.target == node or s.source == node))
             bottleneck_score = min(1.0, vulnerability + shock_boost * 0.15)
 
             dominant_commodity = commodities[0] if commodities else "mixed"
@@ -310,10 +314,7 @@ class SupplyChainEngine:
                 "target": s.target,
                 "commodity": s.commodity,
                 "severity": s.severity,
-                "remaining_steps": (
-                    s.duration_steps - (self._step - s.step_applied)
-                    if s.duration_steps >= 0 else -1
-                ),
+                "remaining_steps": (s.duration_steps - (self._step - s.step_applied) if s.duration_steps >= 0 else -1),
             }
             for s in self.shocks
             if s.active
@@ -358,8 +359,7 @@ class SupplyChainEngine:
             if not shock.active:
                 continue
             targets = (
-                [shock.commodity] if shock.commodity and shock.commodity in self.ledgers
-                else list(self.ledgers.keys())
+                [shock.commodity] if shock.commodity and shock.commodity in self.ledgers else list(self.ledgers.keys())
             )
             for commodity in targets:
                 if commodity in self.ledgers:
@@ -391,9 +391,7 @@ class SupplyChainEngine:
                     continue
                 rid = getattr(agent, "region_id", "")
                 if rid and (rid == shock.target or rid == shock.source):
-                    region_penalties[rid] = min(
-                        0.3, region_penalties.get(rid, 0.0) + shock.severity * 0.05
-                    )
+                    region_penalties[rid] = min(0.3, region_penalties.get(rid, 0.0) + shock.severity * 0.05)
 
         # Apply or recover
         for agent in self.model.schedule.agents:

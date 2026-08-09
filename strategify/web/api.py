@@ -136,10 +136,7 @@ def get_agent_beliefs(agent_id: str) -> dict[str, Any]:
             rid = getattr(agent, "region_id", "").lower()
             if rid == agent_id.lower() and isinstance(agent, CognitiveActorAgent):
                 raw = getattr(agent, "epistemic_beliefs", {})
-                beliefs = [
-                    {"fact": k, "value": str(v), "source": "live"}
-                    for k, v in raw.items()
-                ]
+                beliefs = [{"fact": k, "value": str(v), "source": "live"} for k, v in raw.items()]
                 if beliefs:
                     return {"agent_id": agent_id, "beliefs": beliefs, "mode": "live"}
 
@@ -455,10 +452,7 @@ def run_analysis(request: AnalysisRequest) -> dict[str, Any]:
             ts = prepare_agent_timeseries(df)
             raw = pairwise_granger_causality(ts, maxlag=params.get("maxlag", 3))
             # Convert tuple keys to strings
-            pairs = [
-                {"cause": k[0], "effect": k[1], **v}
-                for k, v in raw.items()
-            ]
+            pairs = [{"cause": k[0], "effect": k[1], **v} for k, v in raw.items()]
             causal_pairs = [p for p in pairs if p.get("causes")]
             return {
                 "type": "granger",
@@ -477,8 +471,7 @@ def run_analysis(request: AnalysisRequest) -> dict[str, Any]:
                 for agent in model_instance.schedule.agents
             }
             named_communities = [
-                [id_to_region.get(aid, str(aid)) for aid in community]
-                for community in result.get("communities", [])
+                [id_to_region.get(aid, str(aid)) for aid in community] for community in result.get("communities", [])
             ]
             return {
                 "type": "community",
@@ -607,23 +600,26 @@ def get_live_map_geojson() -> dict[str, Any]:
                 import json
 
                 from shapely.geometry import mapping
+
                 geometry = json.loads(json.dumps(mapping(shape)))
             except Exception:
                 geometry = None
 
-        features.append({
-            "type": "Feature",
-            "geometry": geometry,
-            "properties": {
-                "region_id": rid,
-                "posture": posture,
-                "tension": tension,
-                "stability": round(stability, 3),
-                "military": round(military, 3),
-                "economic": round(economic, 3),
-                "color": posture_colors.get(posture, REGION_COLORS.get(rid, "#888888")),
-            },
-        })
+        features.append(
+            {
+                "type": "Feature",
+                "geometry": geometry,
+                "properties": {
+                    "region_id": rid,
+                    "posture": posture,
+                    "tension": tension,
+                    "stability": round(stability, 3),
+                    "military": round(military, 3),
+                    "economic": round(economic, 3),
+                    "color": posture_colors.get(posture, REGION_COLORS.get(rid, "#888888")),
+                },
+            }
+        )
 
     return {
         "type": "FeatureCollection",
