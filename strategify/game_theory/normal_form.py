@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import random
 
-import nashpy as nash
+try:
+    import nashpy as nash
+except ImportError:
+    nash = None
 import numpy as np
 
 
@@ -19,14 +22,12 @@ class NormalFormGame:
         Column player payoff matrix (same shape as A).
     """
 
-    def __init__(
-        self,
-        A: np.ndarray | list,
-        B: np.ndarray | list,
-    ) -> None:
-        self.A = np.array(A, dtype=float)
-        self.B = np.array(B, dtype=float)
-        self._game = nash.Game(self.A, self.B)
+    def __init__(self, A: np.ndarray, B: np.ndarray) -> None:
+        if nash is None:
+            raise ImportError("nashpy is required for NormalFormGame. Install via `pip install nashpy`.")
+        self.A = np.asarray(A, dtype=float)
+        self.B = np.asarray(B, dtype=float)
+        self.game = nash.Game(self.A, self.B)
 
     # ------------------------------------------------------------------
     # Core methods

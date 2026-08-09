@@ -6,7 +6,7 @@ from strategify.plugins.mcp_bridge import EpidemiologyMCPBridge
 from strategify.rl.benchmark import RLControlBenchmark
 from strategify.viz.epidemic_plots import EpidemicPlotter
 
-EXPECTED_MCP_TOOLS_COUNT = 6
+EXPECTED_MCP_TOOLS_COUNT = 7
 MIN_BASE64_LENGTH = 100
 
 
@@ -41,6 +41,11 @@ def test_mcp_bridge_rl_tools():
     bridge = EpidemiologyMCPBridge()
     decls = bridge.get_tool_declarations()
     assert len(decls) == EXPECTED_MCP_TOOLS_COUNT
+
+    res_discover = bridge.execute_tool("server_discover", {})
+    assert res_discover["status"] == "success"
+    assert res_discover["spec_version"] == "2026-07-28"
+    assert res_discover["stateless"] is True
 
     res_step = bridge.execute_tool("step_epidemic_env", {"action": [0.7, 0.3, 0.1]})
     assert res_step["status"] == "success"

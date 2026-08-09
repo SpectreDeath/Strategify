@@ -7,11 +7,15 @@ can be trained via reinforcement learning.
 from __future__ import annotations
 
 import numpy as np
-from gymnasium import spaces
-from pettingzoo import AECEnv
+try:
+    from gymnasium import spaces
+    from pettingzoo import AECEnv
+    _ENV_BASE = AECEnv
+except ImportError:
+    spaces = None
+    _ENV_BASE = object
 
-
-class GeopolEnv(AECEnv):
+class GeopolEnv(_ENV_BASE):
     """PettingZoo AEC environment wrapping GeopolModel.
 
     Each agent observes: [military, economic, net_influence, escalation_count]

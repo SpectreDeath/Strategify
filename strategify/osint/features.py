@@ -9,7 +9,10 @@ from __future__ import annotations
 import logging
 from typing import Any, Protocol
 
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+try:
+    from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+except ImportError:
+    SentimentIntensityAnalyzer = None
 
 logger = logging.getLogger(__name__)
 

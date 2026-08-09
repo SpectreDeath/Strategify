@@ -106,6 +106,14 @@ class EpidemiologyMCPBridge:
                     },
                 },
             },
+            {
+                "name": "server_discover",
+                "description": "Exposes MCP 2026-07-28 stateless server capabilities, spec version, and routing header requirements.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                },
+            },
         ]
 
     def execute_tool(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
@@ -123,7 +131,26 @@ class EpidemiologyMCPBridge:
         dict[str, Any]
             Execution payload response.
         """
-        if tool_name == "query_cdc_soda":
+        if tool_name == "server_discover" or tool_name == "serverDiscover":
+            return {
+                "status": "success",
+                "spec_version": "2026-07-28",
+                "protocolVersion": "2026-07-28",
+                "stateless": True,
+                "server_info": {"name": "strategify-mcp-bridge", "version": "1.0.0"},
+                "capabilities": {
+                    "stateless_transport": True,
+                    "routing_headers": ["MCP-Method", "MCP-Name"],
+                    "interactive_mode": "input_required",
+                    "tools": len(self.get_tool_declarations()),
+                },
+                "_meta": {
+                    "handshake_required": False,
+                    "mcp_session_id_deprecated": True,
+                },
+            }
+
+        elif tool_name == "query_cdc_soda":
             query = SoQLQuery(
                 where=arguments.get("where"),
                 limit=arguments.get("limit", 5),

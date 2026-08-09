@@ -7,23 +7,26 @@ Maps between our Escalate/Deescalate world and Axelrod's Cooperate/Defect world:
 
 from __future__ import annotations
 
-import axelrod as axl
+try:
+    import axelrod as axl
+    _ACTION_MAP = {axl.Action.C: "Deescalate", axl.Action.D: "Escalate"}
+    _REVERSE_MAP = {"Deescalate": axl.Action.C, "Escalate": axl.Action.D}
+    PERSONALITY_STRATEGIES: dict[str, type] = {
+        "TitForTat": axl.TitForTat,
+        "Cooperator": axl.Cooperator,
+        "Defector": axl.Defector,
+        "Grudger": axl.Grudger,
+        "Random": axl.Random,
+        "ForgivingTitForTat": axl.ForgivingTitForTat,
+    }
+except ImportError:
+    axl = None
+    _ACTION_MAP = {}
+    _REVERSE_MAP = {}
+    PERSONALITY_STRATEGIES = {}
 
 ESCALATE = "Escalate"
 DEESCALATE = "Deescalate"
-
-# Map Axelrod Action enums to our actions
-_ACTION_MAP = {axl.Action.C: DEESCALATE, axl.Action.D: ESCALATE}
-_REVERSE_MAP = {DEESCALATE: axl.Action.C, ESCALATE: axl.Action.D}
-
-# Map personality names to Axelrod strategy constructors
-PERSONALITY_STRATEGIES: dict[str, type] = {
-    "Aggressor": axl.Defector,
-    "Pacifist": axl.Cooperator,
-    "Tit-for-Tat": axl.TitForTat,
-    "Neutral": axl.GoByMajority,
-    "Grudger": axl.Grudger,
-}
 
 
 class OpponentProxy:
