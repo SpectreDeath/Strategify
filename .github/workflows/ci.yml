@@ -38,4 +38,4 @@ jobs:
         run: ruff format --check .
 
       - name: Run test suite
-        run: pytest --cov-fail-under=0
+        run: pytest --cov-fail-under=66

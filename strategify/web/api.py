@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from strategify.agents.cognitive_actor import CognitiveActorAgent
 from strategify.agents.state_actor import StateActorAgent
 from strategify.config.settings import REGION_COLORS
 from strategify.economics.supply_chain import SupplyChainEngine
@@ -38,6 +39,16 @@ model_instance = None
 
 class ScenarioConfig(BaseModel):
     scenario_id: str
+
+
+class InjectActionRequest(BaseModel):
+    agent_id: str
+    action: str  # "Escalate" | "Deescalate" | "SpreadFakeNews" | "Negotiate" | "Invade" | "Observe"
+
+
+class AnalysisRequest(BaseModel):
+    type: str  # "var" | "granger" | "community" | "risk" | "forecast"
+    params: dict[str, Any] = {}
 
 
 @app.get("/api/status")
@@ -118,8 +129,22 @@ def get_simulation_state() -> dict[str, Any]:
 
 @app.get("/api/agents/{agent_id}/beliefs")
 def get_agent_beliefs(agent_id: str) -> dict[str, Any]:
-    """Fetch agent's belief graph from Prolog."""
-    mock_beliefs = {
+    """Fetch agent's belief graph — live from model when running, demo fallback otherwise."""
+    # Try to pull live beliefs from a running CognitiveActorAgent
+    if model_instance:
+        for agent in model_instance.schedule.agents:
+            rid = getattr(agent, "region_id", "").lower()
+            if rid == agent_id.lower() and isinstance(agent, CognitiveActorAgent):
+                raw = getattr(agent, "epistemic_beliefs", {})
+                beliefs = [
+                    {"fact": k, "value": str(v), "source": "live"}
+                    for k, v in raw.items()
+                ]
+                if beliefs:
+                    return {"agent_id": agent_id, "beliefs": beliefs, "mode": "live"}
+
+    # Fallback: demo / Prolog mock
+    mock_beliefs: dict[str, list[dict[str, str]]] = {
         "usa": [
             {"fact": "russia_military_weak", "source": "prolog"},
             {"fact": "china_economy_strong", "source": "prolog"},
@@ -134,21 +159,18 @@ def get_agent_beliefs(agent_id: str) -> dict[str, Any]:
             {"fact": "sanctions_ineffective", "source": "prolog"},
         ],
     }
-
     try:
         from strategify.logic.bridge import StrategicBridge
 
         bridge = StrategicBridge()
-        if not bridge._initialized:
-            return {"agent_id": agent_id, "beliefs": mock_beliefs.get(agent_id, []), "mode": "demo"}
-
-        query_res = [
-            b for b in mock_beliefs.get(agent_id, []) if bridge.believes(agent_id, b["fact"])
-        ] or mock_beliefs.get(agent_id, [])
-        return {"agent_id": agent_id, "beliefs": query_res, "mode": "demo"}
+        if bridge._initialized:
+            query_res = [
+                b for b in mock_beliefs.get(agent_id, []) if bridge.believes(agent_id, b["fact"])
+            ] or mock_beliefs.get(agent_id, [])
+            return {"agent_id": agent_id, "beliefs": query_res, "mode": "prolog"}
     except Exception:
         logger.info("Using demo beliefs (Prolog unavailable)")
-        return {"agent_id": agent_id, "beliefs": mock_beliefs.get(agent_id, []), "mode": "demo"}
+    return {"agent_id": agent_id, "beliefs": mock_beliefs.get(agent_id, []), "mode": "demo"}
 
 
 @app.get("/api/agents/{agent_id}/mcts-branches")
@@ -369,9 +391,18 @@ def solve_nash_equilibrium_api(actor_a: str = "BlueLand", actor_b: str = "RedNat
 
 @app.get("/api/agents/{agent_id}/logs")
 def get_agent_decision_logs(agent_id: str) -> dict[str, Any]:
-    """Fetch decision audit trace log for Cognitive LLM Agent."""
+    """Fetch decision audit trace log — live from CognitiveActorAgent when running."""
+    if model_instance:
+        for agent in model_instance.schedule.agents:
+            rid = getattr(agent, "region_id", "").lower()
+            if rid == agent_id.lower() and isinstance(agent, CognitiveActorAgent):
+                log = getattr(agent, "decision_log", [])
+                return {"agent_id": agent_id, "logs": log, "mode": "live"}
+
+    # Demo fallback
     return {
         "agent_id": agent_id,
+        "mode": "demo",
         "logs": [
             {
                 "step": 1,
@@ -388,6 +419,217 @@ def get_agent_decision_logs(agent_id: str) -> dict[str, Any]:
                 "prompt_snippet": "State: Economic strain. Clojure MCTS timeline: display posture gives highest stability.",
             },
         ],
+    }
+
+
+@app.post("/api/analysis/run")
+def run_analysis(request: AnalysisRequest) -> dict[str, Any]:
+    """Run a live analysis against the active simulation model."""
+    if not model_instance:
+        raise HTTPException(status_code=400, detail="Model not initialized — start a simulation first")
+
+    analysis_type = request.type
+    params = request.params
+
+    try:
+        if analysis_type == "var":
+            from strategify.analysis.timeseries import fit_var_model, prepare_agent_timeseries
+
+            df = model_instance.datacollector.get_agent_vars_dataframe()
+            ts = prepare_agent_timeseries(df)
+            result = fit_var_model(ts, maxlags=params.get("maxlags", 3))
+            # forecast is ndarray — convert to list for JSON
+            forecast = result.get("forecast")
+            return {
+                "type": "var",
+                "optimal_lags": result.get("optimal_lags", 0),
+                "regions": result.get("regions", []),
+                "forecast": forecast.tolist() if hasattr(forecast, "tolist") else [],
+                "summary_snippet": str(result.get("model_summary", ""))[:500],
+            }
+
+        elif analysis_type == "granger":
+            from strategify.analysis.timeseries import pairwise_granger_causality, prepare_agent_timeseries
+
+            df = model_instance.datacollector.get_agent_vars_dataframe()
+            ts = prepare_agent_timeseries(df)
+            raw = pairwise_granger_causality(ts, maxlag=params.get("maxlag", 3))
+            # Convert tuple keys to strings
+            pairs = [
+                {"cause": k[0], "effect": k[1], **v}
+                for k, v in raw.items()
+            ]
+            causal_pairs = [p for p in pairs if p.get("causes")]
+            return {
+                "type": "granger",
+                "total_pairs": len(pairs),
+                "causal_pairs": causal_pairs,
+                "all_pairs": pairs,
+            }
+
+        elif analysis_type == "community":
+            from strategify.analysis.communities import detect_communities
+
+            result = detect_communities(model_instance)
+            # Map agent IDs back to region names
+            id_to_region = {
+                agent.unique_id: getattr(agent, "region_id", str(agent.unique_id))
+                for agent in model_instance.schedule.agents
+            }
+            named_communities = [
+                [id_to_region.get(aid, str(aid)) for aid in community]
+                for community in result.get("communities", [])
+            ]
+            return {
+                "type": "community",
+                "num_communities": result.get("num_communities", 0),
+                "modularity": result.get("modularity", 0.0),
+                "communities": named_communities,
+            }
+
+        elif analysis_type == "risk":
+            from strategify.analysis.strategic_risk import assess_all_risks
+
+            risks = assess_all_risks(model_instance)
+            return {
+                "type": "risk",
+                "risks": [
+                    {
+                        "region": r.region_id,
+                        "threat_score": r.threat_score,
+                        "risk_level": r.risk_level.value if hasattr(r.risk_level, "value") else str(r.risk_level),
+                        "volatility": r.volatility,
+                    }
+                    for r in risks
+                ],
+            }
+
+        elif analysis_type == "forecast":
+            from strategify.analysis.forecasting import forecast_all_regions
+
+            df = model_instance.datacollector.get_agent_vars_dataframe()
+            forecasts = forecast_all_regions(df, steps=params.get("steps", 5))
+            return {
+                "type": "forecast",
+                "forecasts": {
+                    region: {"forecast": vals.tolist() if hasattr(vals, "tolist") else list(vals)}
+                    for region, vals in forecasts.items()
+                },
+            }
+
+        else:
+            # Raise before entering the catch-all except to satisfy TRY301
+            pass
+
+    except HTTPException:
+        raise
+    except Exception as err:
+        logger.exception("Analysis run failed")
+        raise HTTPException(status_code=500, detail=str(err)) from err
+
+    raise HTTPException(status_code=400, detail=f"Unknown analysis type: {analysis_type}")
+
+
+@app.post("/api/simulation/inject-action")
+def inject_human_action(request: InjectActionRequest) -> dict[str, Any]:
+    """Human-in-the-Loop: override a state actor's posture/action for the next step."""
+    if not model_instance:
+        raise HTTPException(status_code=400, detail="Model not initialized")
+
+    posture_map = {
+        "Escalate": "Escalate",
+        "Deescalate": "Deescalate",
+        "Observe": "Observe",
+        "Invade": "Invade",
+        "Negotiate": "Deescalate",  # maps negotiate intent to deescalate posture
+        "SpreadFakeNews": "Observe",  # deceptive posture
+    }
+
+    target_posture = posture_map.get(request.action)
+    if not target_posture:
+        raise HTTPException(status_code=400, detail=f"Unknown action: {request.action}. Valid: {list(posture_map)!r}")
+
+    matched = False
+    for agent in model_instance.schedule.agents:
+        rid = getattr(agent, "region_id", "").lower()
+        if rid == request.agent_id.lower() and isinstance(agent, StateActorAgent):
+            agent.posture = target_posture
+            # If the action is SpreadFakeNews, flag deception
+            if request.action == "SpreadFakeNews":
+                agent.propaganda_active = True  # type: ignore[attr-defined]
+            matched = True
+            break
+
+    if not matched:
+        raise HTTPException(status_code=404, detail=f"Agent '{request.agent_id}' not found in active simulation")
+
+    return {
+        "success": True,
+        "agent_id": request.agent_id,
+        "action": request.action,
+        "new_posture": target_posture,
+        "step": model_instance.schedule.steps,
+    }
+
+
+@app.get("/api/map/geojson")
+def get_live_map_geojson() -> dict[str, Any]:
+    """Return a GeoJSON FeatureCollection with live simulation state per region."""
+    if not model_instance:
+        raise HTTPException(status_code=400, detail="Model not initialized")
+
+    # Build a posture → risk colour mapping for choropleth
+    posture_colors: dict[str, str] = {
+        "Invade": "#e94560",
+        "Escalate": "#ff7043",
+        "Deploy": "#ffa726",
+        "Observe": "#66bb6a",
+        "Deescalate": "#29b6f6",
+        "Withdraw": "#ab47bc",
+    }
+
+    features = []
+    for agent in model_instance.schedule.agents:
+        if not isinstance(agent, StateActorAgent):
+            continue
+        rid = getattr(agent, "region_id", "UNKNOWN")
+        posture = getattr(agent, "posture", "Observe")
+        stability = getattr(agent, "stability", 1.0)
+        military = agent.capabilities.get("military", 0.0)
+        economic = agent.capabilities.get("economic", 0.0)
+        tension = round((military + (1.0 - stability)) * 50, 1)
+
+        # Pull geometry if the agent has a shape (mesa-geo)
+        shape = getattr(agent, "shape", None)
+        geometry = None
+        if shape is not None:
+            try:
+                import json
+
+                from shapely.geometry import mapping
+                geometry = json.loads(json.dumps(mapping(shape)))
+            except Exception:
+                geometry = None
+
+        features.append({
+            "type": "Feature",
+            "geometry": geometry,
+            "properties": {
+                "region_id": rid,
+                "posture": posture,
+                "tension": tension,
+                "stability": round(stability, 3),
+                "military": round(military, 3),
+                "economic": round(economic, 3),
+                "color": posture_colors.get(posture, REGION_COLORS.get(rid, "#888888")),
+            },
+        })
+
+    return {
+        "type": "FeatureCollection",
+        "step": model_instance.schedule.steps,
+        "global_tension": getattr(model_instance, "global_tension", 0.0),
+        "features": features,
     }
 
 

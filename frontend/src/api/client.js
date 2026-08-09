@@ -13,6 +13,7 @@ export const simulationApi = {
   stop: () => api.post('/simulation/stop'),
   step: () => api.post('/simulation/step'),
   getState: () => api.get('/simulation/state'),
+  injectAction: (agent_id, action) => api.post('/simulation/inject-action', { agent_id, action }),
 };
 
 export const xaiApi = {
@@ -21,10 +22,13 @@ export const xaiApi = {
   getAgentLogs: (agentId) => api.get(`/agents/${agentId}/logs`),
 };
 
+export const analysisApi = {
+  run: (type, params = {}) => api.post('/analysis/run', { type, params }),
+};
+
 export const economicsApi = {
   getChokepoints: () => api.get('/economics/chokepoints'),
 };
-
 
 export const wargameApi = {
   runWargame: (steps = 5) => api.post(`/wargame/run?steps=${steps}`),
@@ -36,6 +40,10 @@ export const swarmApi = {
 
 export const epidemiologyApi = {
   getTrajectoryPlot: () => api.get('/epidemiology/trajectory'),
+};
+
+export const mapApi = {
+  getGeoJSON: () => api.get('/map/geojson'),
 };
 
 export default api;

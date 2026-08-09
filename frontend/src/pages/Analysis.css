@@ -6,7 +6,7 @@
 
 .analysis-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
   margin-bottom: 2rem;
 }
@@ -17,45 +17,212 @@
   border-radius: 12px;
   border: 1px solid #0f3460;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  position: relative;
 }
 
 .analysis-card:hover {
+  transform: translateY(-4px);
   border-color: #e94560;
-  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(233, 69, 96, 0.2);
 }
 
 .analysis-card.selected {
   border-color: #e94560;
-  background: linear-gradient(135deg, #1a1a2e 0%, #2a1a3e 100%);
+  box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.4);
+}
+
+.analysis-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 .analysis-card h3 {
-  color: #e94560;
+  color: #a2a8d3;
   margin: 0 0 0.5rem;
+  font-size: 1rem;
 }
 
 .analysis-card p {
-  color: #666;
+  color: #555;
+  font-size: 0.82rem;
   margin: 0;
-  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.card-spinner {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #333;
+  border-top-color: #e94560;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.analysis-error {
+  background: rgba(233, 69, 96, 0.1);
+  border: 1px solid #e94560;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  color: #e94560;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
 }
 
 .analysis-results {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 1.5rem;
-}
-
-.chart-container {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  padding: 1.5rem;
   border-radius: 12px;
   border: 1px solid #0f3460;
+  padding: 2rem;
+  margin-top: 1rem;
 }
 
-.chart-container h2 {
+.analysis-results h2 {
+  color: #e94560;
+  margin: 0 0 1.5rem;
+}
+
+.result-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.result-block h3 {
   color: #a2a8d3;
-  font-size: 1rem;
-  margin: 0 0 1rem;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.meta-badge {
+  background: #0f3460;
+  color: #a2a8d3;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.82rem;
+}
+
+.meta-badge.causal {
+  background: rgba(233, 69, 96, 0.15);
+  color: #e94560;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 0.6rem 1rem;
+  color: #666;
+  border-bottom: 1px solid #1e2240;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.data-table td {
+  padding: 0.6rem 1rem;
+  color: #a2a8d3;
+  border-bottom: 1px solid #1a1a2e;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.region-badge {
+  background: #0f3460;
+  color: #a2a8d3;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-family: monospace;
+}
+
+.pvalue {
+  color: #66bb6a;
+  font-weight: 600;
+}
+
+.no-result {
+  color: #555;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.community-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.community-card {
+  background: #0f1428;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+
+.community-card h4 {
+  color: #a2a8d3;
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bloc-members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.threat-bar {
+  width: 120px;
+  background: #0f1428;
+  border-radius: 3px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.risk-level-badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.risk-level-badge.high { background: rgba(233, 69, 96, 0.2); color: #e94560; }
+.risk-level-badge.medium { background: rgba(255, 167, 38, 0.2); color: #ffa726; }
+.risk-level-badge.low { background: rgba(102, 187, 106, 0.2); color: #66bb6a; }
+.risk-level-badge.critical { background: rgba(233, 69, 96, 0.35); color: #ff1744; }
+
+.summary-snippet {
+  background: #0a0a14;
+  color: #555;
+  font-size: 0.72rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  max-height: 160px;
+}
+
+.risk-table-wrap {
+  overflow-x: auto;
 }

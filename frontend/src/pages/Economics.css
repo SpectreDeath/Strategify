@@ -1,0 +1,214 @@
+.economics-page {
+  padding: 2rem;
+  background: #0f0f1a;
+  min-height: 100vh;
+}
+
+.econ-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.btn-analyze {
+  background: linear-gradient(135deg, #533483, #0f3460);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.75rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-analyze:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(83, 52, 131, 0.4);
+}
+
+.btn-analyze:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.econ-error {
+  color: #e94560;
+  background: rgba(233, 69, 96, 0.1);
+  border: 1px solid #e94560;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.88rem;
+}
+
+/* Chokepoint Cards */
+.chokepoint-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.chokepoint-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  border: 1px solid #0f3460;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cp-name {
+  color: #a2a8d3;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.cp-risk {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.cp-commodity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.82rem;
+  text-transform: capitalize;
+}
+
+.commodity-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cp-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.cp-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.cp-stat span {
+  color: #555;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cp-stat strong {
+  color: #a2a8d3;
+  font-size: 0.9rem;
+}
+
+.util-bar {
+  height: 4px;
+  background: #0f1428;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.util-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* Charts */
+.econ-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.chart-box {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  border: 1px solid #0f3460;
+  padding: 1.5rem;
+}
+
+.chart-box h2 {
+  color: #a2a8d3;
+  font-size: 1rem;
+  margin: 0 0 1.25rem;
+}
+
+/* Prolog export */
+.prolog-facts {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  border: 1px solid #0f3460;
+  padding: 1.5rem;
+}
+
+.prolog-facts h2 {
+  color: #a2a8d3;
+  font-size: 1rem;
+  margin: 0 0 1rem;
+}
+
+.prolog-code {
+  background: #0a0a14;
+  color: #66bb6a;
+  font-size: 0.78rem;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  font-family: 'Fira Code', 'Cascadia Code', monospace;
+}
+
+/* Placeholder */
+.econ-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  color: #555;
+}
+
+.placeholder-icon {
+  font-size: 4rem;
+}
+
+.econ-placeholder p {
+  color: #666;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.econ-placeholder ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.econ-placeholder li {
+  color: #555;
+  font-size: 0.88rem;
+}

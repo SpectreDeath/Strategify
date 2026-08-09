@@ -2,11 +2,13 @@ import { NavLink } from 'react-router-dom'
 import './Navbar.css'
 
 const navItems = [
-  { path: '/', label: 'Dashboard' },
-  { path: '/simulation', label: 'Simulation' },
-  { path: '/map', label: 'Map' },
-  { path: '/analysis', label: 'Analysis' },
-  { path: '/xai', label: 'XAI' },
+  { path: '/',           label: '📊 Dashboard' },
+  { path: '/simulation', label: '⚙️ Simulation' },
+  { path: '/map',        label: '🗺 Map' },
+  { path: '/analysis',   label: '📈 Analysis' },
+  { path: '/xai',        label: '🧠 XAI' },
+  { path: '/play',       label: '🎮 Human Play' },
+  { path: '/economics',  label: '📦 Economics' },
 ]
 
 function Navbar() {
