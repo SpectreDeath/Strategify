@@ -9,6 +9,7 @@ from __future__ import annotations
 
 try:
     import axelrod as axl
+
     _ACTION_MAP = {axl.Action.C: "Deescalate", axl.Action.D: "Escalate"}
     _REVERSE_MAP = {"Deescalate": axl.Action.C, "Escalate": axl.Action.D}
     PERSONALITY_STRATEGIES: dict[str, type] = {

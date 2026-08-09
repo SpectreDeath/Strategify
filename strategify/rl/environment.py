@@ -11,10 +11,12 @@ import numpy as np
 try:
     from gymnasium import spaces
     from pettingzoo import AECEnv
+
     _ENV_BASE = AECEnv
 except ImportError:
     spaces = None
     _ENV_BASE = object
+
 
 class GeopolEnv(_ENV_BASE):
     """PettingZoo AEC environment wrapping GeopolModel.
