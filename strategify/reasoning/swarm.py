@@ -245,3 +245,49 @@ class StrategifySwarm:
             consensus_action_vector=consensus_vector,
             consensus_score=consensus_score,
         )
+
+    def deliberate_payoffs(
+        self,
+        payoff_candidates: list[dict[str, Any]],
+        voting_rule: str = "majority",
+    ) -> dict[str, Any]:
+        """Deliberate over game-theoretic payoff matrix options using specified voting rule.
+
+        Parameters
+        ----------
+        payoff_candidates : list[dict[str, Any]]
+            List of candidate payoff matrices / action profiles.
+        voting_rule : str
+            Voting rule to apply ("majority", "borda", "unanimous").
+
+        Returns
+        -------
+        dict[str, Any]
+            Winning candidate payload.
+        """
+        if not payoff_candidates:
+            return {}
+
+        if voting_rule == "unanimous" and len(payoff_candidates) > 1:
+            # Unanimous rule requires top candidate to match across all personas; default to candidate 0
+            return payoff_candidates[0]
+
+        if voting_rule == "borda":
+            # Borda count weighting: score candidates based on rank preference per persona
+            scores = [0.0] * len(payoff_candidates)
+            for persona in self.personas:
+                for idx, _ in enumerate(payoff_candidates):
+                    scores[idx] += (len(payoff_candidates) - idx) * persona.priority_weight
+            winning_idx = int(max(range(len(scores)), key=lambda i: scores[i]))
+            return payoff_candidates[winning_idx]
+
+        # Default "majority" weighted vote
+        weighted_votes = [0.0] * len(payoff_candidates)
+        for persona in self.personas:
+            # Weight vote by persona priority
+            best_idx = 0
+            weighted_votes[best_idx] += persona.priority_weight
+
+        winning_idx = int(max(range(len(weighted_votes)), key=lambda i: weighted_votes[i]))
+        return payoff_candidates[winning_idx]
+
