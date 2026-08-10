@@ -86,7 +86,7 @@ strategify-scenario = "strategify.config.cli:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=strategify --cov-report=term-missing --cov-fail-under=75 --timeout=20"
+addopts = "--cov=strategify --cov-report=term-missing --cov-fail-under=80 --timeout=20"
 filterwarnings = [
     "ignore::DeprecationWarning:mesa.*:",
     "ignore::DeprecationWarning:libpysal.*:",

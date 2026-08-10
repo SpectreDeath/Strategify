@@ -88,7 +88,11 @@ class GeopolModel(Model):
         enable_governance: bool = True,
         active_games: list[str] | None = None,
         region_gdf: gpd.GeoDataFrame | None = None,
+        flywheel_url: str | None = "http://localhost:8000",
     ) -> None:
+        from strategify.sim.flywheel_client import FlywheelSkillClient
+
+        self.flywheel_client = FlywheelSkillClient(base_url=flywheel_url) if flywheel_url else None
         # Load scenario config first (no randomness needed) to determine seed
         if scenario is not None:
             scenario_data = load_scenario(scenario)
