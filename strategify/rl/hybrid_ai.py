@@ -173,7 +173,6 @@ class HierarchicalHybridAI:
         """Map strategic decision to tactical action using scripted rules."""
         military_power = getattr(agent, "military_power", 0.5)
         stability = getattr(agent, "stability", 0.5)
-        posture = getattr(agent, "posture", "Deescalate")
 
         neighbors = model.adjacency.get(getattr(agent, "region_id", ""), [])
         has_neighbors = len(neighbors) > 0

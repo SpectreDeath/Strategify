@@ -314,7 +314,6 @@ class TreatyComplianceChecker:
         critical_actions = ["war_crime", "crime_against_humanity", "genocide", "annexation"]
         serious_actions = ["invasion", "armed_attack", "aggression", "torture"]
         moderate_actions = ["intervention", "interference", "violation"]
-        minor_actions = ["procedural", "technical"]
 
         if any(c in prohibited_action for c in critical_actions):
             return ViolationSeverity.CRITICAL

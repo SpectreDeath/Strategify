@@ -71,7 +71,7 @@ dev = [
 ]
 logic = [
     "pyswip>=0.2",
-    "memtext>=0.6.0",
+    "memtext @ git+https://github.com/SpectreDeath/Memtext.git",
 ]
 docs = [
     "mkdocs>=1.5",
@@ -86,7 +86,7 @@ strategify-scenario = "strategify.config.cli:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=strategify --cov-report=term-missing --cov-fail-under=66 --timeout=20"
+addopts = "--cov=strategify --cov-report=term-missing --cov-fail-under=75 --timeout=20"
 filterwarnings = [
     "ignore::DeprecationWarning:mesa.*:",
     "ignore::DeprecationWarning:libpysal.*:",
@@ -128,12 +128,66 @@ line-ending = "lf"
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM", "RSE", "TRY", "PL", "PERF", "N"]
 ignore = [
-    "E501", "F821", "W293", "PLR2004", "PLR0913", "PLR0917", "TRY003", "TRY300", "PLC0415",
-    "N802", "N803", "N806", "PLW0603", "PERF102", "PLR0915", "PLR0912", "PLR0911",
-    "F401", "F841", "B007", "PLW0108", "B904", "N999", "PERF401", "PLW2901", "SIM108",
-    "SIM102", "SIM105", "SIM118", "SIM103", "SIM114", "TRY004", "TRY400", "TRY201",
-    "B028", "UP007", "UP035", "UP006", "C408", "C416", "E402", "PLR1722", "C401", "C414",
-    "PLW1510", "PLR1714", "PLC0206"
+    # Line length handled by black / formatter
+    "E501",
+    # Forward-reference issues in complex modules
+    "F821",
+    # Whitespace — handled by formatter
+    "W293",
+    # Magic value comparisons — common in simulation/game-theory code
+    "PLR2004",
+    # Argument count — legitimate in ABM constructors
+    "PLR0913", "PLR0917",
+    # Exception message style — project choice
+    "TRY003", "TRY300",
+    # Top-level imports — lazy imports used intentionally in some modules
+    "PLC0415",
+    # Naming — simulation code uses domain-conventional names (A, B matrices etc.)
+    "N802", "N803", "N806",
+    # Global statement — used in Mesa model initialization
+    "PLW0603",
+    # Performance suggestions — not critical for simulation
+    "PERF102",
+    # Complexity — simulation/game-theory code is legitimately complex
+    "PLR0915", "PLR0912", "PLR0911",
+    # Unused loop variable — common in iteration boilerplate
+    "B007",
+    # Set/dict comprehension edge cases
+    "PLW0108",
+    # Exception chaining — project choice
+    "B904", "N999",
+    # List comprehension style — readability preference
+    "PERF401", "PLW2901",
+    # Ternary vs if-else — readability preference
+    "SIM108",
+    # Nested if collapsing — not always clearer
+    "SIM102",
+    # Use contextlib.suppress — project choice
+    "SIM105",
+    # Dict/set membership style
+    "SIM118", "SIM103", "SIM114",
+    # Exception handling style
+    "TRY004", "TRY400", "TRY201",
+    # Stacklevel for warnings — not always needed
+    "B028",
+    # UP035/UP006 — Optional/Union compat kept for mesa type stubs
+    "UP035", "UP006",
+    # Dict/list constructors
+    "C408", "C416",
+    # Module-level import not at top — lazy imports used intentionally
+    "E402",
+    # sys.exit — used intentionally in CLI
+    "PLR1722",
+    # Generator/set comprehension style
+    "C401", "C414",
+    # subprocess without shell — project choice
+    "PLW1510",
+    # Membership test simplification
+    "PLR1714",
+    # Dict iteration items
+    "PLC0206",
+    # NOTE: F401 (unused imports), F841 (unused vars), UP007 (X|Y unions) are now ENABLED
+    # Run `ruff check --fix strategify/` to auto-fix these
 ]
 exclude = [
     "strategify/viz/dashboard.py",

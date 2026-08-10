@@ -91,7 +91,6 @@ class SpatialReasoningEngine:
     ) -> dict[str, Any]:
         """Recommend optimal position for engagement."""
         current_neighbors = model.adjacency.get(current_position, [])
-        target_neighbors = model.adjacency.get(target_position, [])
 
         options = []
 

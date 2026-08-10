@@ -49,4 +49,9 @@ __all__ = [
     "CourtroomSimulator",
     "BindingArbitrationSystem",
     "JudicialPanel",
+    "AgentProposal",
+    "StrategifySwarm",
+    "SwarmAgentPersona",
+    "SwarmDeliberationResult",
 ]
+

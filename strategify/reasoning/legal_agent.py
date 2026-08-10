@@ -130,7 +130,6 @@ class LegalAgent:
 
     def evaluate_ruling(self, ruling: LegalRuling) -> dict[str, Any]:
         """Evaluate a ruling and decide on compliance/appeal."""
-        ruling_received = ruling
         self.rulings_received.append(ruling)
 
         if not self.preference_for_appeal and ruling.decision in ["favorable", "partial"]:

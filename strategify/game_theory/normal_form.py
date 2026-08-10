@@ -46,6 +46,14 @@ class NormalFormGame:
 
         Falls back to a uniform mixed strategy over all actions when the
         list is empty.
+
+        .. note::
+            **Tie-breaking convention**: when multiple Nash equilibria exist,
+            this method always returns ``equilibria[0]`` from
+            ``support_enumeration()``.  This is *intentional* — combined with
+            the ``random.seed(42)`` in ``GeopolModel.__init__``, it guarantees
+            fully reproducible simulation runs.  Do **not** change to a random
+            selector without also updating the reproducibility note in README.
         """
         equilibria = self.get_nash_equilibria()
         if equilibria:

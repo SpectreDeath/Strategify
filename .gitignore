@@ -28,3 +28,14 @@ strategify/osint/.cache/
 
 # Memtext Context
 .context/
+
+# Simulation output directories
+middle_east_output/
+reports\ 3rd\ party/
+
+# Coverage artifacts
+coverage.json
+coverage.xml
+
+# Build artifacts committed by mistake
+strategify.egg-info/
