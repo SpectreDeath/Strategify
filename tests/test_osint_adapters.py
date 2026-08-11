@@ -52,7 +52,7 @@ class TestOSINTAdapters:
         adapter = ACLEDAdapter(api_key="test_key")
         events = adapter.fetch(region_keywords={"RegionA": ["Protests"]})
         assert len(events) == 1
-        assert events[0]["event_type"] == "conflict"
+        assert events[0]["event_type"] == "protests"
 
     @patch("urllib.request.urlopen")
     def test_worldbank_feed_fetch(self, mock_urlopen):

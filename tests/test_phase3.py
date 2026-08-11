@@ -3,6 +3,7 @@ forecasting, counterfactuals, and reports."""
 
 import tempfile
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pandas as pd
@@ -68,8 +69,14 @@ class TestOSSources:
         result = fetch_rss_feed("http://invalid.example.com/feed.xml")
         assert result == []
 
-    def test_fetch_gdelt_events_bad_query(self):
+    @patch("urllib.request.urlopen")
+    def test_fetch_gdelt_events_bad_query(self, mock_urlopen):
         from strategify.osint.sources import fetch_gdelt_events
+
+        mock_response = MagicMock()
+        mock_response.read.return_value = b"{}"
+        mock_response.__enter__.return_value = mock_response
+        mock_urlopen.return_value = mock_response
 
         result = fetch_gdelt_events("", timespan="24h")
         assert isinstance(result, list)
