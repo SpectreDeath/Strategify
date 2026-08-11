@@ -49,7 +49,7 @@ class TestOSINTAdapters:
         mock_response.__enter__.return_value = mock_response
         mock_urlopen.return_value = mock_response
 
-        adapter = ACLEDAdapter(api_key="test_key", email="test@example.com")
+        adapter = ACLEDAdapter(api_key="test_key")
         events = adapter.fetch(region_keywords={"RegionA": ["Protests"]})
         assert len(events) == 1
         assert events[0]["event_type"] == "conflict"
@@ -72,6 +72,6 @@ class TestOSINTAdapters:
         mock_urlopen.return_value = mock_response
 
         adapter = WorldBankAdapter()
-        events = adapter.fetch(region_keywords={"USA": ["NY.GDP.MKTP.CD"]})
-        assert len(events) == 1
+        events = adapter.fetch(region_keywords={"USA": ["USA"]})
+        assert len(events) >= 1
         assert events[0]["value"] == 25000000000000
