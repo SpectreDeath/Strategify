@@ -312,7 +312,6 @@ class TestPopulationModel:
         """GDP should use population labor multiplier."""
         model = GeopolModel()
         pm = model.population_model
-        tn = model.trade_network
         uids = list(pm.population.keys())
         # Verify labor multiplier is used in GDP calculation
         # Set one agent to very large population, another to very small

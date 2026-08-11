@@ -290,4 +290,3 @@ class StrategifySwarm:
 
         winning_idx = int(max(range(len(weighted_votes)), key=lambda i: weighted_votes[i]))
         return payoff_candidates[winning_idx]
-

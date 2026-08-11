@@ -51,7 +51,7 @@ def test_cyber_warfare():
 
     # Agent alpha has 'cyber' in active_games (mil_cap 0.8)
     alpha = next(a for a in model.schedule.agents if getattr(a, "region_id", "") == "alpha")
-    delta = next(a for a in model.schedule.agents if getattr(a, "region_id", "") == "delta")
+    next(a for a in model.schedule.agents if getattr(a, "region_id", "") == "delta")
 
     print(f"Alpha active games: {alpha.active_games}")
     assert "cyber" in alpha.active_games

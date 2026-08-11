@@ -7,7 +7,7 @@ and execute skills hosted on Skill Flywheel's FastAPI server (port 8000).
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +40,7 @@ class FlywheelSkillClient:
             logger.warning("Failed to reach Skill Flywheel server at %s: %s", self.base_url, e)
         return []
 
-    def execute_skill(
-        self, skill_name: str, input_data: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+    def execute_skill(self, skill_name: str, input_data: Dict[str, Any] | None = None) -> Dict[str, Any]:
         """Execute a skill on the Flywheel server.
 
         Args:

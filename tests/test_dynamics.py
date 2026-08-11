@@ -157,12 +157,12 @@ class TestPublicOpinion:
         return MockModel()
 
     def test_public_opinion_init(self, mock_model):
-        agent = MockAgent()
+        MockAgent()
         po = PublicOpinion(mock_model, "RUS")
         assert po is not None
 
     def test_get_approval_rating(self, mock_model):
-        agent = MockAgent()
+        MockAgent()
         po = PublicOpinion(mock_model, "RUS")
         rating = po.get_approval_rating()
         assert isinstance(rating, (float, int))

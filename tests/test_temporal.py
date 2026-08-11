@@ -89,12 +89,6 @@ class TestTemporalStep:
 
     def test_season_progression(self, temporal):
         # steps_per_year=4, so season changes every step
-        expected_seasons = [
-            "summer",  # step 1: 1//4 % 4 = 0 → but actually 1//4=0, 0%4=0 = spring?
-            "autumn",
-            "winter",
-            "spring",
-        ]
         # Step through a full year
         seasons_seen = []
         for _ in range(4):
@@ -182,7 +176,7 @@ class TestTemporalModifiers:
         for _ in range(20):
             temporal.step()
         # Capabilities should have changed
-        any_changed = any(
+        any(
             model.schedule.agents[i].capabilities != initial_caps[model.schedule.agents[i].unique_id]
             for i in range(len(model.schedule.agents))
         )

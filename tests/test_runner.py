@@ -115,7 +115,7 @@ def test_run_scenario_csv_reproducible():
 
 def test_run_scenario_no_economics():
     """Running without economics should still work."""
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory():
         from strategify.sim.model import GeopolModel
 
         model = GeopolModel(enable_economics=False)
@@ -126,7 +126,7 @@ def test_run_scenario_no_economics():
 
 def test_run_scenario_no_escalation():
     """Running without escalation ladder should still work."""
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory():
         from strategify.sim.model import GeopolModel
 
         model = GeopolModel(enable_escalation_ladder=False)

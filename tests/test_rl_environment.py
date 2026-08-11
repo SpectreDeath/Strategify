@@ -117,7 +117,7 @@ class TestGeopolEnvStep:
 
     def test_step_model_is_stepped(self, env_with_model):
         agent = env_with_model.agent_selection
-        agent_obj = env_with_model._get_agent(agent)
+        env_with_model._get_agent(agent)
 
         initial_step_count = env_with_model._step_count
         env_with_model.step(1)

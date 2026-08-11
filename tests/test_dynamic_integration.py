@@ -171,7 +171,7 @@ class TestModelIntegration:
         model.enable_payoff_history()
         for _ in range(3):
             model.step()
-        df = model.payoff_history.to_dataframe()
+        model.payoff_history.to_dataframe()
         # Payoff history not automatically recorded (requires agent integration)
         # Just verify it doesn't crash
 

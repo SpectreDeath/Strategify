@@ -309,7 +309,7 @@ class TestBindingArbitrationSystem:
 
     def test_process_to_ruling(self):
         system = BindingArbitrationSystem()
-        proceeding_id = system.submit_dispute("DISP_001", "USA", "Russia", {})
+        system.submit_dispute("DISP_001", "USA", "Russia", {})
         ruling = system.process_dispute_to_ruling(
             "DISP_001",
             "partial_favorable",
