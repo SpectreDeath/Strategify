@@ -38,6 +38,7 @@ dependencies = [
     "pyvis>=0.3",
     "matplotlib>=3.8",
     "Pillow>=10.0",
+    "em-cubed @ git+https://github.com/SpectreDeath/Em-Cubed.git@master",
 ]
 
 [project.optional-dependencies]

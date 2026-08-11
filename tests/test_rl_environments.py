@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from strategify.rl.geopol_env import GeopolEnv
+from strategify.rl.environment import GeopolEnv
 
 
 class TestRLEnvironments:

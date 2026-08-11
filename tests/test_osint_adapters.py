@@ -4,41 +4,37 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from strategify.osint.acled import ACLEDFeed
-from strategify.osint.gdelt import GDELTFeed
-from strategify.osint.worldbank import WorldBankFeed
+from strategify.osint.adapters import ACLEDAdapter, GDELTAdapter, WorldBankAdapter
 
 
 class TestOSINTAdapters:
-    @patch("httpx.get")
-    def test_gdelt_feed_fetch(self, mock_get):
+    @patch("urllib.request.urlopen")
+    def test_gdelt_feed_fetch(self, mock_urlopen):
         mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
+        mock_response.read.return_value = json_data = b"""{
             "articles": [
                 {
                     "title": "Diplomatic Summit Announced",
                     "url": "https://example.com/news1",
                     "seendate": "20260810T120000Z",
-                    "socialimage": "",
                     "domain": "example.com",
                     "language": "English",
-                    "sourcecountry": "United States",
+                    "sourcecountry": "United States"
                 }
             ]
-        }
-        mock_get.return_value = mock_response
+        }"""
+        mock_response.__enter__.return_value = mock_response
+        mock_urlopen.return_value = mock_response
 
-        feed = GDELTFeed()
-        articles = feed.fetch_events(query="diplomacy", limit=5)
-        assert len(articles) == 1
-        assert articles[0]["title"] == "Diplomatic Summit Announced"
+        adapter = GDELTAdapter()
+        events = adapter.fetch(region_keywords={"USA": ["diplomacy"]})
+        assert len(events) == 1
+        assert events[0]["text"] == "Diplomatic Summit Announced"
 
-    @patch("httpx.get")
-    def test_acled_feed_fetch(self, mock_get):
+    @patch("urllib.request.urlopen")
+    def test_acled_feed_fetch(self, mock_urlopen):
         mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
+        mock_response.read.return_value = b"""{
             "data": [
                 {
                     "event_id_cnt": "ACLED1001",
@@ -46,35 +42,36 @@ class TestOSINTAdapters:
                     "event_type": "Protests",
                     "actor1": "Protesters",
                     "country": "RegionA",
-                    "fatalities": "0",
+                    "fatalities": "0"
                 }
             ]
-        }
-        mock_get.return_value = mock_response
+        }"""
+        mock_response.__enter__.return_value = mock_response
+        mock_urlopen.return_value = mock_response
 
-        feed = ACLEDFeed()
-        events = feed.fetch_events(country="RegionA", limit=5)
+        adapter = ACLEDAdapter(api_key="test_key", email="test@example.com")
+        events = adapter.fetch(region_keywords={"RegionA": ["Protests"]})
         assert len(events) == 1
-        assert events[0]["event_type"] == "Protests"
+        assert events[0]["event_type"] == "conflict"
 
-    @patch("httpx.get")
-    def test_worldbank_feed_fetch(self, mock_get):
+    @patch("urllib.request.urlopen")
+    def test_worldbank_feed_fetch(self, mock_urlopen):
         mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = [
+        mock_response.read.return_value = b"""[
             {"page": 1, "pages": 1, "per_page": 50, "total": 1},
             [
                 {
                     "indicator": {"id": "NY.GDP.MKTP.CD", "value": "GDP"},
                     "country": {"id": "USA", "value": "United States"},
                     "value": 25000000000000,
-                    "date": "2025",
+                    "date": "2025"
                 }
-            ],
-        ]
-        mock_get.return_value = mock_response
+            ]
+        ]"""
+        mock_response.__enter__.return_value = mock_response
+        mock_urlopen.return_value = mock_response
 
-        feed = WorldBankFeed()
-        data = feed.fetch_indicator(country="USA", indicator="NY.GDP.MKTP.CD")
-        assert len(data) == 1
-        assert data[0]["value"] == 25000000000000
+        adapter = WorldBankAdapter()
+        events = adapter.fetch(region_keywords={"USA": ["NY.GDP.MKTP.CD"]})
+        assert len(events) == 1
+        assert events[0]["value"] == 25000000000000
