@@ -11,7 +11,7 @@ class TestOSINTAdapters:
     @patch("urllib.request.urlopen")
     def test_gdelt_feed_fetch(self, mock_urlopen):
         mock_response = MagicMock()
-        mock_response.read.return_value = json_data = b"""{
+        mock_response.read.return_value = b"""{
             "articles": [
                 {
                     "title": "Diplomatic Summit Announced",
